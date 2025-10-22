@@ -47,6 +47,31 @@ export default function Product() {
     load()
   }, [id])
 
+  const pdfUrl = useMemo(() => {
+    if (!product?.catalog_pdf) return null
+    const p = product.catalog_pdf
+    return p.startsWith('http') ? p : `${baseURL}${p}`
+  }, [product, baseURL])
+
+  async function downloadProductPdf() {
+    if (!pdfUrl) return
+    try {
+      const res = await fetch(pdfUrl)
+      if (!res.ok) throw new Error('PDF não disponível')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${product?.slug || 'produto'}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (e) {
+      window.open(pdfUrl, '_blank')
+    }
+  }
+
   const images = useMemo(() => {
     if (!product?.images) return []
     return product.images.map(img => {
@@ -302,7 +327,7 @@ export default function Product() {
             </div>
 
             {/* Add to cart */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="flex items-center border border-neutral-300 rounded-lg">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
@@ -353,6 +378,15 @@ export default function Product() {
                   </div>
                 )}
               </button>
+              {pdfUrl && (
+                <button
+                  type="button"
+                  onClick={downloadProductPdf}
+                  className="px-4 py-3 rounded-lg border border-neutral-300 text-neutral-800 hover:bg-neutral-100"
+                >
+                  Baixar ficha PDF
+                </button>
+              )}
             </div>
 
             {/* Care instructions */}

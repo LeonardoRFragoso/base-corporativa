@@ -157,7 +157,7 @@ export default function ProductCard({ product }) {
           )}
           
           {/* Add to Cart Button */}
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-col sm:flex-row gap-2">
             <Link 
               to={`/product/${product.id}`}
               className="flex-1 text-center px-3 py-2 border border-gold-500 text-gold-700 text-sm font-medium rounded-lg hover:bg-gold-50 transition-all duration-200"

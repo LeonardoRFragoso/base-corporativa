@@ -164,7 +164,7 @@ export default function Cart() {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item, idx) => (
               <div key={idx} className="bg-white rounded-lg shadow-soft p-6">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
                   {/* Product image placeholder */}
                   {item.image ? (
                     <img
@@ -189,7 +189,7 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
                     {/* Quantity controls */}
                     <div className="flex items-center border border-neutral-300 rounded-lg">
                       <button
@@ -247,13 +247,13 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-soft p-6 sticky top-24">
+            <div className="bg-white rounded-lg shadow-soft p-6 sm:sticky sm:top-24">
               <h2 className="text-lg font-semibold text-primary-950 mb-4">Resumo do pedido</h2>
 
               {/* Shipping: CEP and quotes */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Calcular frete</label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     inputMode="numeric"

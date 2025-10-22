@@ -31,7 +31,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/10 to-bronze-500/10"></div>
         
         {/* Geometric Pattern Background */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="hidden md:block absolute inset-0 opacity-5">
           <div className="absolute top-20 left-20 w-32 h-32 border border-gold-400/20 transform rotate-45"></div>
           <div className="absolute top-40 right-32 w-24 h-24 border border-bronze-400/20 transform rotate-12"></div>
           <div className="absolute bottom-32 left-1/3 w-20 h-20 border border-gold-400/20 transform -rotate-12"></div>
@@ -40,10 +40,10 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h1 className="text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                 BASE CORPORATIVA
               </h1>
-              <p className="text-xl lg:text-2xl text-white/90 mb-4 font-light">
+              <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-4 font-light">
                 Conforto e praticidade diária
               </p>
               <p className="text-lg text-white/80 mb-8 leading-relaxed max-w-lg">
@@ -53,7 +53,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link 
                   to="/catalog"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 font-semibold rounded-lg hover:from-gold-400 hover:to-bronze-400 transition-all duration-200 shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
+                  className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 font-semibold rounded-lg hover:from-gold-400 hover:to-bronze-400 transition-all duration-200 shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
                 >
                   Ver catálogo
                   <svg className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@ export default function Home() {
                 </Link>
                 <Link 
                   to="/about"
-                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-gold-400/50 text-gold-300 font-semibold rounded-lg hover:bg-gold-500/10 hover:border-gold-300 transition-all duration-200"
+                  className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 border-2 border-gold-400/50 text-gold-300 font-semibold rounded-lg hover:bg-gold-500/10 hover:border-gold-300 transition-all duration-200"
                 >
                   Sobre nós
                 </Link>
@@ -79,7 +79,7 @@ export default function Home() {
                   <img 
                     src={logo} 
                     alt="BASE CORPORATIVA" 
-                    className="h-80 w-auto object-contain drop-shadow-2xl filter brightness-110"
+                    className="h-56 sm:h-72 lg:h-80 w-auto object-contain drop-shadow-2xl filter brightness-110"
                   />
                 </div>
                 
@@ -212,7 +212,7 @@ export default function Home() {
       {/* CTA Section */}
       <section className="relative py-32 bg-gradient-to-br from-dark-950 via-dark-900 to-bronze-900 text-white overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="hidden md:block absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-32 h-32 border border-gold-400/20 transform rotate-45"></div>
           <div className="absolute bottom-20 right-20 w-24 h-24 border border-bronze-400/20 transform rotate-12"></div>
           <div className="absolute top-1/2 left-1/3 w-16 h-16 border border-gold-400/20 transform -rotate-12"></div>
@@ -232,7 +232,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in" style={{animationDelay: '0.2s'}}>
             <Link 
               to="/catalog"
-              className="group inline-flex items-center justify-center px-10 py-5 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 font-bold rounded-xl hover:from-gold-400 hover:to-bronze-400 transition-all duration-300 shadow-strong hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
+              className="group inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 font-bold rounded-xl hover:from-gold-400 hover:to-bronze-400 transition-all duration-300 shadow-strong hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
             >
               Explorar catálogo
               <svg className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -240,7 +240,7 @@ export default function Home() {
               </svg>
             </Link>
             
-            <button onClick={handleDownloadCatalog} className="group inline-flex items-center justify-center px-10 py-5 border-2 border-gold-400/70 text-gold-300 font-bold rounded-xl hover:bg-gold-500/10 hover:border-gold-300 transition-all duration-300 backdrop-blur-sm">
+            <button onClick={handleDownloadCatalog} className="group inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 border-2 border-gold-400/70 text-gold-300 font-bold rounded-xl hover:bg-gold-500/10 hover:border-gold-300 transition-all duration-300 backdrop-blur-sm">
               <svg className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>

@@ -82,10 +82,18 @@ export default function Catalog() {
           <p className="text-lg text-neutral-600">
             Descubra nossa coleção completa de roupas corporativas
           </p>
+          <div className="mt-4 flex lg:hidden">
+            <button
+              onClick={() => setShowFilters((v) => !v)}
+              className="inline-flex items-center px-4 py-2 border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-colors"
+            >
+              {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-soft p-6 mb-8">
+        <div className={`${showFilters ? 'block' : 'hidden'} lg:block bg-white rounded-lg shadow-soft p-6 mb-8`}>
           <div className="flex flex-col lg:flex-row lg:items-center gap-4">
             {/* Search */}
             <div className="flex-1">

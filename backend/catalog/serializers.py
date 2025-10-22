@@ -36,5 +36,5 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'slug', 'description', 'fabric_type', 'composition',
             'care_instructions', 'base_price', 'is_active', 'created_at', 'updated_at',
-            'category', 'variants', 'images'
+            'category', 'variants', 'images', 'catalog_pdf'
         )

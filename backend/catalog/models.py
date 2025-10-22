@@ -25,6 +25,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    catalog_pdf = models.FileField(upload_to='product_pdfs/', blank=True, null=True)
 
     def __str__(self):
         return self.name
