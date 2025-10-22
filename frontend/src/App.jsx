@@ -11,6 +11,12 @@ import Register from './pages/Register.jsx'
 import CheckoutSuccess from './pages/CheckoutSuccess.jsx'
 import CheckoutFailure from './pages/CheckoutFailure.jsx'
 import CheckoutPending from './pages/CheckoutPending.jsx'
+import Contact from './pages/Contact.jsx'
+import SizeGuide from './pages/SizeGuide.jsx'
+import Shipping from './pages/Shipping.jsx'
+import Returns from './pages/Returns.jsx'
+import FAQ from './pages/FAQ.jsx'
+import Privacy from './pages/Privacy.jsx'
 
 function App() {
   return (
@@ -23,6 +29,12 @@ function App() {
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/size-guide" element={<SizeGuide />} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/returns" element={<Returns />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
