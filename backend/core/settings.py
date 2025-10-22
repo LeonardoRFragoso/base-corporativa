@@ -26,12 +26,12 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8k)wjtoq51&06@+65l8wv(5&4q4dobck3(2)34^n@f1(fd9+=0'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-insecure-secret')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h] or []
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_filters',
     'storages',
@@ -154,12 +155,22 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/minute',
+        'user': '1000/day',
+    },
 }
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [o for o in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if o] or [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
+
+CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -168,6 +179,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Mercado Pago credentials exposed via settings (read from environment)
 MERCADOPAGO_ACCESS_TOKEN = os.environ.get('MERCADOPAGO_ACCESS_TOKEN', '')
 MERCADOPAGO_PUBLIC_KEY = os.environ.get('MERCADOPAGO_PUBLIC_KEY', '')
+MERCADOPAGO_NOTIFICATION_URL = os.environ.get('MERCADOPAGO_NOTIFICATION_URL', 'http://localhost:8000/api/payments/webhook/')
 
 # Shipping configuration (Melhor Envio)
 SHIPPING_ORIGIN_ZIP = os.environ.get('SHIPPING_ORIGIN_ZIP', '01000-000')
@@ -182,3 +194,10 @@ MELHORENVIO_AUTH_BASE = os.environ.get('MELHORENVIO_AUTH_BASE', 'https://www.mel
 MELHORENVIO_CLIENT_ID = os.environ.get('MELHORENVIO_CLIENT_ID', '')
 MELHORENVIO_CLIENT_SECRET = os.environ.get('MELHORENVIO_CLIENT_SECRET', '')
 MELHORENVIO_REDIRECT_URI = os.environ.get('MELHORENVIO_REDIRECT_URI', 'http://localhost:8000/api/shipping/oauth/callback/')
+
+# Security headers (adjusted by environment)
+SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0' if DEBUG else '31536000'))
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False' if DEBUG else 'True') == 'True'
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False' if DEBUG else 'True') == 'True'
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False' if DEBUG else 'True') == 'True'
+SECURE_REFERRER_POLICY = os.environ.get('SECURE_REFERRER_POLICY', 'same-origin')

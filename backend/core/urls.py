@@ -36,13 +36,16 @@ urlpatterns = [
     path('', root_health, name='root'),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # path('api/users/', include('users.urls')),
+    path('api/', include('users.urls')),
     path('api/', include('catalog.urls')),
     path('api/payments/', include('payments.urls')),
     path('api/shipping/', include('shipping.urls')),
     path('api/', include('newsletter.urls')),
-    # path('api/cart/', include('cart.urls')),
-    # path('api/orders/', include('orders.urls')),
+    path('api/user/addresses/', include('addresses.urls')),
+    path('api/cart/', include('cart.urls')),
+    path('api/orders/', include('orders.urls')),
+    path('api/reviews/', include('reviews.urls')),
+    path('api/discounts/', include('discounts.urls')),
 ]
 
 if settings.DEBUG:
