@@ -4,7 +4,33 @@ export default function SizeGuide() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-6">Guia de Tamanhos</h1>
         <p className="text-neutral-700 mb-8">Consulte as medidas para encontrar o ajuste ideal.</p>
-        <div className="bg-white rounded-lg shadow-soft overflow-hidden">
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3">
+          {[
+            {size:'P', chest:'88-94', waist:'76-82', hip:'90-96'},
+            {size:'M', chest:'95-100', waist:'83-88', hip:'97-102'},
+            {size:'G', chest:'101-106', waist:'89-94', hip:'103-108'},
+            {size:'GG', chest:'107-112', waist:'95-100', hip:'109-114'},
+          ].map(row => (
+            <div key={row.size} className="bg-white rounded-lg shadow-soft p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-base font-semibold text-primary-950">{row.size}</div>
+                <div className="text-sm text-neutral-500">Tamanho</div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="text-neutral-500">Peito (cm)</div>
+                <div className="text-neutral-800">{row.chest}</div>
+                <div className="text-neutral-500">Cintura (cm)</div>
+                <div className="text-neutral-800">{row.waist}</div>
+                <div className="text-neutral-500">Quadril (cm)</div>
+                <div className="text-neutral-800">{row.hip}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block bg-white rounded-lg shadow-soft overflow-hidden">
           <div className="p-6">
             <div className="grid grid-cols-4 gap-4 text-sm font-medium text-neutral-600 mb-3">
               <div>Tamanho</div>
