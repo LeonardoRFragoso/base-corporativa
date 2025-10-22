@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useCart } from '../context/CartContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../lib/api.js'
 
 export default function Cart() {
   const { items, update, remove, clear } = useCart()
+  const { isAuthenticated } = useAuth()
   const [isProcessing, setIsProcessing] = useState(false)
   const subtotal = items.reduce((sum, i) => sum + Number(i.price) * i.qty, 0)
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
@@ -16,8 +18,27 @@ export default function Cart() {
   const [loadingQuotes, setLoadingQuotes] = useState(false)
   const [quoteError, setQuoteError] = useState('')
 
+  // Address state (only for authenticated users)
+  const [addresses, setAddresses] = useState([])
+  const [selectedAddressId, setSelectedAddressId] = useState(null)
+  const [newAddressOpen, setNewAddressOpen] = useState(false)
+  const [newAddress, setNewAddress] = useState({
+    first_name: '', last_name: '', phone: '',
+    street: '', number: '', complement: '', neighborhood: '',
+    city: '', state: '', zip_code: ''
+  })
+
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('')
+  const [coupon, setCoupon] = useState(null)
+  const [couponError, setCouponError] = useState('')
+
   const shipping = selectedQuote ? Number(selectedQuote.price) : 0
-  const total = subtotal + shipping
+  const discount = coupon ? Math.min(
+    Number(coupon.amount_off || 0) || (subtotal * (Number(coupon.percent_off || 0) / 100)),
+    subtotal
+  ) : 0
+  const total = Math.max(0, subtotal + shipping - discount)
 
   // Load persisted shipping info
   useEffect(() => {
@@ -31,6 +52,65 @@ export default function Cart() {
       }
     } catch {}
   }, [])
+
+  async function createAddress() {
+    try {
+      setCouponError('')
+      const required = ['first_name','street','city','state','zip_code']
+      for (const k of required) {
+        if (!newAddress[k]) {
+          alert('Preencha os campos obrigatórios do endereço.')
+          return
+        }
+      }
+      const res = await api.post('/api/user/addresses/', newAddress)
+      setAddresses(prev => [res.data, ...prev])
+      setSelectedAddressId(res.data.id)
+      setNewAddressOpen(false)
+    } catch (e) {
+      alert('Não foi possível salvar o endereço.')
+    }
+  }
+
+  async function applyCoupon() {
+    setCouponError('')
+    setCoupon(null)
+    const code = (couponCode || '').trim()
+    if (!code) return
+    try {
+      const res = await api.get(`/api/discounts/validate/`, { params: { code } })
+      if (res.data.valid) {
+        setCoupon({ code: res.data.code, percent_off: res.data.percent_off, amount_off: res.data.amount_off })
+      } else {
+        setCouponError('Cupom inválido ou expirado.')
+      }
+    } catch (e) {
+      setCouponError('Não foi possível validar o cupom.')
+    }
+  }
+
+  // Load user addresses when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return
+    async function loadAddresses() {
+      try {
+        const res = await api.get('/api/user/addresses/')
+        setAddresses(res.data)
+        if (res.data.length > 0) {
+          const defaultAddr = res.data.find(a => a.is_default) || res.data[0]
+          setSelectedAddressId(defaultAddr.id)
+        }
+      } catch {}
+    }
+    loadAddresses()
+  }, [isAuthenticated])
+
+  // When address changes, sync CEP
+  useEffect(() => {
+    if (!isAuthenticated || !selectedAddressId) return
+    const addr = addresses.find(a => a.id === selectedAddressId)
+    if (addr?.zip_code) setZip(addr.zip_code)
+  }, [selectedAddressId, isAuthenticated, addresses])
 
   // Persist on change
   useEffect(() => {
@@ -88,6 +168,9 @@ export default function Cart() {
     try {
       // Preparar dados do carrinho para o Mercado Pago
       const checkoutData = {
+        destination_zip: formatZip(zipNumbersOnly(zip)),
+        shipping_service_name: selectedQuote?.service_name || '',
+        shipping_carrier: selectedQuote?.carrier || '',
         items: [
           ...items.map(item => ({
           name: item.name,
@@ -97,6 +180,13 @@ export default function Cart() {
           color: item.color
         })),
         ]
+      }
+      if (isAuthenticated && selectedAddressId) {
+        checkoutData.address_id = selectedAddressId
+      }
+      if (coupon) {
+        checkoutData.coupon_code = coupon.code
+        checkoutData.discount_amount = Number(discount)
       }
       // Add shipping as an item if selected
       if (selectedQuote && Number(selectedQuote.price) > 0) {
@@ -304,6 +394,72 @@ export default function Cart() {
                 </div>
               )}
 
+              {isAuthenticated && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">Endereço de entrega</label>
+                  {addresses.length > 0 ? (
+                    <select
+                      value={selectedAddressId || ''}
+                      onChange={(e) => setSelectedAddressId(Number(e.target.value) || null)}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent"
+                    >
+                      {addresses.map(a => (
+                        <option key={a.id} value={a.id}>{a.street}, {a.number} - {a.city}/{a.state} • CEP {a.zip_code}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="text-sm text-neutral-600">Nenhum endereço cadastrado.</div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setNewAddressOpen(!newAddressOpen)}
+                    className="mt-2 text-sm text-primary-800 hover:text-primary-950"
+                  >
+                    {newAddressOpen ? 'Fechar' : 'Adicionar novo endereço'}
+                  </button>
+
+                  {newAddressOpen && (
+                    <div className="mt-3 grid grid-cols-1 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <input className="px-3 py-2 border rounded" placeholder="Nome" value={newAddress.first_name} onChange={(e) => setNewAddress(v => ({...v, first_name: e.target.value}))} />
+                        <input className="px-3 py-2 border rounded" placeholder="Sobrenome" value={newAddress.last_name} onChange={(e) => setNewAddress(v => ({...v, last_name: e.target.value}))} />
+                      </div>
+                      <input className="px-3 py-2 border rounded" placeholder="Telefone" value={newAddress.phone} onChange={(e) => setNewAddress(v => ({...v, phone: e.target.value}))} />
+                      <input className="px-3 py-2 border rounded" placeholder="Rua" value={newAddress.street} onChange={(e) => setNewAddress(v => ({...v, street: e.target.value}))} />
+                      <div className="grid grid-cols-2 gap-2">
+                        <input className="px-3 py-2 border rounded" placeholder="Número" value={newAddress.number} onChange={(e) => setNewAddress(v => ({...v, number: e.target.value}))} />
+                        <input className="px-3 py-2 border rounded" placeholder="Complemento" value={newAddress.complement} onChange={(e) => setNewAddress(v => ({...v, complement: e.target.value}))} />
+                      </div>
+                      <input className="px-3 py-2 border rounded" placeholder="Bairro" value={newAddress.neighborhood} onChange={(e) => setNewAddress(v => ({...v, neighborhood: e.target.value}))} />
+                      <div className="grid grid-cols-2 gap-2">
+                        <input className="px-3 py-2 border rounded" placeholder="Cidade" value={newAddress.city} onChange={(e) => setNewAddress(v => ({...v, city: e.target.value}))} />
+                        <input className="px-3 py-2 border rounded" placeholder="Estado" value={newAddress.state} onChange={(e) => setNewAddress(v => ({...v, state: e.target.value}))} />
+                      </div>
+                      <input className="px-3 py-2 border rounded" placeholder="CEP" value={newAddress.zip_code} onChange={(e) => setNewAddress(v => ({...v, zip_code: e.target.value}))} />
+                      <button onClick={createAddress} className="mt-1 px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800">Salvar endereço</button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">Cupom de desconto</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Digite seu cupom"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent"
+                  />
+                  <button onClick={applyCoupon} className="px-4 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800">Aplicar</button>
+                </div>
+                {couponError && <div className="text-sm text-error-600 mt-2">{couponError}</div>}
+                {coupon && (
+                  <div className="text-sm text-success-700 mt-2">Cupom aplicado: {coupon.code}</div>
+                )}
+              </div>
+
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Subtotal ({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
@@ -313,6 +469,10 @@ export default function Cart() {
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Frete</span>
                   <span className="font-medium">{shipping === 0 ? '—' : `R$ ${shipping.toFixed(2)}`}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Desconto</span>
+                  <span className="font-medium">{discount > 0 ? `- R$ ${discount.toFixed(2)}` : '—'}</span>
                 </div>
 
                 {/* Tip: could add free shipping rule hint here if needed */}

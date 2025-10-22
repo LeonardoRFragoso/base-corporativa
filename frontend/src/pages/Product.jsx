@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { api } from '../lib/api.js'
 import { useCart } from '../context/CartContext.jsx'
 import ProductCard from '../components/ProductCard.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Product() {
   const { id } = useParams()
@@ -14,6 +15,17 @@ export default function Product() {
   const [loading, setLoading] = useState(true)
   const [addingToCart, setAddingToCart] = useState(false)
   const { add } = useCart()
+  const { isAuthenticated } = useAuth()
+
+  // Wishlist state
+  const [wishlisted, setWishlisted] = useState(false)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
+
+  // Reviews state
+  const [reviews, setReviews] = useState([])
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [ratingInput, setRatingInput] = useState(5)
+  const [commentInput, setCommentInput] = useState('')
 
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
@@ -27,6 +39,46 @@ export default function Product() {
           const firstAvailable = res.data.variants.find(v => v.stock > 0) || res.data.variants[0]
           setSelectedVariant(firstAvailable)
         }
+
+  async function toggleWishlist() {
+    if (!product) return
+    if (!isAuthenticated) {
+      alert('Faça login para usar a wishlist.')
+      return
+    }
+    if (wishlistLoading) return
+    setWishlistLoading(true)
+    try {
+      if (wishlisted) {
+        await api.delete(`/api/user/wishlist/${product.id}/`)
+        setWishlisted(false)
+      } else {
+        await api.post('/api/user/wishlist/', { product_id: product.id })
+        setWishlisted(true)
+      }
+    } catch (e) {
+      // noop
+    } finally {
+      setWishlistLoading(false)
+    }
+  }
+
+  async function submitReview(e) {
+    e.preventDefault()
+    if (!product) return
+    try {
+      setReviewLoading(true)
+      await api.post(`/api/reviews/${product.id}/`, { rating: Number(ratingInput), comment: commentInput })
+      setCommentInput('')
+      // reload
+      const rev = await api.get(`/api/reviews/${product.id}/`)
+      setReviews(Array.isArray(rev.data) ? rev.data : [])
+    } catch (e) {
+      // noop
+    } finally {
+      setReviewLoading(false)
+    }
+  }
         
         // Load related products from same category
         if (res.data.category) {
@@ -38,6 +90,22 @@ export default function Product() {
             console.error('Erro ao carregar produtos relacionados:', error)
           }
         }
+        // Load wishlist status if logged in
+        try {
+          if (isAuthenticated) {
+            const wl = await api.get('/api/user/wishlist/')
+            const has = (wl.data || []).some(w => Number(w.product_id) === Number(id))
+            setWishlisted(has)
+          } else {
+            setWishlisted(false)
+          }
+        } catch {}
+
+        // Load reviews
+        try {
+          const rev = await api.get(`/api/reviews/${id}/`)
+          setReviews(Array.isArray(rev.data) ? rev.data : [])
+        } catch {}
       } catch (error) {
         console.error('Erro ao carregar produto:', error)
       } finally {
@@ -45,7 +113,7 @@ export default function Product() {
       }
     }
     load()
-  }, [id])
+  }, [id, isAuthenticated])
 
   const pdfUrl = useMemo(() => {
     if (!product?.catalog_pdf) return null
@@ -226,13 +294,24 @@ export default function Product() {
               <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-2">
                 {product.name}
               </h1>
-              {product.category && (
-                <div className="text-neutral-600">
-                  <Link to={`/catalog?category=${product.category.id}`} className="hover:text-primary-950">
-                    {product.category.name}
-                  </Link>
-                </div>
-              )}
+              <div className="flex items-center gap-3">
+                {product.category && (
+                  <div className="text-neutral-600">
+                    <Link to={`/catalog?category=${product.category.id}`} className="hover:text-primary-950">
+                      {product.category.name}
+                    </Link>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
+                  className={`ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition ${wishlisted ? 'border-gold-500 text-gold-700 bg-gold-50' : 'border-neutral-300 text-neutral-700 hover:border-primary-950'}`}
+                >
+                  <svg className="w-5 h-5" fill={wishlisted ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
+                  {wishlisted ? 'Salvo' : 'Salvar' }
+                </button>
+              </div>
             </div>
 
             {/* Price */}
@@ -430,6 +509,47 @@ export default function Product() {
             </div>
           </div>
         )}
+
+        {/* Reviews */}
+        <div className="mt-16 pt-10 border-t border-neutral-200">
+          <h2 className="text-2xl font-bold text-primary-950 mb-4">Avaliações</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <div className="space-y-4">
+                {reviews.length === 0 && (
+                  <div className="text-neutral-600">Ainda não há avaliações.</div>
+                )}
+                {reviews.map(r => (
+                  <div key={r.id} className="bg-white rounded-lg p-4 shadow-soft">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium text-primary-950">{r.user_name || 'Cliente'}</div>
+                      <div className="text-yellow-600">{'★'.repeat(Number(r.rating)||0)}{'☆'.repeat(5 - (Number(r.rating)||0))}</div>
+                    </div>
+                    {r.title && <div className="text-neutral-800 mt-1">{r.title}</div>}
+                    {r.comment && <div className="text-neutral-600 mt-1 text-sm">{r.comment}</div>}
+                    <div className="text-xs text-neutral-500 mt-2">{new Date(r.created_at).toLocaleString()}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <form onSubmit={submitReview} className="bg-white rounded-lg p-4 shadow-soft space-y-3">
+                <div className="font-semibold text-primary-950">Escreva uma avaliação</div>
+                <div>
+                  <label className="block text-sm text-neutral-700 mb-1">Nota</label>
+                  <select value={ratingInput} onChange={(e)=>setRatingInput(Number(e.target.value))} className="w-full px-3 py-2 border rounded">
+                    {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} estrelas</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-700 mb-1">Comentário</label>
+                  <textarea value={commentInput} onChange={(e)=>setCommentInput(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded" placeholder="Conte sua experiência"></textarea>
+                </div>
+                <button disabled={reviewLoading} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800">Enviar</button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

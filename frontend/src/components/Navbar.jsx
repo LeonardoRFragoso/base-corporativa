@@ -65,6 +65,16 @@ export default function Navbar() {
             </NavLink>
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
+                <NavLink 
+                  to="/orders"
+                  className={({ isActive }) =>
+                    `text-sm font-medium transition-colors hover:text-primary-950 ${
+                      isActive ? 'text-primary-950' : 'text-neutral-600'
+                    }`
+                  }
+                >
+                  Meus Pedidos
+                </NavLink>
                 <span className="text-sm text-neutral-600">Olá, {user?.username}</span>
                 <button
                   onClick={logout}
@@ -146,6 +156,19 @@ export default function Navbar() {
                   </span>
                 )}
               </NavLink>
+              {isAuthenticated && (
+                <NavLink 
+                  to="/orders"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      isActive ? 'bg-primary-950 text-white' : 'text-neutral-600 hover:bg-neutral-100'
+                    }`
+                  }
+                >
+                  Meus Pedidos
+                </NavLink>
+              )}
               <NavLink 
                 to="/login"
                 onClick={() => setIsMenuOpen(false)}

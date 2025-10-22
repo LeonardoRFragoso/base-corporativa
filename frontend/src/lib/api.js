@@ -2,8 +2,19 @@ import axios from 'axios'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
+let sessionKey = null
+try {
+  sessionKey = localStorage.getItem('session_key')
+  if (!sessionKey) {
+    const gen = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2))
+    sessionKey = gen
+    localStorage.setItem('session_key', sessionKey)
+  }
+} catch {}
+
 export const api = axios.create({
   baseURL,
+  headers: sessionKey ? { 'X-Session-Key': sessionKey } : undefined,
 })
 
 api.interceptors.request.use((config) => {

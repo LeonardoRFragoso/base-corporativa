@@ -41,7 +41,13 @@ export function AuthProvider({ children }) {
     }
   }
 
-  function logout() {
+  async function logout() {
+    try {
+      const refresh = localStorage.getItem('refresh_token')
+      if (refresh) {
+        await api.post('/api/auth/logout/', { refresh })
+      }
+    } catch {}
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     setUser(null)

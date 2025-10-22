@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
+import { api } from '../lib/api.js'
 
 const CartContext = createContext(null)
 
@@ -58,6 +59,27 @@ export function CartProvider({ children }) {
     try {
       localStorage.setItem('cart_items', JSON.stringify(state.items))
     } catch {}
+  }, [state.items])
+
+  // Sync to backend cart on every change
+  useEffect(() => {
+    async function sync() {
+      try {
+        // Clear server cart then re-add all items to avoid item_id mapping complexity
+        await api.delete('/api/cart/clear/')
+        if (state.items.length > 0) {
+          await Promise.all(
+            state.items.map(it =>
+              api.post('/api/cart/add/', { variant_id: it.variantId, quantity: it.qty })
+            )
+          )
+        }
+      } catch (e) {
+        // Silently ignore sync errors to not break UX
+        // console.error('Cart sync error', e)
+      }
+    }
+    sync()
   }, [state.items])
   const value = useMemo(
     () => ({ items: state.items, add: (item) => dispatch({ type: 'add', item }), remove: (item) => dispatch({ type: 'remove', item }), update: (item, qty) => dispatch({ type: 'update', item, qty }), clear: () => dispatch({ type: 'clear' }) }),

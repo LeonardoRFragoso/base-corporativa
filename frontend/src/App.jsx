@@ -17,6 +17,8 @@ import Shipping from './pages/Shipping.jsx'
 import Returns from './pages/Returns.jsx'
 import FAQ from './pages/FAQ.jsx'
 import Privacy from './pages/Privacy.jsx'
+import Orders from './pages/Orders.jsx'
+import OrderDetail from './pages/OrderDetail.jsx'
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/checkout/failure" element={<CheckoutFailure />} />
           <Route path="/checkout/pending" element={<CheckoutPending />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders/:id" element={<OrderDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
