@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Product, ProductVariant, ProductImage
+from django.utils.text import slugify
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -38,3 +39,26 @@ class ProductSerializer(serializers.ModelSerializer):
             'care_instructions', 'base_price', 'is_active', 'created_at', 'updated_at',
             'category', 'variants', 'images', 'catalog_pdf'
         )
+
+
+class ProductWriteSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
+    class Meta:
+        model = Product
+        fields = (
+            'id', 'name', 'slug', 'description', 'fabric_type', 'composition',
+            'care_instructions', 'base_price', 'is_active', 'category'
+        )
+        read_only_fields = ('id', 'slug')
+
+    def create(self, validated_data):
+        name = validated_data.get('name') or ''
+        base = slugify(name) or 'produto'
+        slug = base
+        i = 1
+        while Product.objects.filter(slug=slug).exists():
+            i += 1
+            slug = f"{base}-{i}"
+        validated_data['slug'] = slug
+        return super().create(validated_data)

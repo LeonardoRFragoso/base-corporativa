@@ -1,7 +1,10 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Category, Product
-from .serializers import CategorySerializer, ProductSerializer
+from .models import Category, Product, ProductImage, ProductVariant
+from .serializers import CategorySerializer, ProductSerializer, ProductWriteSerializer, ProductImageSerializer
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -11,15 +14,24 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = []
 
 
-class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ProductSerializer
+class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
-    authentication_classes = []
-    queryset = (
-        Product.objects.filter(is_active=True)
-        .select_related('category')
-        .prefetch_related('variants', 'images')
-    )
+
+    def get_queryset(self):
+        qs = Product.objects.all().select_related('category').prefetch_related('variants', 'images')
+        if self.action in ['list', 'retrieve'] and not (self.request and self.request.user and self.request.user.is_staff):
+            qs = qs.filter(is_active=True)
+        return qs
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ProductWriteSerializer
+        return ProductSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'upload_image']:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
@@ -34,3 +46,32 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['name', 'description', 'fabric_type']
     ordering_fields = ['created_at', 'base_price', 'name']
     ordering = ['-created_at']
+
+    @action(detail=True, methods=['post'], url_path='upload-image', parser_classes=[MultiPartParser, FormParser])
+    def upload_image(self, request, pk=None):
+        product = self.get_object()
+        image = request.data.get('image')
+        if not image:
+            return Response({'error': 'image é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        variant_id = request.data.get('variant')
+        variant = None
+        if variant_id:
+            try:
+                variant = ProductVariant.objects.get(id=variant_id, product=product)
+            except ProductVariant.DoesNotExist:
+                return Response({'error': 'variant inválido'}, status=status.HTTP_400_BAD_REQUEST)
+        alt_text = request.data.get('alt_text') or ''
+        is_primary = str(request.data.get('is_primary', '')).lower() in ['1', 'true', 't', 'yes', 'y']
+        try:
+            sort_order = int(request.data.get('sort_order', '0'))
+        except ValueError:
+            sort_order = 0
+        obj = ProductImage.objects.create(
+            product=product,
+            variant=variant,
+            image=image,
+            alt_text=alt_text,
+            is_primary=is_primary,
+            sort_order=sort_order,
+        )
+        return Response(ProductImageSerializer(obj).data, status=status.HTTP_201_CREATED)

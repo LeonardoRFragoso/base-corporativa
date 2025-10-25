@@ -28,15 +28,42 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response && error.response.status === 401) {
       const refresh = localStorage.getItem('refresh_token')
+      const originalRequest = error.config
+      
+      // Evitar loop infinito
+      if (originalRequest._retry) {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        return Promise.reject(error)
+      }
+      
       if (refresh) {
+        originalRequest._retry = true
         try {
           const res = await axios.post(`${baseURL}/api/auth/refresh/`, { refresh })
           localStorage.setItem('access_token', res.data.access)
-          error.config.headers.Authorization = `Bearer ${res.data.access}`
-          return api.request(error.config)
-        } catch {
+          originalRequest.headers.Authorization = `Bearer ${res.data.access}`
+          return api.request(originalRequest)
+        } catch (refreshError) {
+          // Token de refresh inválido, limpar tudo
           localStorage.removeItem('access_token')
           localStorage.removeItem('refresh_token')
+          
+          // Se for uma requisição pública (GET), tentar novamente sem auth
+          if (originalRequest.method?.toLowerCase() === 'get') {
+            delete originalRequest.headers.Authorization
+            originalRequest._retry = false
+            return api.request(originalRequest)
+          }
+        }
+      } else {
+        // Sem refresh token, limpar access token inválido
+        localStorage.removeItem('access_token')
+        
+        // Se for uma requisição pública (GET), tentar novamente sem auth
+        if (originalRequest.method?.toLowerCase() === 'get') {
+          delete originalRequest.headers.Authorization
+          return api.request(originalRequest)
         }
       }
     }

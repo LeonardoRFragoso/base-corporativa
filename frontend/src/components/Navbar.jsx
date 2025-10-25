@@ -21,7 +21,7 @@ export default function Navbar() {
               alt="BASE CORPORATIVA" 
               className="h-8 w-auto transition-transform group-hover:scale-105" 
             />
-            <span className="text-lg font-semibold bg-gradient-to-r from-gold-600 to-bronze-600 bg-clip-text text-transparent tracking-wide hidden sm:block">
+            <span className="text-lg font-semibold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent tracking-wide hidden sm:block">
               BASE CORPORATIVA
             </span>
           </Link>
@@ -58,7 +58,7 @@ export default function Navbar() {
             >
               Carrinho
               {cartItemsCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                   {cartItemsCount}
                 </span>
               )}
@@ -75,10 +75,17 @@ export default function Navbar() {
                 >
                   Meus Pedidos
                 </NavLink>
-                <span className="text-sm text-neutral-600">Olá, {user?.username}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-neutral-600">Olá, {user?.username}</span>
+                  {user?.is_staff && (
+                    <span className="px-2 py-0.5 text-xs font-semibold bg-bronze-800 text-white rounded">
+                      ADMIN
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={logout}
-                  className="px-4 py-2 text-sm font-medium rounded-md transition-all text-neutral-600 hover:bg-gold-50 hover:text-gold-700 border border-transparent hover:border-gold-200"
+                  className="px-4 py-2 text-sm font-medium rounded-md transition-all text-neutral-600 hover:bg-primary-50 hover:text-primary-700 border border-transparent hover:border-primary-200"
                 >
                   Sair
                 </button>
@@ -89,8 +96,8 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   `px-4 py-2 text-sm font-medium rounded-md transition-all ${
                     isActive 
-                      ? 'bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950' 
-                      : 'text-neutral-600 hover:bg-gold-50 hover:text-gold-700 border border-transparent hover:border-gold-200'
+                      ? 'bg-bronze-800 text-white' 
+                      : 'text-neutral-600 hover:bg-primary-50 hover:text-primary-700 border border-transparent hover:border-primary-200'
                   }`
                 }
               >

@@ -32,11 +32,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True)
+    is_staff = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "first_name", "last_name")
-        read_only_fields = ("id", "username")
+        fields = ("id", "username", "email", "first_name", "last_name", "is_staff")
+        read_only_fields = ("id", "username", "is_staff")
 
 
 class WishlistItemSerializer(serializers.ModelSerializer):

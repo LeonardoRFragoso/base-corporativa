@@ -65,18 +65,18 @@ export function CartProvider({ children }) {
   useEffect(() => {
     async function sync() {
       try {
-        // Clear server cart then re-add all items to avoid item_id mapping complexity
-        await api.delete('/api/cart/clear/')
-        if (state.items.length > 0) {
-          await Promise.all(
-            state.items.map(it =>
-              api.post('/api/cart/add/', { variant_id: it.variantId, quantity: it.qty })
-            )
-          )
-        }
+        // Only sync if we have items to sync
+        if (state.items.length === 0) return
+        
+        // Use single sync endpoint to avoid multiple simultaneous requests
+        const items = state.items.map(it => ({
+          variant_id: it.variantId,
+          quantity: it.qty
+        }))
+        await api.post('/api/cart/sync/', { items })
       } catch (e) {
         // Silently ignore sync errors to not break UX
-        // console.error('Cart sync error', e)
+        console.debug('Cart sync skipped:', e.response?.status || e.message)
       }
     }
     sync()

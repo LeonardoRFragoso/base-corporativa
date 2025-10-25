@@ -11,11 +11,18 @@ export function AuthProvider({ children }) {
   // Check if user is already logged in on app start
   useEffect(() => {
     const token = localStorage.getItem('access_token')
-    if (token) {
-      // You could verify the token here with the backend if needed
-      setUser({ username: 'user' }) // Placeholder, ideally get from token or API
+    async function bootstrap() {
+      if (token) {
+        try {
+          const res = await api.get('/api/user/profile/')
+          setUser(res.data)
+        } catch {
+          setUser(null)
+        }
+      }
+      setInitialized(true)
     }
-    setInitialized(true)
+    bootstrap()
   }, [])
 
   async function login(username, password) {
@@ -27,7 +34,8 @@ export function AuthProvider({ children }) {
       if (res.data.access && res.data.refresh) {
         localStorage.setItem('access_token', res.data.access)
         localStorage.setItem('refresh_token', res.data.refresh)
-        setUser({ username })
+        const profile = await api.get('/api/user/profile/')
+        setUser(profile.data)
         return true
       } else {
         console.error('Invalid response format:', res.data)
@@ -59,7 +67,8 @@ export function AuthProvider({ children }) {
     logout, 
     loading, 
     initialized,
-    isAuthenticated: !!user 
+    isAuthenticated: !!user,
+    isAdmin: !!user?.is_staff
   }), [user, loading, initialized])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

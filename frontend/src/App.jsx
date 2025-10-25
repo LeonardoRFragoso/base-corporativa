@@ -19,6 +19,7 @@ import FAQ from './pages/FAQ.jsx'
 import Privacy from './pages/Privacy.jsx'
 import Orders from './pages/Orders.jsx'
 import OrderDetail from './pages/OrderDetail.jsx'
+import AdminProductCreate from './pages/AdminProductCreate.jsx'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="/checkout/pending" element={<CheckoutPending />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/orders/:id" element={<OrderDetail />} />
+          <Route path="/admin/products/new" element={<AdminProductCreate />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

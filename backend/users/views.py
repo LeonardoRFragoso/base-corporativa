@@ -3,6 +3,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, ProfileSerializer
 from .serializers import WishlistItemSerializer
 from .models import WishlistItem
@@ -73,3 +75,21 @@ class WishlistDeleteView(APIView):
     def delete(self, request, product_id: int):
         WishlistItem.objects.filter(user=request.user, product_id=product_id).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        identifier = attrs.get(self.username_field)
+        if identifier and '@' in identifier:
+            User = get_user_model()
+            try:
+                user = User.objects.filter(email__iexact=identifier).first()
+                if user:
+                    attrs[self.username_field] = user.get_username()
+            except User.DoesNotExist:
+                pass
+        return super().validate(attrs)
+
+
+class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailOrUsernameTokenObtainPairSerializer

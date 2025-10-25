@@ -29,17 +29,6 @@ export default function Product() {
 
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await api.get(`/api/products/${id}/`)
-        setProduct(res.data)
-        // Select first available variant
-        if (res.data.variants && res.data.variants.length > 0) {
-          const firstAvailable = res.data.variants.find(v => v.stock > 0) || res.data.variants[0]
-          setSelectedVariant(firstAvailable)
-        }
-
   async function toggleWishlist() {
     if (!product) return
     if (!isAuthenticated) {
@@ -79,6 +68,17 @@ export default function Product() {
       setReviewLoading(false)
     }
   }
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await api.get(`/api/products/${id}/`)
+        setProduct(res.data)
+        // Select first available variant
+        if (res.data.variants && res.data.variants.length > 0) {
+          const firstAvailable = res.data.variants.find(v => v.stock > 0) || res.data.variants[0]
+          setSelectedVariant(firstAvailable)
+        }
         
         // Load related products from same category
         if (res.data.category) {

@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api.js'
 import ProductCard from '../components/ProductCard.jsx'
+import ProductModal from '../components/ProductModal.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Catalog() {
+  const { isAdmin } = useAuth()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -12,6 +15,9 @@ export default function Catalog() {
     ordering: '-created_at'
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [deletingProduct, setDeletingProduct] = useState(null)
 
   useEffect(() => {
     loadCategories()
@@ -47,6 +53,44 @@ export default function Catalog() {
     }
   }
 
+  function handleCreateProduct() {
+    setEditingProduct(null)
+    setShowModal(true)
+  }
+
+  function handleEditProduct(product) {
+    setEditingProduct(product)
+    setShowModal(true)
+  }
+
+  async function handleDeleteProduct(product) {
+    if (!window.confirm(`Tem certeza que deseja excluir "${product.name}"?`)) {
+      return
+    }
+    
+    setDeletingProduct(product.id)
+    try {
+      await api.delete(`/api/products/${product.id}/`)
+      setProducts(products.filter(p => p.id !== product.id))
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error)
+      alert('Erro ao excluir produto. Tente novamente.')
+    } finally {
+      setDeletingProduct(null)
+    }
+  }
+
+  function handleSaveProduct(savedProduct) {
+    if (editingProduct) {
+      // Update existing
+      setProducts(products.map(p => p.id === savedProduct.id ? savedProduct : p))
+    } else {
+      // Add new
+      setProducts([savedProduct, ...products])
+    }
+    loadProducts() // Reload to get full data with relations
+  }
+
   function handleFilterChange(key, value) {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
@@ -76,12 +120,27 @@ export default function Catalog() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-4">
-            Catálogo de Produtos
-          </h1>
-          <p className="text-lg text-neutral-600">
-            Descubra nossa coleção completa de roupas corporativas
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl lg:text-4xl font-display font-bold text-primary-950 mb-4">
+                Catálogo de Produtos
+              </h1>
+              <p className="text-lg text-neutral-600">
+                Descubra nossa coleção completa de roupas corporativas
+              </p>
+            </div>
+            {isAdmin && (
+              <button
+                onClick={handleCreateProduct}
+                className="inline-flex items-center px-4 py-3 bg-bronze-800 text-white rounded-lg hover:bg-bronze-700 transition-all shadow-soft hover:shadow-medium font-medium"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Novo Produto
+              </button>
+            )}
+          </div>
           <div className="mt-4 flex lg:hidden">
             <button
               onClick={() => setShowFilters((v) => !v)}
@@ -178,7 +237,36 @@ export default function Catalog() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="relative">
+                <ProductCard product={product} />
+                {isAdmin && (
+                  <div className="absolute top-2 left-2 flex gap-2 z-10">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="p-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors shadow-medium"
+                      title="Editar produto"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product)}
+                      disabled={deletingProduct === product.id}
+                      className="p-2 bg-error-500 text-white rounded-lg hover:bg-error-600 transition-colors shadow-medium disabled:opacity-50"
+                      title="Excluir produto"
+                    >
+                      {deletingProduct === product.id ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
@@ -191,6 +279,19 @@ export default function Catalog() {
               <p className="text-neutral-600 mt-2">Carregando...</p>
             </div>
           </div>
+        )}
+
+        {/* Product Modal */}
+        {showModal && (
+          <ProductModal
+            product={editingProduct}
+            categories={categories}
+            onClose={() => {
+              setShowModal(false)
+              setEditingProduct(null)
+            }}
+            onSave={handleSaveProduct}
+          />
         )}
       </div>
     </div>

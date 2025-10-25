@@ -92,7 +92,7 @@ export default function ProductCard({ product }) {
           
           {/* Category badge */}
           {product.category && (
-            <div className="absolute top-2 right-2 bg-gradient-to-r from-gold-500/90 to-bronze-500/90 text-dark-950 text-xs px-2 py-1 rounded backdrop-blur-sm font-medium">
+            <div className="absolute top-2 right-2 bg-primary-500/90 text-white text-xs px-2 py-1 rounded backdrop-blur-sm font-medium">
               {product.category.name}
             </div>
           )}
@@ -160,7 +160,7 @@ export default function ProductCard({ product }) {
           <div className="mt-4 flex flex-col sm:flex-row gap-2">
             <Link 
               to={`/product/${product.id}`}
-              className="flex-1 text-center px-3 py-2 border border-gold-500 text-gold-700 text-sm font-medium rounded-lg hover:bg-gold-50 transition-all duration-200"
+              className="flex-1 text-center px-3 py-2 border border-primary-500 text-primary-700 text-sm font-medium rounded-lg hover:bg-primary-50 transition-all duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               Ver detalhes
@@ -173,7 +173,7 @@ export default function ProductCard({ product }) {
                 className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isAdding 
                     ? 'bg-green-500 text-white' 
-                    : 'bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 hover:from-gold-400 hover:to-bronze-400 hover:scale-105'
+                    : 'bg-bronze-800 text-white hover:bg-bronze-700 hover:scale-105'
                 }`}
               >
                 {isAdding ? (

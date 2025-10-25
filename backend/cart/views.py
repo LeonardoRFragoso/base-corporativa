@@ -10,17 +10,21 @@ from catalog.models import ProductVariant
 
 
 def _get_session_key(request):
-    return request.headers.get('X-Session-Key') or request.query_params.get('session_key') or request.data.get('session_key')
+    return request.headers.get('X-Session-Key') or request.query_params.get('session_key')
 
 
 def _get_or_create_cart_for_request(request):
     if request.user.is_authenticated:
-        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart = Cart.objects.filter(user=request.user).order_by('id').first()
+        if cart is None:
+            cart = Cart.objects.create(user=request.user)
         return cart
     session_key = _get_session_key(request)
     if not session_key:
         return None
-    cart, _ = Cart.objects.get_or_create(user=None, session_key=session_key)
+    cart = Cart.objects.filter(user=None, session_key=session_key).order_by('id').first()
+    if cart is None:
+        cart = Cart.objects.create(user=None, session_key=session_key)
     return cart
 
 
@@ -100,4 +104,49 @@ def clear_cart(request):
     if cart is None:
         return Response({"error": "Informe X-Session-Key no header para carrinho de convidado."}, status=status.HTTP_400_BAD_REQUEST)
     cart.items.all().delete()
-    return Response(CartSerializer(cart).data)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@transaction.atomic
+def sync_cart(request):
+    """
+    Sincroniza o carrinho inteiro de uma vez, evitando múltiplas requisições.
+    Espera um array de itens: [{"variant_id": 1, "quantity": 2}, ...]
+    """
+    cart = _get_or_create_cart_for_request(request)
+    if cart is None:
+        return Response({"error": "Informe X-Session-Key no header para carrinho de convidado."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    items_data = request.data.get('items', [])
+    if not isinstance(items_data, list):
+        return Response({"error": "items deve ser um array"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Limpa o carrinho atual
+    cart.items.all().delete()
+    
+    # Adiciona todos os novos itens
+    for item_data in items_data:
+        variant_id = item_data.get('variant_id')
+        quantity = int(item_data.get('quantity', 1))
+        
+        if not variant_id or quantity < 1:
+            continue
+            
+        try:
+            variant = ProductVariant.objects.select_related('product').get(id=variant_id)
+            unit_price = variant.price or variant.product.base_price
+            product_name = variant.product.name
+            
+            CartItem.objects.create(
+                cart=cart,
+                variant=variant,
+                product_name=product_name,
+                unit_price=unit_price,
+                quantity=quantity
+            )
+        except ProductVariant.DoesNotExist:
+            continue
+    
+    return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)

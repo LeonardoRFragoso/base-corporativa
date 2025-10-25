@@ -3,44 +3,47 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Dourado elegante da logo - cor principal
         primary: {
-          50: '#fefdf8',
-          100: '#fef9e7',
-          200: '#fef3c7',
-          300: '#fde68a',
-          400: '#fcd34d',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-          950: '#451a03'
+          50: '#fdfaf5',
+          100: '#faf4e8',
+          200: '#f5e8cd',
+          300: '#ead7a8',
+          400: '#ddc182',
+          500: '#d4a574', // Tom principal da logo
+          600: '#c89558',
+          700: '#b07d45',
+          800: '#8f653a',
+          900: '#745332',
+          950: '#3e2b19'
         },
+        // Dourado mais vibrante para acentos
         gold: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-          950: '#451a03'
+          50: '#fdfaf5',
+          100: '#faf4e8',
+          200: '#f5e8cd',
+          300: '#ead7a8',
+          400: '#ddc182',
+          500: '#d4a574',
+          600: '#c89558',
+          700: '#b07d45',
+          800: '#8f653a',
+          900: '#745332',
+          950: '#3e2b19'
         },
+        // Marrom escuro para botões e CTAs
         bronze: {
-          50: '#fdf8f3',
-          100: '#f7e6d3',
-          200: '#efc9a6',
-          300: '#e5a572',
-          400: '#d4815c',
-          500: '#cd853f',
-          600: '#b8860b',
-          700: '#9a6914',
-          800: '#7c5518',
-          900: '#654518',
-          950: '#37240a'
+          50: '#faf7f5',
+          100: '#f0ebe5',
+          200: '#e0d4c9',
+          300: '#cab6a4',
+          400: '#b4957f',
+          500: '#9d7a63',
+          600: '#8a6651',
+          700: '#735345',
+          800: '#5d2e0f', // Tom dos botões nas imagens
+          900: '#4a2812',
+          950: '#2a1608'
         },
         dark: {
           50: '#f6f6f6',
@@ -102,7 +105,8 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
+        display: ['Playfair Display', 'Georgia', 'serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif']
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],
