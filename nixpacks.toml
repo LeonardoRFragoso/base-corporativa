@@ -1,9 +1,14 @@
 [phases.setup]
 nixPkgs = ["python311", "postgresql"]
-aptPkgs = ["python3-pip"]
+# aptPkgs removed to avoid pulling Python 3.12 which enforces PEP 668
+
+[variables]
+PIP_BREAK_SYSTEM_PACKAGES = "1"
+PYTHONUNBUFFERED = "1"
+DJANGO_SETTINGS_MODULE = "core.settings"
 
 [phases.install]
-cmds = ["cd backend && pip install --break-system-packages -r requirements.txt"]
+cmds = ["cd backend && python -m pip install --break-system-packages -r requirements.txt"]
 
 [phases.build]
 cmds = ["cd backend && python manage.py collectstatic --noinput"]
