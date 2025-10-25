@@ -13,4 +13,4 @@ cmds = ["cd backend && python -m pip install --break-system-packages -r requirem
 cmds = ["cd backend && python manage.py collectstatic --noinput"]
 
 [start]
-cmd = "cd backend && python manage.py migrate --noinput && gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+cmd = "cd backend && python manage.py migrate --noinput && python -m gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
