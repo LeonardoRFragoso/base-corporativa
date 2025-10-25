@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python311", "postgresql"]
+nixPkgs = ["python311", "python311Packages.pip", "postgresql"]
 # aptPkgs removed to avoid pulling Python 3.12 which enforces PEP 668
 
 [variables]
