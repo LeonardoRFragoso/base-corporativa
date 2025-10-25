@@ -204,5 +204,5 @@ def oauth_callback(request):
 
     data = resp.json()
     _store_token(data)
-    # Redirect back to a success page in frontend (cart to recalculate quotes)
-    return redirect('http://localhost:5173/cart')
+    # Redirect back to frontend (cart to recalculate quotes)
+    return redirect(settings.FRONTEND_BASE_URL.rstrip('/') + '/cart')
