@@ -11,3 +11,6 @@ boto3
 mercadopago
 python-decouple
 reportlab
+gunicorn
+whitenoise
+dj-database-url
