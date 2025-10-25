@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput"
+buildCommand = "cd backend && pip3 install --break-system-packages -r requirements.txt && python manage.py collectstatic --noinput"
 
 [deploy]
-startCommand = "cd backend && python manage.py migrate --noinput && gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+startCommand = "cd backend && python manage.py migrate --noinput && python -m gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"

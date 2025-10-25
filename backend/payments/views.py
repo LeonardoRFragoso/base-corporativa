@@ -106,9 +106,9 @@ def create_preference(request):
                 "email": request.data.get('email') or (request.user.email if getattr(request, 'user', None) and request.user.is_authenticated else '')
             },
             "back_urls": {
-                "success": "http://localhost:5173/checkout/success",
-                "failure": "http://localhost:5173/checkout/failure", 
-                "pending": "http://localhost:5173/checkout/pending"
+                "success": settings.FRONTEND_BASE_URL.rstrip('/') + "/checkout/success",
+                "failure": settings.FRONTEND_BASE_URL.rstrip('/') + "/checkout/failure", 
+                "pending": settings.FRONTEND_BASE_URL.rstrip('/') + "/checkout/pending"
             },
             "payment_methods": {
                 "excluded_payment_methods": [],

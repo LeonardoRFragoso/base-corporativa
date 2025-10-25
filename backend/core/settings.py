@@ -190,6 +190,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [o for o in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if o] or [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
 ]
 
 # Allow custom headers used by the frontend
@@ -198,6 +199,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
