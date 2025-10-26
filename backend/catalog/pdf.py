@@ -5,6 +5,8 @@ from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from PIL import Image as PILImage
+from reportlab.lib.utils import ImageReader
+from django.core.files.storage import default_storage
 
 
 def _wrap_text(text, font_name, font_size, max_width):
@@ -60,12 +62,21 @@ def generate_product_pdf(product):
     img_h = 8 * cm
     if img_obj and getattr(img_obj, 'image', None):
         try:
-            img_path = img_obj.image.path
-            with PILImage.open(img_path) as im:
-                iw, ih = im.size
-                ratio = min(img_w / iw, img_h / ih)
-                dw, dh = iw * ratio, ih * ratio
-            c.drawImage(img_path, margin, y - dh, width=dw, height=dh, preserveAspectRatio=True, mask='auto')
+            source = None
+            if hasattr(img_obj.image, 'path'):
+                source = img_obj.image.path
+                with PILImage.open(source) as im:
+                    iw, ih = im.size
+            else:
+                with default_storage.open(img_obj.image.name, 'rb') as f:
+                    with PILImage.open(f) as im:
+                        iw, ih = im.size
+                    f.seek(0)
+                    source = ImageReader(f)
+
+            ratio = min(img_w / iw, img_h / ih)
+            dw, dh = iw * ratio, ih * ratio
+            c.drawImage(source, margin, y - dh, width=dw, height=dh, preserveAspectRatio=True, mask='auto')
             img_block_h = dh
         except Exception:
             img_block_h = 0

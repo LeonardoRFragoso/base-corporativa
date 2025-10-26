@@ -10,7 +10,11 @@ export default function ProductCard({ product }) {
   const price = product.base_price
   const raw = product.images && product.images[0]?.image
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
-  const image = raw ? (raw.startsWith('http') ? raw : `${baseURL}${raw}`) : null
+  const image = raw
+    ? (raw.startsWith('http')
+        ? raw
+        : `${baseURL}${raw.startsWith('/') ? '' : '/'}${raw}`)
+    : null
   
   // Check if product has variants in stock
   const hasStock = product.variants && product.variants.some(v => v.stock > 0)

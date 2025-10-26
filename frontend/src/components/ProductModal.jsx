@@ -170,7 +170,8 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
       const toNumber = (val) => {
         if (typeof val === 'number') return val
         if (val === null || val === undefined) return 0
-        const s = String(val).replace(/\./g, '').replace(',', '.').trim()
+        const s0 = String(val).trim()
+        const s = s0.includes(',') ? s0.replace(/\./g, '').replace(',', '.') : s0
         const n = Number(s)
         return Number.isFinite(n) ? n : 0
       }
