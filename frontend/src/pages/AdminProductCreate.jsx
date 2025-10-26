@@ -63,9 +63,7 @@ export default function AdminProductCreate() {
           formData.append('image', file)
           formData.append('alt_text', `${form.name} - ${i + 1}`)
           formData.append('is_primary', i === 0 ? 'true' : 'false')
-          await api.post(`/api/products/${product.id}/upload-image/`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          })
+          await api.post(`/api/products/${product.id}/upload-image/`, formData)
         }
       }
 

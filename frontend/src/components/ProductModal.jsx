@@ -102,15 +102,21 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
     }
   }
 
-  function removeImage(index) {
+  async function removeImage(index) {
     const preview = imagePreviews[index]
-    
-    if (!preview.isExisting) {
-      // Remove from new images
+
+    if (preview.isExisting && product) {
+      try {
+        await api.delete(`/api/products/${product.id}/images/${preview.id}/`)
+      } catch (err) {
+        setErrors(prev => ({ ...prev, images: 'Falha ao remover a imagem existente' }))
+        return
+      }
+    } else {
       const newImageIndex = imagePreviews.slice(0, index).filter(p => !p.isExisting).length
       setImages(prev => prev.filter((_, i) => i !== newImageIndex))
     }
-    
+
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
@@ -125,11 +131,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
         formData.append('sort_order', i)
         formData.append('is_primary', i === 0 ? 'true' : 'false')
         
-        await api.post(`/api/products/${productId}/upload-image/`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+        await api.post(`/api/products/${productId}/upload-image/`, formData)
       }
     } catch (error) {
       console.error('Erro ao fazer upload de imagens:', error)
