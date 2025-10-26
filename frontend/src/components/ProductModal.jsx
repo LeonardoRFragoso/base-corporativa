@@ -167,13 +167,30 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
     
     setLoading(true)
     try {
+      const toNumber = (val) => {
+        if (typeof val === 'number') return val
+        if (val === null || val === undefined) return 0
+        const s = String(val).replace(/\./g, '').replace(',', '.').trim()
+        const n = Number(s)
+        return Number.isFinite(n) ? n : 0
+      }
+
+      const normalizeSize = (s) => {
+        const v = String(s || '').toUpperCase().trim()
+        const map = { 'PP':'XS', 'P':'S', 'M':'M', 'G':'L', 'GG':'XL', 'XG':'XL', 'EG':'XL', 'XXG':'XXL', 'XGG':'XXL' }
+        if (['XS','S','M','L','XL','XXL'].includes(v)) return v
+        return map[v] || ''
+      }
+
       const payload = {
         ...formData,
-        base_price: Number(formData.base_price),
+        base_price: toNumber(formData.base_price),
         variants: variants.map(v => ({
-          ...v,
-          price: v.price ? Number(v.price) : Number(formData.base_price),
-          stock: Number(v.stock || 0)
+          size: normalizeSize(v.size),
+          color: v.color || '',
+          price: v.price ? toNumber(v.price) : toNumber(formData.base_price),
+          stock: toNumber(v.stock || 0),
+          is_default: Boolean(v.is_default)
         }))
       }
 
