@@ -43,15 +43,37 @@ export default function AdminProductCreate() {
     setError('')
     setSubmitting(true)
     try {
+      const toNumber = (val) => {
+        if (typeof val === 'number') return val
+        if (val === null || val === undefined) return 0
+        const s0 = String(val).trim()
+        const s = s0.includes(',') ? s0.replace(/\./g, '').replace(',', '.') : s0
+        const n = Number(s)
+        return Number.isFinite(n) ? n : 0
+      }
+      const normalizeSize = (s) => {
+        const v = String(s || '').toUpperCase().trim()
+        const map = { 'PP':'XS', 'P':'S', 'M':'M', 'G':'L', 'GG':'XL', 'XG':'XL', 'EG':'XL', 'XXG':'XXL', 'XGG':'XXL' }
+        if (['XS','S','M','L','XL','XXL'].includes(v)) return v
+        return map[v] || ''
+      }
+
       const payload = {
         name: form.name,
         description: form.description,
         fabric_type: form.fabric_type,
         composition: form.composition,
         care_instructions: form.care_instructions,
-        base_price: form.base_price || '0',
+        base_price: toNumber(form.base_price),
         is_active: form.is_active,
         category: form.category,
+        variants: (form.variants || []).map(v => ({
+          size: normalizeSize(v.size),
+          color: v.color || '',
+          price: v.price ? toNumber(v.price) : toNumber(form.base_price),
+          stock: toNumber(v.stock || 0),
+          is_default: Boolean(v.is_default)
+        })),
       }
       const createRes = await api.post('/api/products/', payload)
       const product = createRes.data

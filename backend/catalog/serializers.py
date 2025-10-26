@@ -78,7 +78,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         bp = validated_data.get('base_price')
         if isinstance(bp, str):
             try:
-                validated_data['base_price'] = Decimal(bp.replace('.', '').replace(',', '.'))
+                if ',' in bp:
+                    validated_data['base_price'] = Decimal(bp.replace('.', '').replace(',', '.'))
+                else:
+                    validated_data['base_price'] = Decimal(bp)
             except InvalidOperation:
                 raise serializers.ValidationError({'base_price': 'Número inválido'})
 
@@ -94,7 +97,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             price_raw = v.get('price')
             if isinstance(price_raw, str):
                 try:
-                    price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                    if ',' in price_raw:
+                        price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                    else:
+                        price_val = Decimal(price_raw)
                 except InvalidOperation:
                     price_val = product.base_price
             else:
@@ -148,7 +154,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
                     price_raw = v.get('price')
                     if isinstance(price_raw, str):
                         try:
-                            obj.price = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                            if ',' in price_raw:
+                                obj.price = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                            else:
+                                obj.price = Decimal(price_raw)
                         except InvalidOperation:
                             obj.price = obj.price or instance.base_price
                     elif price_raw is not None:
@@ -165,7 +174,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
                     price_raw = v.get('price')
                     if isinstance(price_raw, str):
                         try:
-                            price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                            if ',' in price_raw:
+                                price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                            else:
+                                price_val = Decimal(price_raw)
                         except InvalidOperation:
                             price_val = instance.base_price
                     else:
