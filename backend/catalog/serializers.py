@@ -152,64 +152,70 @@ class ProductWriteSerializer(serializers.ModelSerializer):
 
             for v in variants_data:
                 vid = v.get('id')
+                size_raw = (v.get('size') or '').upper().strip()
+                size_map = {'PP':'XS','P':'S','M':'M','G':'L','GG':'XL','XG':'XL','EG':'XL','XXG':'XXL','XGG':'XXL'}
+                size_norm = size_raw if size_raw in ['XS','S','M','L','XL','XXL'] else size_map.get(size_raw, size_raw)
+                color = v.get('color', '')
+                
+                # Procura variante existente por ID ou por combinação (product, size, color)
+                obj = None
                 if vid and vid in existing:
                     obj = existing[vid]
-                    size_raw = (v.get('size') or obj.size or '').upper().strip()
-                    size_map = {'PP':'XS','P':'S','M':'M','G':'L','GG':'XL','XG':'XL','EG':'XL','XXG':'XXL','XGG':'XXL'}
-                    obj.size = size_raw if size_raw in ['XS','S','M','L','XL','XXL'] else size_map.get(size_raw, size_raw)
-                    obj.color = v.get('color', obj.color)
-                    price_raw = v.get('price')
-                    if isinstance(price_raw, str):
-                        try:
-                            if ',' in price_raw:
-                                obj.price = Decimal(price_raw.replace('.', '').replace(',', '.'))
-                            else:
-                                obj.price = Decimal(price_raw)
-                        except InvalidOperation:
-                            obj.price = obj.price or instance.base_price
-                    elif price_raw is not None:
-                        obj.price = price_raw
-                    obj.stock = int(v.get('stock')) if v.get('stock') is not None else obj.stock
-                    obj.is_default = bool(v.get('is_default')) if v.get('is_default') is not None else obj.is_default
-                    obj.save()
-                    sent_ids.add(vid)
                 else:
-                    size_raw = (v.get('size') or '').upper().strip()
-                    size_map = {'PP':'XS','P':'S','M':'M','G':'L','GG':'XL','XG':'XL','EG':'XL','XXG':'XXL','XGG':'XXL'}
-                    size_norm = size_raw if size_raw in ['XS','S','M','L','XL','XXL'] else size_map.get(size_raw, size_raw)
-
-                    price_raw = v.get('price')
-                    if isinstance(price_raw, str):
-                        try:
-                            if ',' in price_raw:
-                                price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
-                            else:
-                                price_val = Decimal(price_raw)
-                        except InvalidOperation:
-                            price_val = instance.base_price
-                    else:
-                        price_val = price_raw if price_raw is not None else instance.base_price
-
-                    stock_raw = v.get('stock')
+                    # Tenta encontrar por combinação única
                     try:
-                        stock_val = int(stock_raw) if stock_raw is not None else 0
-                    except (TypeError, ValueError):
-                        stock_val = 0
+                        obj = instance.variants.get(size=size_norm, color=color)
+                    except ProductVariant.DoesNotExist:
+                        obj = None
+                    except ProductVariant.MultipleObjectsReturned:
+                        # Se há múltiplas, pega a primeira
+                        obj = instance.variants.filter(size=size_norm, color=color).first()
+                
+                # Processa preço
+                price_raw = v.get('price')
+                if isinstance(price_raw, str):
+                    try:
+                        if ',' in price_raw:
+                            price_val = Decimal(price_raw.replace('.', '').replace(',', '.'))
+                        else:
+                            price_val = Decimal(price_raw)
+                    except InvalidOperation:
+                        price_val = instance.base_price
+                else:
+                    price_val = price_raw if price_raw is not None else instance.base_price
 
-                    sku_base = f"{instance.slug}-{(v.get('color') or 'std').lower()}-{(v.get('size') or 'u').lower()}"
+                stock_raw = v.get('stock')
+                try:
+                    stock_val = int(stock_raw) if stock_raw is not None else 0
+                except (TypeError, ValueError):
+                    stock_val = 0
+
+                if obj:
+                    # Atualiza variante existente
+                    obj.size = size_norm
+                    obj.color = color
+                    obj.price = price_val
+                    obj.stock = stock_val
+                    obj.is_default = bool(v.get('is_default', obj.is_default))
+                    obj.save()
+                    sent_ids.add(obj.id)
+                else:
+                    # Cria nova variante
+                    sku_base = f"{instance.slug}-{color.lower() or 'std'}-{size_norm.lower() or 'u'}"
                     sku = sku_base
                     j = 1
                     while ProductVariant.objects.filter(sku=sku).exists():
                         j += 1
                         sku = f"{sku_base}-{j}"
+                    
                     obj = ProductVariant.objects.create(
                         product=instance,
                         size=size_norm,
-                        color=v.get('color', ''),
+                        color=color,
                         sku=sku,
                         price=price_val,
                         stock=stock_val,
-                        is_default=bool(v.get('is_default')),
+                        is_default=bool(v.get('is_default', False)),
                     )
                     sent_ids.add(obj.id)
 

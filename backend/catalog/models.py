@@ -14,7 +14,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey('Category', related_name='products', on_delete=models.PROTECT)
+    category = models.ForeignKey('Category', related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True)
     description = models.TextField(blank=True)
@@ -29,6 +29,18 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def delete(self, *args, **kwargs):
+        """
+        Override delete to handle protected references gracefully.
+        Remove from carts before deleting the product.
+        """
+        # Remove product from all carts before deletion
+        from cart.models import CartItem
+        CartItem.objects.filter(product_variant__product=self).delete()
+        
+        # Now delete the product normally
+        super().delete(*args, **kwargs)
 
 
 class ProductVariant(models.Model):
