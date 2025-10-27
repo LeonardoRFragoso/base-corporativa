@@ -164,14 +164,17 @@ class ResendVerificationEmailView(APIView):
     authentication_classes = []
     
     def post(self, request):
-        email = request.data.get("email")
+        identifier = request.data.get("email") or request.data.get("identifier")
         
-        if not email:
-            return Response({"error": "Email é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+        if not identifier:
+            return Response({"error": "Email ou usuário é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
         
         User = get_user_model()
         try:
-            user = User.objects.get(email__iexact=email)
+            if '@' in identifier:
+                user = User.objects.get(email__iexact=identifier)
+            else:
+                user = User.objects.get(username__iexact=identifier)
             
             if user.email_verified:
                 return Response({"error": "Este email já foi verificado"}, status=status.HTTP_400_BAD_REQUEST)
