@@ -92,23 +92,23 @@ export default function Register() {
                           formData.password.length > 0 ? 'weak' : 'none'
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-950 mb-2">Criar sua conta</h1>
-          <p className="text-neutral-600">Junte-se à BASE CORPORATIVA</p>
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4">Criar sua conta</h1>
+          <p className="text-lg text-neutral-600">Junte-se à <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-soft p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-10">
           <form onSubmit={onSubmit} className="space-y-6">
             {errors.general && (
-              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-error-50 border-2 border-error-300 text-error-700 px-5 py-4 rounded-xl text-base font-medium">
                 {errors.general}
               </div>
             )}
 
             {success && (
-              <div className="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-lg">
+              <div className="bg-success-50 border-2 border-success-300 text-success-700 px-5 py-4 rounded-xl">
                 <div className="flex items-start">
                   <svg className="h-5 w-5 text-success-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -125,7 +125,7 @@ export default function Register() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 mb-2">
                 Usuário
               </label>
               <input
@@ -136,18 +136,18 @@ export default function Register() {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                   errors.username ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                 }`}
                 placeholder="Escolha um nome de usuário"
               />
               {errors.username && (
-                <p className="mt-1 text-sm text-error-600">{errors.username}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.username}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="email" className="block text-base font-semibold text-neutral-700 mb-2">
                 E-mail
               </label>
               <input
@@ -158,18 +158,18 @@ export default function Register() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                   errors.email ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                 }`}
                 placeholder="Digite seu e-mail"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-error-600">{errors.email}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 mb-2">
                 Senha
               </label>
               <div className="relative">
@@ -181,7 +181,7 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                     errors.password ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                   }`}
                   placeholder="Crie uma senha segura"
@@ -189,7 +189,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,12 +221,12 @@ export default function Register() {
               )}
               
               {errors.password && (
-                <p className="mt-1 text-sm text-error-600">{errors.password}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.password}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="confirmPassword" className="block text-base font-semibold text-neutral-700 mb-2">
                 Confirmar Senha
               </label>
               <div className="relative">
@@ -238,7 +238,7 @@ export default function Register() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full px-3 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                     errors.confirmPassword ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                   }`}
                   placeholder="Confirme sua senha"
@@ -246,7 +246,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
                 >
                   {showConfirmPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -261,18 +261,18 @@ export default function Register() {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-error-600">{errors.confirmPassword}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.confirmPassword}</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-bronze-800 hover:bg-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-2xl"
             >
               {loading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
                   Criando conta...
                 </div>
               ) : (
@@ -281,10 +281,10 @@ export default function Register() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-600">
+          <div className="mt-8 text-center">
+            <p className="text-base text-neutral-600">
               Já tem uma conta?{' '}
-              <Link to="/login" className="font-medium text-primary-800 hover:text-primary-950">
+              <Link to="/login" className="font-bold text-primary-700 hover:text-primary-800">
                 Faça login
               </Link>
             </p>

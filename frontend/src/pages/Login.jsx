@@ -94,24 +94,24 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-950 mb-2">Entrar na sua conta</h1>
-          <p className="text-neutral-600">Acesse sua conta BASE CORPORATIVA</p>
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4">Entrar na sua conta</h1>
+          <p className="text-lg text-neutral-600">Acesse sua conta <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-soft p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-10">
           <form onSubmit={onSubmit} className="space-y-6">
             {successMessage && (
-              <div className="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-success-50 border-2 border-success-300 text-success-700 px-5 py-4 rounded-xl text-base font-medium">
                 {successMessage}
               </div>
             )}
 
             {errors.general && (
-              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg">
-                <p className="text-sm">{errors.general}</p>
+              <div className="bg-error-50 border-2 border-error-300 text-error-700 px-5 py-4 rounded-xl">
+                <p className="text-base font-medium">{errors.general}</p>
                 {emailNotVerified && (
                   <button
                     type="button"
@@ -125,7 +125,7 @@ export default function Login() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 mb-2">
                 Usuário ou E-mail
               </label>
               <input
@@ -136,18 +136,18 @@ export default function Login() {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                   errors.username ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                 }`}
                 placeholder="Digite seu usuário ou e-mail"
               />
               {errors.username && (
-                <p className="mt-1 text-sm text-error-600">{errors.username}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.username}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 mb-2">
                 Senha
               </label>
               <div className="relative">
@@ -159,7 +159,7 @@ export default function Login() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
                     errors.password ? 'border-error-300 bg-error-50' : 'border-neutral-300'
                   }`}
                   placeholder="Digite sua senha"
@@ -167,7 +167,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,7 +182,7 @@ export default function Login() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-error-600">{errors.password}</p>
+                <p className="mt-2 text-sm text-error-600 font-medium">{errors.password}</p>
               )}
             </div>
 
@@ -192,15 +192,15 @@ export default function Login() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-primary-950 focus:ring-primary-950 border-neutral-300 rounded"
+                  className="h-5 w-5 text-primary-700 focus:ring-primary-600 border-neutral-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-neutral-700">
+                <label htmlFor="remember-me" className="ml-3 block text-base text-neutral-700 font-medium">
                   Lembrar de mim
                 </label>
               </div>
 
-              <div className="text-sm">
-                <Link to="/forgot-password" className="text-primary-800 hover:text-primary-950 font-medium">
+              <div className="text-base">
+                <Link to="/forgot-password" className="text-primary-700 hover:text-primary-800 font-semibold">
                   Esqueceu a senha?
                 </Link>
               </div>
@@ -209,11 +209,11 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-bronze-800 hover:bg-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-2xl"
             >
               {loading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
                   Entrando...
                 </div>
               ) : (
@@ -222,10 +222,10 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-600">
+          <div className="mt-8 text-center">
+            <p className="text-base text-neutral-600">
               Não tem uma conta?{' '}
-              <Link to="/register" className="font-medium text-primary-800 hover:text-primary-950">
+              <Link to="/register" className="font-bold text-primary-700 hover:text-primary-800">
                 Cadastre-se gratuitamente
               </Link>
             </p>

@@ -21,7 +21,8 @@ def send_verification_email(user, token):
         subject=subject,
         body=text_content,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[user.email]
+        to=[user.email],
+        reply_to=[settings.DEFAULT_FROM_EMAIL]
     )
     email.attach_alternative(html_content, "text/html")
     email.send(fail_silently=False)
@@ -44,7 +45,8 @@ def send_password_reset_email(user, token):
         subject=subject,
         body=text_content,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[user.email]
+        to=[user.email],
+        reply_to=[settings.DEFAULT_FROM_EMAIL]
     )
     email.attach_alternative(html_content, "text/html")
     email.send(fail_silently=False)

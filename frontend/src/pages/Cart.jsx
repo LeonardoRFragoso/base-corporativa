@@ -213,20 +213,22 @@ export default function Cart() {
 
   if (!items.length) {
     return (
-      <div className="min-h-screen bg-neutral-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center py-16">
-            <svg className="mx-auto h-16 w-16 text-neutral-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
-            </svg>
-            <h2 className="text-2xl font-bold text-primary-950 mb-4">Seu carrinho está vazio</h2>
-            <p className="text-neutral-600 mb-8">Que tal dar uma olhada em nossos produtos?</p>
+      <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center py-24">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary-100 to-bronze-100 rounded-full mb-8">
+              <svg className="h-12 w-12 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 7H6L5 9z" />
+              </svg>
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-6">Seu carrinho está vazio</h2>
+            <p className="text-xl text-neutral-600 mb-12 max-w-2xl mx-auto">Que tal dar uma olhada em nossos produtos?</p>
             <Link 
               to="/catalog" 
-              className="inline-flex items-center px-6 py-3 bg-primary-950 text-white font-semibold rounded-lg hover:bg-primary-800 transition-all"
+              className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-bronze-700 to-bronze-800 text-white font-bold text-lg rounded-xl hover:from-bronze-600 hover:to-bronze-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105"
             >
               Continuar comprando
-              <svg className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="ml-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
@@ -237,23 +239,23 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-2">
+        <div className="mb-12">
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-3">
             Carrinho de Compras
           </h1>
-          <p className="text-neutral-600">
-            {items.length} {items.length === 1 ? 'item' : 'itens'} no seu carrinho
+          <p className="text-lg text-neutral-600">
+            {items.length} {items.length === 1 ? 'item' : 'itens'} no seu <span className="text-primary-700 font-medium">carrinho</span>
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-6">
             {items.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-lg shadow-soft p-6">
+              <div key={idx} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   {/* Product image placeholder */}
                   {item.image ? (
@@ -271,20 +273,20 @@ export default function Cart() {
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-primary-950 mb-1">{item.name}</h3>
-                    <div className="text-sm text-neutral-600 space-y-1">
-                      {item.size && <div>Tamanho: {item.size}</div>}
-                      {item.color && <div>Cor: {item.color}</div>}
-                      <div className="font-medium text-primary-950">R$ {Number(item.price).toFixed(2)} cada</div>
+                    <h3 className="text-xl font-bold text-neutral-900 mb-2">{item.name}</h3>
+                    <div className="text-base text-neutral-600 space-y-1">
+                      {item.size && <div><span className="font-medium">Tamanho:</span> {item.size}</div>}
+                      {item.color && <div><span className="font-medium">Cor:</span> {item.color}</div>}
+                      <div className="font-semibold text-primary-700 text-lg mt-2">R$ {Number(item.price).toFixed(2)} <span className="text-sm font-normal text-neutral-500">cada</span></div>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
                     {/* Quantity controls */}
-                    <div className="flex items-center border border-neutral-300 rounded-lg">
+                    <div className="flex items-center border-2 border-neutral-300 rounded-xl overflow-hidden">
                       <button
                         onClick={() => update(item, Math.max(1, item.qty - 1))}
-                        className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                        className="px-4 py-3 hover:bg-neutral-100 transition-colors font-semibold text-lg"
                       >
                         -
                       </button>
@@ -293,11 +295,11 @@ export default function Cart() {
                         min="1"
                         value={item.qty}
                         onChange={(e) => update(item, Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-16 text-center py-2 border-0 focus:ring-0"
+                        className="w-16 text-center py-3 border-0 focus:ring-0 font-semibold"
                       />
                       <button
                         onClick={() => update(item, item.qty + 1)}
-                        className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                        className="px-4 py-3 hover:bg-neutral-100 transition-colors font-semibold text-lg"
                       >
                         +
                       </button>
@@ -306,10 +308,10 @@ export default function Cart() {
                     {/* Remove button */}
                     <button
                       onClick={() => remove(item)}
-                      className="p-2 text-error-500 hover:bg-error-50 rounded-lg transition-colors"
+                      className="p-3 text-error-500 hover:bg-error-50 rounded-xl transition-all duration-200 hover:scale-110"
                       title="Remover item"
                     >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
@@ -317,9 +319,9 @@ export default function Cart() {
                 </div>
 
                 {/* Item total */}
-                <div className="mt-4 pt-4 border-t border-neutral-200 flex justify-between items-center">
-                  <span className="text-neutral-600">Subtotal do item:</span>
-                  <span className="font-semibold text-primary-950">R$ {(Number(item.price) * item.qty).toFixed(2)}</span>
+                <div className="mt-6 pt-6 border-t-2 border-neutral-200 flex justify-between items-center">
+                  <span className="text-neutral-600 font-medium">Subtotal do item:</span>
+                  <span className="text-2xl font-bold text-primary-700">R$ {(Number(item.price) * item.qty).toFixed(2)}</span>
                 </div>
               </div>
             ))}
@@ -337,36 +339,36 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-soft p-6 sm:sticky sm:top-24">
-              <h2 className="text-lg font-semibold text-primary-950 mb-4">Resumo do pedido</h2>
+            <div className="bg-white rounded-2xl shadow-xl p-8 sm:sticky sm:top-24">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-6">Resumo do pedido</h2>
 
               {/* Shipping: CEP and quotes */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">Calcular frete</label>
-                <div className="flex flex-col sm:flex-row gap-2">
+              <div className="mb-6">
+                <label className="block text-base font-semibold text-neutral-700 mb-2">Calcular frete</label>
+                <div className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
                     inputMode="numeric"
-                    placeholder="Digite seu CEP"
+                    placeholder="20730-480"
                     value={formatZip(zip)}
                     onChange={(e) => setZip(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
                   />
                   <button
                     onClick={calculateShipping}
                     disabled={loadingQuotes || items.length === 0}
-                    className="px-4 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 disabled:bg-neutral-300"
+                    className="px-6 py-3 rounded-xl bg-neutral-900 text-white font-semibold hover:bg-neutral-800 disabled:bg-neutral-300 transition-all"
                   >
                     {loadingQuotes ? 'Calculando...' : 'Calcular'}
                   </button>
                 </div>
-                {quoteError && <div className="text-sm text-error-600 mt-2">{quoteError}</div>}
+                {quoteError && <div className="text-sm text-error-600 mt-2 font-medium">{quoteError}</div>}
               </div>
 
               {quotes.length > 0 && (
-                <div className="mb-4 space-y-2">
+                <div className="mb-6 space-y-3">
                   {quotes.map(q => (
-                    <label key={q.service_id} className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer ${selectedQuote?.service_id === q.service_id ? 'border-primary-950 bg-neutral-50' : 'border-neutral-200 hover:border-neutral-300'}`}>
+                    <label key={q.service_id} className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedQuote?.service_id === q.service_id ? 'border-primary-600 bg-primary-50' : 'border-neutral-200 hover:border-neutral-300 hover:shadow-md'}`}>
                       <div className="flex items-center gap-3">
                         {q.carrier_logo ? (
                           <img src={q.carrier_logo} alt={q.carrier} className="w-8 h-8 object-contain" />
@@ -442,45 +444,45 @@ export default function Cart() {
                 </div>
               )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">Cupom de desconto</label>
-                <div className="flex gap-2">
+              <div className="mb-6">
+                <label className="block text-base font-semibold text-neutral-700 mb-2">Cupom de desconto</label>
+                <div className="flex gap-3">
                   <input
                     type="text"
                     placeholder="Digite seu cupom"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-950 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
                   />
-                  <button onClick={applyCoupon} className="px-4 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800">Aplicar</button>
+                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 text-white font-semibold hover:bg-neutral-800 transition-all">Aplicar</button>
                 </div>
-                {couponError && <div className="text-sm text-error-600 mt-2">{couponError}</div>}
+                {couponError && <div className="text-sm text-error-600 mt-2 font-medium">{couponError}</div>}
                 {coupon && (
-                  <div className="text-sm text-success-700 mt-2">Cupom aplicado: {coupon.code}</div>
+                  <div className="text-sm text-success-700 mt-2 font-semibold">✓ Cupom aplicado: {coupon.code}</div>
                 )}
               </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-neutral-600">Subtotal ({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
-                  <span className="font-medium">R$ {subtotal.toFixed(2)}</span>
+              <div className="space-y-5">
+                <div className="flex justify-between text-base">
+                  <span className="text-neutral-600 font-medium">Subtotal ({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
+                  <span className="font-semibold text-neutral-900">R$ {subtotal.toFixed(2)}</span>
                 </div>
                 
-                <div className="flex justify-between">
-                  <span className="text-neutral-600">Frete</span>
-                  <span className="font-medium">{shipping === 0 ? '—' : `R$ ${shipping.toFixed(2)}`}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-neutral-600 font-medium">Frete</span>
+                  <span className="font-semibold text-neutral-900">{shipping === 0 ? '—' : `R$ ${shipping.toFixed(2)}`}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-600">Desconto</span>
-                  <span className="font-medium">{discount > 0 ? `- R$ ${discount.toFixed(2)}` : '—'}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-neutral-600 font-medium">Desconto</span>
+                  <span className="font-semibold text-success-700">{discount > 0 ? `- R$ ${discount.toFixed(2)}` : '—'}</span>
                 </div>
 
                 {/* Tip: could add free shipping rule hint here if needed */}
 
-                <div className="border-t border-neutral-200 pt-4">
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total</span>
-                    <span className="text-primary-950">R$ {total.toFixed(2)}</span>
+                <div className="border-t-2 border-neutral-200 pt-5">
+                  <div className="flex justify-between text-2xl font-bold">
+                    <span className="text-neutral-900">Total</span>
+                    <span className="text-primary-700">R$ {total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -488,10 +490,10 @@ export default function Cart() {
               <button 
                 onClick={handleCheckout}
                 disabled={isProcessing}
-                className={`w-full mt-6 py-3 px-6 rounded-lg font-semibold transition-all ${
+                className={`w-full mt-8 py-5 px-6 rounded-xl font-bold text-lg transition-all ${
                   isProcessing 
                     ? 'bg-neutral-400 text-neutral-600 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 hover:from-gold-400 hover:to-bronze-400 hover:scale-105 shadow-medium hover:shadow-strong'
+                    : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700 hover:scale-105 shadow-xl hover:shadow-2xl'
                 }`}
               >
                 {isProcessing ? (
@@ -514,18 +516,18 @@ export default function Cart() {
 
               <Link 
                 to="/catalog" 
-                className="block w-full mt-3 text-center py-3 px-6 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition-all"
+                className="block w-full mt-4 text-center py-4 px-6 border-2 border-neutral-300 rounded-xl font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400 transition-all"
               >
                 Continuar comprando
               </Link>
 
               {/* Security badges */}
-              <div className="mt-6 pt-6 border-t border-neutral-200">
-                <div className="flex items-center justify-center gap-2 text-sm text-neutral-600">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mt-8 pt-8 border-t-2 border-neutral-200">
+                <div className="flex items-center justify-center gap-3 text-base text-neutral-600">
+                  <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  Compra 100% segura
+                  <span className="font-semibold">Compra 100% segura</span>
                 </div>
               </div>
             </div>
