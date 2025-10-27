@@ -27,9 +27,12 @@ class RegisterView(generics.CreateAPIView):
         token = EmailVerificationToken.objects.create(user=user)
         try:
             send_verification_email(user, token.token)
+            print(f"✅ Email de verificação enviado para: {user.email}")
         except Exception as e:
             # Log do erro mas não falha o registro
-            print(f"Erro ao enviar email de verificação: {e}")
+            print(f"❌ Erro ao enviar email de verificação para {user.email}: {e}")
+            import traceback
+            traceback.print_exc()
         
         headers = self.get_success_headers(serializer.data)
         return Response({
