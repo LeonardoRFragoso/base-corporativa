@@ -18,6 +18,15 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
+    def get_authentication_classes(self):
+        """
+        Remove authentication for public actions (list, retrieve)
+        to prevent 401 errors when invalid tokens are sent
+        """
+        if self.action in ['list', 'retrieve']:
+            return []
+        return super().get_authentication_classes()
+
     def get_queryset(self):
         qs = Product.objects.all().select_related('category').prefetch_related('variants', 'images')
         if self.action in ['list', 'retrieve'] and not (self.request and self.request.user and self.request.user.is_staff):
