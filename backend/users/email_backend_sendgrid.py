@@ -6,6 +6,7 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Email, To, Content
+from email.utils import parseaddr
 import logging
 
 logger = logging.getLogger('users')
@@ -33,7 +34,11 @@ class SendGridBackend(BaseEmailBackend):
         for message in email_messages:
             try:
                 # Email sai de contato@basecorporativa.store
-                from_email = Email(message.from_email)
+                display_name, address = parseaddr(message.from_email or "")
+                if not address:
+                    address = getattr(settings, 'DEFAULT_FROM_EMAIL', '')
+                    display_name, address = parseaddr(address)
+                from_email = Email(address, display_name or None)
                 to_emails = [To(email) for email in message.to]
                 subject = message.subject
                 
@@ -52,7 +57,7 @@ class SendGridBackend(BaseEmailBackend):
                     from_email=from_email,
                     to_emails=to_emails[0] if len(to_emails) == 1 else to_emails,
                     subject=subject,
-                    html_content=html_content,
+                    html_content=html_content or plain_text_content,
                     plain_text_content=plain_text_content
                 )
                 
@@ -63,7 +68,11 @@ class SendGridBackend(BaseEmailBackend):
                     num_sent += 1
                     logger.info(f"✅ Email enviado via SendGrid de contato@basecorporativa.store para: {message.to}")
                 else:
-                    logger.error(f"❌ Erro SendGrid: Status {response.status_code}")
+                    try:
+                        body = response.body.decode() if hasattr(response.body, 'decode') else str(response.body)
+                    except Exception:
+                        body = str(response.body)
+                    logger.error(f"❌ Erro SendGrid: Status {response.status_code} Body: {body}")
                     if not self.fail_silently:
                         raise Exception(f"SendGrid returned status {response.status_code}")
                         
