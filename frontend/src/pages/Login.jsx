@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { api } from '../lib/api.js'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ export default function Login() {
   const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [emailNotVerified, setEmailNotVerified] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
   const { login, loading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -52,6 +55,8 @@ export default function Login() {
     
     if (!validateForm()) return
     
+    setEmailNotVerified(false)
+    
     try {
       console.log('Attempting login with:', formData.username)
       const ok = await login(formData.username, formData.password)
@@ -65,7 +70,26 @@ export default function Login() {
       }
     } catch (err) {
       console.error('Login error caught:', err)
-      setErrors({ general: 'Login falhou. Verifique suas credenciais.' })
+      
+      // Verificar se é erro de email não verificado
+      if (err.response?.data?.email_not_verified) {
+        setEmailNotVerified(true)
+        setUserEmail(formData.username)
+        setErrors({ general: err.response.data.detail || 'Por favor, verifique seu email antes de fazer login.' })
+      } else {
+        setErrors({ general: 'Login falhou. Verifique suas credenciais.' })
+      }
+    }
+  }
+
+  async function handleResendVerification() {
+    try {
+      await api.post('/api/auth/resend-verification/', { email: userEmail })
+      setSuccessMessage('Email de verificação reenviado! Verifique sua caixa de entrada.')
+      setEmailNotVerified(false)
+      setErrors({})
+    } catch (err) {
+      setErrors({ general: 'Erro ao reenviar email. Tente novamente.' })
     }
   }
 
@@ -86,8 +110,17 @@ export default function Login() {
             )}
 
             {errors.general && (
-              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg text-sm">
-                {errors.general}
+              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg">
+                <p className="text-sm">{errors.general}</p>
+                {emailNotVerified && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    className="mt-3 w-full text-sm font-medium text-bronze-700 hover:text-bronze-800 underline"
+                  >
+                    Reenviar email de verificação
+                  </button>
+                )}
               </div>
             )}
 

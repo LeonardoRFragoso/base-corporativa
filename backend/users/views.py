@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -225,7 +225,19 @@ class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
                     attrs[self.username_field] = user.get_username()
             except User.DoesNotExist:
                 pass
-        return super().validate(attrs)
+        
+        # Validar credenciais primeiro
+        data = super().validate(attrs)
+        
+        # Verificar se o email foi verificado
+        user = self.user
+        if not user.email_verified:
+            raise serializers.ValidationError({
+                'detail': 'Por favor, verifique seu email antes de fazer login. Verifique sua caixa de entrada e spam.',
+                'email_not_verified': True
+            })
+        
+        return data
 
 
 class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
