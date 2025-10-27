@@ -203,6 +203,8 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
         // Upload new images if any
         if (images.length > 0) {
           await uploadImages(product.id)
+          // Fetch updated product with images
+          response = await api.get(`/api/products/${product.id}/`)
         }
       } else {
         // Create new product
@@ -211,6 +213,8 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
         // Upload images for new product
         if (images.length > 0) {
           await uploadImages(response.data.id)
+          // Fetch product with uploaded images
+          response = await api.get(`/api/products/${response.data.id}/`)
         }
       }
 
