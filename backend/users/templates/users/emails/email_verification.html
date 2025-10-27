@@ -98,19 +98,31 @@
         </div>
         
         <div class="content">
-            <h2>Bem-vindo(a), {{ user.first_name|default:user.username }}! 👋</h2>
+            <h2>🎉 Bem-vindo(a), {{ user.first_name|default:user.username }}!</h2>
             
-            <p>Obrigado por se cadastrar na <strong>BASE CORPORATIVA</strong>!</p>
+            <p>Estamos muito felizes em ter você conosco! 🌟</p>
             
-            <p>Para completar seu cadastro e começar a aproveitar todos os benefícios da nossa loja, precisamos confirmar seu endereço de email.</p>
+            <p>Obrigado por se cadastrar na <strong>BASE CORPORATIVA</strong>, sua loja de soluções corporativas de qualidade.</p>
             
-            <div style="text-align: center;">
-                <a href="{{ verification_url }}" class="button">Confirmar meu email</a>
+            <p>Para completar seu cadastro e começar a aproveitar todos os benefícios exclusivos, precisamos confirmar seu endereço de email.</p>
+            
+            <p><strong>É rápido e fácil!</strong> Basta clicar no botão abaixo:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ verification_url }}" class="button" style="color: #ffffff; text-decoration: none;">✅ Confirmar meu email</a>
             </div>
             
             <div class="info-box">
-                <p><strong>⏰ Este link expira em 24 horas.</strong></p>
+                <p><strong>⏰ Atenção:</strong> Este link expira em 24 horas por questões de segurança.</p>
             </div>
+            
+            <p style="margin-top: 30px;">Após confirmar seu email, você poderá:</p>
+            <ul style="color: #666; font-size: 16px; line-height: 1.8;">
+                <li>✨ Acessar produtos exclusivos</li>
+                <li>🛒 Fazer pedidos com segurança</li>
+                <li>📦 Acompanhar suas entregas</li>
+                <li>💰 Aproveitar ofertas especiais</li>
+            </ul>
             
             <div class="divider"></div>
             
