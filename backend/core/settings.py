@@ -225,6 +225,10 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     AWS_S3_ADDRESSING_STYLE = os.environ.get('AWS_S3_ADDRESSING_STYLE', 'virtual')
     AWS_S3_FILE_OVERWRITE = os.environ.get('AWS_S3_FILE_OVERWRITE', 'False') == 'True'
     AWS_QUERYSTRING_AUTH = os.environ.get('AWS_QUERYSTRING_AUTH', 'False') == 'True'
+    AWS_DEFAULT_ACL = None  # Don't set ACL on upload
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', '')
@@ -232,6 +236,11 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
         MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
+    
+    # Log configuration for debugging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"S3 Storage configured: bucket={AWS_STORAGE_BUCKET_NAME}, endpoint={AWS_S3_ENDPOINT_URL}, domain={AWS_S3_CUSTOM_DOMAIN}")
 
 # External services configuration
 # Mercado Pago credentials exposed via settings (read from environment)

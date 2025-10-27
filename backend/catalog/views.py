@@ -59,10 +59,16 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='upload-image', parser_classes=[MultiPartParser, FormParser])
     def upload_image(self, request, pk=None):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         product = self.get_object()
         image = request.data.get('image')
         if not image:
             return Response({'error': 'image é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        logger.info(f"Uploading image for product {product.id}: {image.name}, size: {image.size}")
+        
         variant_id = request.data.get('variant')
         variant = None
         if variant_id:
@@ -76,15 +82,21 @@ class ProductViewSet(viewsets.ModelViewSet):
             sort_order = int(request.data.get('sort_order', '0'))
         except ValueError:
             sort_order = 0
-        obj = ProductImage.objects.create(
-            product=product,
-            variant=variant,
-            image=image,
-            alt_text=alt_text,
-            is_primary=is_primary,
-            sort_order=sort_order,
-        )
-        return Response(ProductImageSerializer(obj).data, status=status.HTTP_201_CREATED)
+        
+        try:
+            obj = ProductImage.objects.create(
+                product=product,
+                variant=variant,
+                image=image,
+                alt_text=alt_text,
+                is_primary=is_primary,
+                sort_order=sort_order,
+            )
+            logger.info(f"Image saved successfully: {obj.image.name}, URL: {obj.image.url}")
+            return Response(ProductImageSerializer(obj).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"Error uploading image: {str(e)}", exc_info=True)
+            return Response({'error': f'Erro ao fazer upload: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['delete'], url_path=r'images/(?P<image_id>[^/.]+)')
     def delete_image(self, request, pk=None, image_id=None):
