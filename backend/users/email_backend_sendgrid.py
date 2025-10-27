@@ -1,0 +1,65 @@
+"""
+Backend de email usando SendGrid API
+Mantém o email contato@basecorporativa.store para credibilidade
+"""
+from django.core.mail.backends.base import BaseEmailBackend
+from django.conf import settings
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Email, To, Content
+import logging
+
+logger = logging.getLogger('users')
+
+
+class SendGridBackend(BaseEmailBackend):
+    """
+    Backend de email usando SendGrid API
+    Emails saem de contato@basecorporativa.store
+    """
+    
+    def __init__(self, fail_silently=False, **kwargs):
+        super().__init__(fail_silently=fail_silently, **kwargs)
+        self.api_key = settings.SENDGRID_API_KEY
+        self.client = SendGridAPIClient(self.api_key)
+    
+    def send_messages(self, email_messages):
+        """
+        Envia emails usando SendGrid mantendo o domínio basecorporativa.store
+        """
+        if not email_messages:
+            return 0
+        
+        num_sent = 0
+        for message in email_messages:
+            try:
+                # Email sai de contato@basecorporativa.store
+                from_email = Email(message.from_email)
+                to_emails = [To(email) for email in message.to]
+                subject = message.subject
+                
+                # Criar mensagem
+                mail = Mail(
+                    from_email=from_email,
+                    to_emails=to_emails[0] if len(to_emails) == 1 else to_emails,
+                    subject=subject,
+                    html_content=message.body if message.content_subtype == 'html' else None,
+                    plain_text_content=message.body if message.content_subtype != 'html' else None
+                )
+                
+                # Enviar via SendGrid
+                response = self.client.send(mail)
+                
+                if response.status_code in [200, 201, 202]:
+                    num_sent += 1
+                    logger.info(f"✅ Email enviado via SendGrid de contato@basecorporativa.store para: {message.to}")
+                else:
+                    logger.error(f"❌ Erro SendGrid: Status {response.status_code}")
+                    if not self.fail_silently:
+                        raise Exception(f"SendGrid returned status {response.status_code}")
+                        
+            except Exception as e:
+                logger.error(f"❌ Erro ao enviar email via SendGrid: {e}")
+                if not self.fail_silently:
+                    raise
+        
+        return num_sent
