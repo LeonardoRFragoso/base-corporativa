@@ -11,6 +11,8 @@ from .models import WishlistItem, EmailVerificationToken, PasswordResetToken
 from catalog.models import Product
 from .email_utils import send_verification_email, send_password_reset_email
 from .tasks import send_verification_email_async, send_password_reset_email_async
+from .tasks_sync import send_verification_email_sync, send_password_reset_email_sync
+import os
 from django.shortcuts import get_object_or_404
 
 
@@ -24,9 +26,21 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
-        # Criar token de verificação e enviar email em background
+        # Criar token de verificação e enviar email
         token = EmailVerificationToken.objects.create(user=user)
-        send_verification_email_async(user, token.token)
+        
+        # Usar versão síncrona em produção para debug (temporário)
+        # Depois voltar para async
+        use_sync = os.environ.get('EMAIL_SYNC_MODE', 'False') == 'True'
+        
+        if use_sync:
+            print(f"📧 Modo SÍNCRONO ativado para debug")
+            try:
+                send_verification_email_sync(user, token.token)
+            except Exception as e:
+                print(f"⚠️ Erro no envio síncrono, mas cadastro foi criado: {e}")
+        else:
+            send_verification_email_async(user, token.token)
         
         headers = self.get_success_headers(serializer.data)
         return Response({
