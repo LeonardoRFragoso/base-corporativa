@@ -60,6 +60,48 @@ def debug_product_update(request, pk=None):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def debug_product_delete(request, pk):
+    """
+    Debug endpoint para testar deleção de produto com erro detalhado.
+    DELETE /api/debug/product-delete/{id}/
+    """
+    try:
+        from .models import ProductImage
+        
+        product = get_object_or_404(Product, pk=pk)
+        
+        # Lista imagens antes de deletar
+        images_info = []
+        for img in product.images.all():
+            images_info.append({
+                'id': img.id,
+                'image_url': str(img.image),
+                'image_name': img.image.name if img.image else 'No file'
+            })
+        
+        # Tenta deletar o produto (isso deve deletar imagens em cascade)
+        product_name = product.name
+        product.delete()
+        
+        return Response({
+            'debug': 'Delete successful',
+            'deleted_product': product_name,
+            'deleted_images': images_info
+        })
+        
+    except Exception as e:
+        return Response({
+            'debug': 'Exception occurred during delete',
+            'error_type': type(e).__name__,
+            'error_message': str(e),
+            'traceback': traceback.format_exc(),
+            'storage_backend': getattr(settings, 'DEFAULT_FILE_STORAGE', 'default'),
+            'media_url': settings.MEDIA_URL
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def debug_storage_info(request):

@@ -74,3 +74,20 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.product.name}"
+    
+    def delete(self, *args, **kwargs):
+        """
+        Override delete to handle storage errors gracefully.
+        If file deletion fails (e.g., file doesn't exist in R2), 
+        still delete the database record.
+        """
+        if self.image:
+            try:
+                self.image.delete(save=False)
+            except Exception as e:
+                # Log the error but don't fail the deletion
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Failed to delete image file {self.image.name}: {e}")
+        
+        super().delete(*args, **kwargs)
