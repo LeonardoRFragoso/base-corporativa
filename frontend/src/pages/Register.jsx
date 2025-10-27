@@ -63,14 +63,13 @@ export default function Register() {
     
     setLoading(true)
     try {
-      // Backend endpoint to be implemented
-      await api.post('/api/auth/register/', {
+      const response = await api.post('/api/auth/register/', {
         username: formData.username,
         email: formData.email,
         password: formData.password
       })
-      setSuccess('Cadastro realizado com sucesso! Redirecionando para o login...')
-      setTimeout(() => navigate('/login'), 2000)
+      setSuccess(response.data.message || 'Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.')
+      // Não redireciona automaticamente - usuário precisa verificar email primeiro
     } catch (err) {
       if (err.response?.data) {
         const serverErrors = {}
@@ -109,8 +108,19 @@ export default function Register() {
             )}
 
             {success && (
-              <div className="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-lg text-sm">
-                {success}
+              <div className="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-lg">
+                <div className="flex items-start">
+                  <svg className="h-5 w-5 text-success-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-medium text-sm">{success}</p>
+                    <p className="text-xs mt-1 text-success-600">
+                      Enviamos um email de verificação para <strong>{formData.email}</strong>. 
+                      Verifique sua caixa de entrada e spam.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 

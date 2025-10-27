@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Login() {
@@ -9,8 +9,19 @@ export default function Login() {
   })
   const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
   const { login, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Mostrar mensagem de sucesso se vier de outra página
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message)
+      // Limpar o estado após mostrar
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -68,6 +79,12 @@ export default function Login() {
 
         <div className="bg-white rounded-lg shadow-soft p-8">
           <form onSubmit={onSubmit} className="space-y-6">
+            {successMessage && (
+              <div className="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-lg text-sm">
+                {successMessage}
+              </div>
+            )}
+
             {errors.general && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg text-sm">
                 {errors.general}

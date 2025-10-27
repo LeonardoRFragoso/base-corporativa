@@ -8,6 +8,9 @@ import Product from './pages/Product.jsx'
 import Cart from './pages/Cart.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
+import ResetPassword from './pages/ResetPassword.jsx'
+import VerifyEmail from './pages/VerifyEmail.jsx'
 import CheckoutSuccess from './pages/CheckoutSuccess.jsx'
 import CheckoutFailure from './pages/CheckoutFailure.jsx'
 import CheckoutPending from './pages/CheckoutPending.jsx'
@@ -40,6 +43,9 @@ function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/redefinir-senha/:token" element={<ResetPassword />} />
+          <Route path="/verificar-email/:token" element={<VerifyEmail />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/checkout/failure" element={<CheckoutFailure />} />
           <Route path="/checkout/pending" element={<CheckoutPending />} />
