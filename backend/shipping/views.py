@@ -47,7 +47,41 @@ def quote(request):
     """
     token = _get_bearer_token()
     if not token:
-        return Response({'error': 'Conta do Melhor Envio não autenticada. Acesse /api/shipping/oauth/start para conectar.'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Return fallback shipping options when Melhor Envio is not configured
+        origin_zip = settings.SHIPPING_ORIGIN_ZIP
+        dest_zip = request.data.get('zip_destination')
+        items = request.data.get('items') or []
+        
+        if not dest_zip:
+            return Response({'error': 'zip_destination é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(items, list) or not items:
+            return Response({'error': 'items deve ser uma lista com ao menos 1 item'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Calculate total value for free shipping threshold
+        total_products_value = sum((float(i.get('price') or 0) * int(i.get('qty') or 1)) for i in items)
+        
+        # Return fallback shipping options
+        fallback_quotes = [
+            {
+                'service_name': 'PAC',
+                'carrier': 'Correios',
+                'price': 0.0 if settings.SHIPPING_FREE_THRESHOLD and total_products_value >= settings.SHIPPING_FREE_THRESHOLD else 15.00,
+                'delivery_time': 10,
+            },
+            {
+                'service_name': 'SEDEX',
+                'carrier': 'Correios',
+                'price': 0.0 if settings.SHIPPING_FREE_THRESHOLD and total_products_value >= settings.SHIPPING_FREE_THRESHOLD else 25.00,
+                'delivery_time': 5,
+            },
+        ]
+        
+        return Response({
+            'origin_zip': origin_zip,
+            'destination_zip': dest_zip,
+            'quotes': fallback_quotes,
+            'note': 'Melhor Envio não configurado. Usando valores estimados.'
+        })
 
     origin_zip = settings.SHIPPING_ORIGIN_ZIP
     dest_zip = request.data.get('zip_destination')
