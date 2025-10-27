@@ -35,9 +35,9 @@ class Product(models.Model):
         Override delete to handle protected references gracefully.
         Remove all related objects before deleting the product.
         """
-        # 1. Remove product from all carts
+        # 1. Remove product from all carts (CartItem.variant -> ProductVariant.product)
         from cart.models import CartItem
-        CartItem.objects.filter(product_variant__product=self).delete()
+        CartItem.objects.filter(variant__product=self).delete()
         
         # 2. Remove from wishlists
         from users.models import WishlistItem
