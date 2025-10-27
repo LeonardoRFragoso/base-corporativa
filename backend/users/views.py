@@ -240,7 +240,8 @@ class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         # Verificar se o email foi verificado
         user = self.user
-        if not user.email_verified:
+        # Permitir staff/superuser logarem mesmo sem verificação de email
+        if not user.email_verified and not (user.is_staff or user.is_superuser):
             raise serializers.ValidationError({
                 'detail': 'Por favor, verifique seu email antes de fazer login. Verifique sua caixa de entrada e spam.',
                 'email_not_verified': True
