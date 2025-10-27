@@ -29,18 +29,15 @@ class RegisterView(generics.CreateAPIView):
         # Criar token de verificação e enviar email
         token = EmailVerificationToken.objects.create(user=user)
         
-        # Usar versão síncrona em produção para debug (temporário)
-        # Depois voltar para async
-        use_sync = os.environ.get('EMAIL_SYNC_MODE', 'False') == 'True'
-        
-        if use_sync:
-            print(f"📧 Modo SÍNCRONO ativado para debug")
-            try:
-                send_verification_email_sync(user, token.token)
-            except Exception as e:
-                print(f"⚠️ Erro no envio síncrono, mas cadastro foi criado: {e}")
-        else:
-            send_verification_email_async(user, token.token)
+        # SEMPRE usar modo síncrono para garantir que o email seja enviado
+        # Em produção, threads daemon podem ser terminadas antes de completar
+        print(f"📧 Enviando email de verificação para: {user.email}")
+        try:
+            send_verification_email_sync(user, token.token)
+        except Exception as e:
+            print(f"⚠️ Erro no envio de email, mas cadastro foi criado: {e}")
+            import traceback
+            traceback.print_exc()
         
         headers = self.get_success_headers(serializer.data)
         return Response({
