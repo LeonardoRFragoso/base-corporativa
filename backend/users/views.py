@@ -10,6 +10,7 @@ from .serializers import WishlistItemSerializer
 from .models import WishlistItem, EmailVerificationToken, PasswordResetToken
 from catalog.models import Product
 from .email_utils import send_verification_email, send_password_reset_email
+from .tasks import send_verification_email_async, send_password_reset_email_async
 from django.shortcuts import get_object_or_404
 
 
@@ -23,16 +24,9 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
-        # Criar token de verificação e enviar email
+        # Criar token de verificação e enviar email em background
         token = EmailVerificationToken.objects.create(user=user)
-        try:
-            send_verification_email(user, token.token)
-            print(f"✅ Email de verificação enviado para: {user.email}")
-        except Exception as e:
-            # Log do erro mas não falha o registro
-            print(f"❌ Erro ao enviar email de verificação para {user.email}: {e}")
-            import traceback
-            traceback.print_exc()
+        send_verification_email_async(user, token.token)
         
         headers = self.get_success_headers(serializer.data)
         return Response({
@@ -82,10 +76,8 @@ class PasswordResetRequestView(APIView):
             PasswordResetToken.objects.filter(user=user, used=False).update(used=True)
             # Criar novo token
             token = PasswordResetToken.objects.create(user=user)
-            try:
-                send_password_reset_email(user, token.token)
-            except Exception as e:
-                print(f"Erro ao enviar email de reset: {e}")
+            # Enviar email em background
+            send_password_reset_email_async(user, token.token)
         except User.DoesNotExist:
             pass  # Não revelar se o email existe ou não
         
