@@ -82,6 +82,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = self.get_object()
         img = get_object_or_404(ProductImage, id=image_id, product=product)
         if img.image:
-            img.image.delete(save=False)
+            try:
+                img.image.delete(save=False)
+            except Exception as e:
+                # Log error but continue with deletion
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Failed to delete image file {img.image.name}: {e}")
         img.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

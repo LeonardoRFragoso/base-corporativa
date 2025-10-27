@@ -130,14 +130,21 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         return product
 
     def update(self, instance, validated_data):
-        variants_data = validated_data.pop('variants', None)
-        bp = validated_data.get('base_price')
-        if isinstance(bp, str):
-            try:
-                validated_data['base_price'] = Decimal(bp.replace('.', '').replace(',', '.'))
-            except InvalidOperation:
-                raise serializers.ValidationError({'base_price': 'Número inválido'})
-        instance = super().update(instance, validated_data)
+        try:
+            variants_data = validated_data.pop('variants', None)
+            bp = validated_data.get('base_price')
+            if isinstance(bp, str):
+                try:
+                    validated_data['base_price'] = Decimal(bp.replace('.', '').replace(',', '.'))
+                except InvalidOperation:
+                    raise serializers.ValidationError({'base_price': 'Número inválido'})
+            instance = super().update(instance, validated_data)
+        except Exception as e:
+            # Log the error for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error updating product {instance.id}: {e}", exc_info=True)
+            raise
 
         if variants_data is not None:
             existing = {v.id: v for v in instance.variants.all()}
