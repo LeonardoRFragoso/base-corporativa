@@ -232,12 +232,13 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', '')
-    # Set location to include bucket name in the path
-    AWS_LOCATION = ''  # Empty to use root of bucket
+    AWS_LOCATION = 'base-corporativa-media'  # Prefix for all uploads
+    AWS_S3_USE_SSL = True  # Force HTTPS
+    AWS_S3_VERIFY = True  # Verify SSL certificates
     
     if AWS_S3_CUSTOM_DOMAIN:
-        # Custom domain already points to the bucket, so we need to add bucket name to path
-        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STORAGE_BUCKET_NAME}/"
+        # Use custom domain with HTTPS
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
     
