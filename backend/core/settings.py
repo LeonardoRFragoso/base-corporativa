@@ -232,8 +232,12 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', '')
+    # Set location to include bucket name in the path
+    AWS_LOCATION = ''  # Empty to use root of bucket
+    
     if AWS_S3_CUSTOM_DOMAIN:
-        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+        # Custom domain already points to the bucket, so we need to add bucket name to path
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STORAGE_BUCKET_NAME}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
     
