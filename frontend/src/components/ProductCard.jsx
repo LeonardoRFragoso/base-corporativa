@@ -67,17 +67,17 @@ export default function ProductCard({ product }) {
   }
   
   return (
-    <div className="group bg-white rounded-lg shadow-soft hover:shadow-medium transition-all duration-300 overflow-hidden hover:-translate-y-1">
+    <div className="group bg-white rounded-2xl shadow-soft hover:shadow-strong transition-all duration-500 overflow-hidden hover:-translate-y-2 border border-neutral-100 hover:border-primary-200">
         {/* Image */}
         <div 
-          className="aspect-square bg-neutral-100 overflow-hidden relative cursor-pointer"
+          className="aspect-square bg-gradient-to-br from-neutral-50 to-neutral-100 overflow-hidden relative cursor-pointer"
           onClick={() => navigate(`/product/${product.id}`)}
         >
           {image ? (
             <img 
               src={image} 
               alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-neutral-400">
@@ -89,23 +89,23 @@ export default function ProductCard({ product }) {
           
           {/* Stock badge */}
           {!hasStock && (
-            <div className="absolute top-2 left-2 bg-error-500 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute top-3 left-3 bg-gradient-to-r from-error-600 to-error-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-medium backdrop-blur-sm">
               Esgotado
             </div>
           )}
           
           {/* Category badge */}
           {product.category && (
-            <div className="absolute top-2 right-2 bg-primary-500/90 text-white text-xs px-2 py-1 rounded backdrop-blur-sm font-medium">
+            <div className="absolute top-3 right-3 bg-gradient-to-r from-bronze-700 to-bronze-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-medium backdrop-blur-sm">
               {product.category.name}
             </div>
           )}
         </div>
         
         {/* Content */}
-        <div className="p-4">
+        <div className="p-5">
           <h3 
-            className="font-medium text-primary-950 mb-2 line-clamp-2 group-hover:text-primary-800 transition-colors cursor-pointer"
+            className="font-semibold text-lg text-primary-950 mb-2 line-clamp-2 group-hover:text-bronze-700 transition-colors cursor-pointer"
             onClick={() => navigate(`/product/${product.id}`)}
           >
             {product.name}
@@ -113,58 +113,67 @@ export default function ProductCard({ product }) {
           
           {/* Description preview */}
           {product.description && (
-            <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
+            <p className="text-sm text-neutral-500 mb-3 line-clamp-2 leading-relaxed">
               {product.description}
             </p>
           )}
           
           {/* Fabric type */}
           {product.fabric_type && (
-            <div className="text-xs text-neutral-500 mb-2">
+            <div className="inline-flex items-center text-xs text-neutral-600 bg-neutral-50 px-2 py-1 rounded-lg mb-3">
+              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
               {product.fabric_type}
             </div>
           )}
           
           {/* Price and stock info */}
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-primary-950">
-              R$ {Number(price).toFixed(2)}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-col">
+              <span className="text-xs text-neutral-500 mb-0.5">A partir de</span>
+              <div className="text-2xl font-bold text-primary-950">
+                R$ {Number(price).toFixed(2)}
+              </div>
             </div>
             {hasStock && totalStock <= 5 && (
-              <div className="text-xs text-warning-600">
-                Últimas {totalStock} unidades
+              <div className="flex items-center gap-1 text-xs font-semibold text-warning-700 bg-warning-50 px-2 py-1 rounded-lg">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                Últimas {totalStock}
               </div>
             )}
           </div>
           
           {/* Available sizes (interactive) */}
           {product.variants && product.variants.length > 0 && availableSizes.length > 0 && (
-            <div className="mt-3">
+            <div className="mt-3 mb-4">
+              <label className="text-xs font-semibold text-neutral-700 mb-2 block">Tamanhos disponíveis:</label>
               <div className="flex flex-wrap gap-2">
                 {availableSizes.map(size => (
                   <button
                     key={size}
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setSelectedSize(size) }}
-                    className={`text-xs px-2 py-1 rounded border transition-colors ${
+                    className={`text-sm font-semibold px-3 py-1.5 rounded-lg border-2 transition-all ${
                       selectedSize === size
-                        ? 'border-primary-950 bg-primary-950 text-white'
-                        : 'border-neutral-300 text-neutral-700 hover:border-primary-950'
+                        ? 'border-primary-950 bg-primary-950 text-white shadow-medium transform scale-105'
+                        : 'border-neutral-300 text-neutral-700 hover:border-primary-500 hover:bg-primary-50'
                     }`}
                   >
                     {size}
                   </button>
                 ))}
               </div>
-              <div className="mt-1 text-[11px] text-neutral-500">Selecione o tamanho antes de comprar</div>
             </div>
           )}
           
           {/* Add to Cart Button */}
-          <div className="mt-4 flex flex-col sm:flex-row gap-2">
+          <div className="mt-4 flex flex-col sm:flex-row gap-2.5">
             <Link 
               to={`/product/${product.id}`}
-              className="flex-1 text-center px-3 py-2 border border-primary-500 text-primary-700 text-sm font-medium rounded-lg hover:bg-primary-50 transition-all duration-200"
+              className="flex-1 text-center px-4 py-2.5 border-2 border-primary-500 text-primary-700 text-sm font-semibold rounded-xl hover:bg-primary-50 hover:border-primary-600 transition-all duration-200 transform hover:scale-105"
               onClick={(e) => e.stopPropagation()}
             >
               Ver detalhes
@@ -174,10 +183,10 @@ export default function ProductCard({ product }) {
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 shadow-soft ${
                   isAdding 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-bronze-800 text-white hover:bg-bronze-700 hover:scale-105'
+                    ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-medium' 
+                    : 'bg-gradient-to-r from-bronze-800 to-bronze-600 text-white hover:from-bronze-700 hover:to-bronze-500 hover:shadow-medium transform hover:scale-105'
                 }`}
               >
                 {isAdding ? (
@@ -199,7 +208,7 @@ export default function ProductCard({ product }) {
             ) : (
               <button
                 disabled
-                className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-neutral-200 text-neutral-500 cursor-not-allowed"
+                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl bg-neutral-100 text-neutral-400 cursor-not-allowed border-2 border-neutral-200"
               >
                 Esgotado
               </button>
