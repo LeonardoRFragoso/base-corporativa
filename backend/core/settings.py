@@ -232,13 +232,14 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', '')
-    AWS_LOCATION = 'base-corporativa-media'  # Prefix for all uploads
+    AWS_LOCATION = ''  # Empty - don't use prefix, bucket name is in URL
     AWS_S3_USE_SSL = True  # Force HTTPS
     AWS_S3_VERIFY = True  # Verify SSL certificates
     
+    # For Cloudflare R2 with Public Development URL
+    # The URL format is: https://pub-xxx.r2.dev/bucket-name/path/to/file
     if AWS_S3_CUSTOM_DOMAIN:
-        # Use custom domain with HTTPS
-        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STORAGE_BUCKET_NAME}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
     
