@@ -339,7 +339,7 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-8 sm:sticky sm:top-24">
+            <div className="bg-white rounded-2xl shadow-xl p-8 sm:sticky sm:top-28">
               <h2 className="text-2xl font-bold text-neutral-900 mb-6">Resumo do pedido</h2>
 
               {/* Shipping: CEP and quotes */}
