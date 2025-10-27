@@ -33,13 +33,42 @@ class Product(models.Model):
     def delete(self, *args, **kwargs):
         """
         Override delete to handle protected references gracefully.
-        Remove from carts before deleting the product.
+        Remove all related objects before deleting the product.
         """
-        # Remove product from all carts before deletion
+        # 1. Remove product from all carts
         from cart.models import CartItem
         CartItem.objects.filter(product_variant__product=self).delete()
         
-        # Now delete the product normally
+        # 2. Remove from wishlists
+        from users.models import WishlistItem
+        WishlistItem.objects.filter(product=self).delete()
+        
+        # 3. Handle OrderItems with PROTECT constraint
+        # Set variant to NULL instead of deleting orders
+        from orders.models import OrderItem
+        OrderItem.objects.filter(variant__product=self).update(variant=None)
+        
+        # 4. Delete product images and their files
+        for image in self.images.all():
+            if image.image:
+                try:
+                    image.image.delete(save=False)
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(f"Failed to delete image file {image.image.name}: {e}")
+            image.delete()
+        
+        # 5. Delete catalog PDF if exists
+        if self.catalog_pdf:
+            try:
+                self.catalog_pdf.delete(save=False)
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Failed to delete PDF file {self.catalog_pdf.name}: {e}")
+        
+        # Now delete the product (variants and reviews cascade automatically)
         super().delete(*args, **kwargs)
 
 
