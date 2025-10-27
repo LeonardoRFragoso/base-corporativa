@@ -297,6 +297,9 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'BASE CORPORATIVA <nor
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_TIMEOUT = 30  # Timeout de 30 segundos para conexões SMTP
 
+# SendGrid Configuration
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+
 # Logging Configuration
 LOGGING = {
     'version': 1,
