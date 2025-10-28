@@ -36,6 +36,20 @@ export default function Cart() {
   // Guest buyer basic info (for non-authenticated checkout)
   const [guestInfo, setGuestInfo] = useState({ first_name: '', last_name: '', email: '' })
   const [guestError, setGuestError] = useState('')
+  // Guest shipping address (for non-authenticated checkout)
+  const [guestAddr, setGuestAddr] = useState({
+    shipping_first_name: '',
+    shipping_last_name: '',
+    shipping_phone: '',
+    shipping_street: '',
+    shipping_number: '',
+    shipping_complement: '',
+    shipping_neighborhood: '',
+    shipping_city: '',
+    shipping_state: '',
+    shipping_zip: ''
+  })
+  const [guestAddrError, setGuestAddrError] = useState('')
 
   const shipping = selectedQuote ? Number(selectedQuote.price) : 0
   const discount = coupon ? Math.min(
@@ -130,6 +144,18 @@ export default function Cart() {
     if (n.length <= 5) return n
     return `${n.slice(0,5)}-${n.slice(5)}`
   }
+  function onlyNumbers(v) { return (v || '').replace(/\D/g, '') }
+  function formatPhoneBR(v) {
+    const n = onlyNumbers(v).slice(0, 11)
+    if (n.length <= 2) return n
+    if (n.length <= 6) return `(${n.slice(0,2)}) ${n.slice(2)}`
+    if (n.length <= 10) return `(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}`
+    // 11 digits (mobile)
+    return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`
+  }
+  function normalizeUF(v) {
+    return (v || '').replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 2)
+  }
 
   async function calculateShipping() {
     setLoadingQuotes(true)
@@ -171,6 +197,7 @@ export default function Cart() {
     
     try {
       setGuestError('')
+      setGuestAddrError('')
       if (!isAuthenticated) {
         const { first_name, last_name, email } = guestInfo
         if (!first_name || !last_name || !email) {
@@ -181,6 +208,35 @@ export default function Cart() {
         // Validação simples de email
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           setGuestError('Informe um e-mail válido.')
+          setIsProcessing(false)
+          return
+        }
+        // Validações de endereço do convidado
+        const requiredAddr = ['shipping_street','shipping_number','shipping_city','shipping_state']
+        for (const k of requiredAddr) {
+          if (!guestAddr[k]) {
+            setGuestAddrError('Preencha rua, número, cidade e estado para entrega.')
+            setIsProcessing(false)
+            return
+          }
+        }
+        // CEP: usar o campo geral do frete (zip) se convidado não informou shipping_zip
+        const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
+        if (zipNorm.length !== 8) {
+          setGuestAddrError('Informe um CEP válido (8 dígitos) no endereço ou no cálculo de frete.')
+          setIsProcessing(false)
+          return
+        }
+        // UF deve ter 2 letras
+        if (!/^[A-Z]{2}$/.test(normalizeUF(guestAddr.shipping_state))) {
+          setGuestAddrError('Informe a UF com 2 letras (ex: RJ, SP).')
+          setIsProcessing(false)
+          return
+        }
+        // Telefone opcional, mas se informado deve ter 10 ou 11 dígitos
+        const phoneDigits = onlyNumbers(guestAddr.shipping_phone)
+        if (phoneDigits && !(phoneDigits.length === 10 || phoneDigits.length === 11)) {
+          setGuestAddrError('Telefone inválido. Use DDD + número (10 ou 11 dígitos).')
           setIsProcessing(false)
           return
         }
@@ -207,6 +263,18 @@ export default function Cart() {
         checkoutData.first_name = guestInfo.first_name
         checkoutData.last_name = guestInfo.last_name
         checkoutData.email = guestInfo.email
+        // shipping fields
+        const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
+        checkoutData.shipping_first_name = guestAddr.shipping_first_name || guestInfo.first_name
+        checkoutData.shipping_last_name = guestAddr.shipping_last_name || guestInfo.last_name
+        checkoutData.shipping_phone = guestAddr.shipping_phone || ''
+        checkoutData.shipping_street = guestAddr.shipping_street
+        checkoutData.shipping_number = guestAddr.shipping_number
+        checkoutData.shipping_complement = guestAddr.shipping_complement
+        checkoutData.shipping_neighborhood = guestAddr.shipping_neighborhood
+        checkoutData.shipping_city = guestAddr.shipping_city
+        checkoutData.shipping_state = normalizeUF(guestAddr.shipping_state)
+        checkoutData.shipping_zip = formatZip(zipNorm)
       }
       if (coupon) {
         checkoutData.coupon_code = coupon.code
@@ -495,6 +563,78 @@ export default function Cart() {
                     className="mt-3 w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
                   />
                   {guestError && <div className="text-sm text-error-600 mt-2 font-medium">{guestError}</div>}
+                </div>
+              )}
+
+              {!isAuthenticated && (
+                <div className="mb-6">
+                  <label className="block text-base font-semibold text-neutral-700 mb-2">Endereço de entrega</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Rua"
+                      value={guestAddr.shipping_street}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_street: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Número"
+                      value={guestAddr.shipping_number}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_number: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <input
+                      type="text"
+                      placeholder="Complemento"
+                      value={guestAddr.shipping_complement}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_complement: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Bairro"
+                      value={guestAddr.shipping_neighborhood}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_neighborhood: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <input
+                      type="text"
+                      placeholder="Cidade"
+                      value={guestAddr.shipping_city}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_city: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Estado (UF)"
+                      value={guestAddr.shipping_state}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_state: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="CEP"
+                      value={formatZip(guestAddr.shipping_zip)}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_zip: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Telefone (opcional)"
+                      value={guestAddr.shipping_phone}
+                      onChange={(e) => setGuestAddr(v => ({...v, shipping_phone: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
+                  {guestAddrError && <div className="text-sm text-error-600 mt-2 font-medium">{guestAddrError}</div>}
                 </div>
               )}
 
