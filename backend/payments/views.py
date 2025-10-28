@@ -215,8 +215,9 @@ def create_preference(request):
             "notification_url": settings.MERCADOPAGO_NOTIFICATION_URL,
             "statement_descriptor": "BASE CORPORATIVA",
             "external_reference": order.external_reference,
-            "binary_mode": True,  # Retorna direto para success/failure sem pending
-            "purpose": "wallet_purchase"  # Indica que é compra de e-commerce
+            "binary_mode": False,  # False permite mais métodos de pagamento
+            "marketplace": None,  # Não é marketplace
+            "marketplace_fee": 0  # Sem taxa de marketplace
         }
         
         # Criar preferência no Mercado Pago
@@ -258,6 +259,125 @@ def create_preference(request):
             )
             
     except Exception as e:
+        return Response(
+            {'error': f'Erro interno: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_card_payment(request):
+    """
+    Criar pagamento com cartão de crédito (Checkout Transparente)
+    """
+    try:
+        # Validar dados obrigatórios
+        required_fields = ['token', 'installments', 'payment_method_id', 'email']
+        for field in required_fields:
+            if not request.data.get(field):
+                return Response(
+                    {'error': f'Campo obrigatório ausente: {field}'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        # Criar pedido
+        items_data = request.data.get('items', [])
+        if not items_data:
+            return Response({'error': 'Carrinho vazio'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Calcular total
+        total_items = sum(item['price'] * item['qty'] for item in items_data)
+        shipping_price = request.data.get('shipping_price', 0)
+        discount_amount = request.data.get('discount_amount', 0)
+        total_amount = total_items + float(shipping_price) - float(discount_amount)
+        
+        # Criar Order
+        order = Order.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            guest_email=request.data.get('email') if not request.user.is_authenticated else None,
+            guest_first_name=request.data.get('first_name', ''),
+            guest_last_name=request.data.get('last_name', ''),
+            status='pending',
+            payment_method='credit_card',
+            shipping_cost=shipping_price,
+            total_amount=total_amount
+        )
+        
+        # Criar OrderItems
+        for item_data in items_data:
+            OrderItem.objects.create(
+                order=order,
+                product_name=item_data['name'],
+                quantity=item_data['qty'],
+                price=item_data['price'],
+                size=item_data.get('size', ''),
+                color=item_data.get('color', '')
+            )
+        
+        order.external_reference = f"ORDER-{order.id}"
+        order.save(update_fields=["external_reference"])
+        
+        # Preparar dados do pagamento
+        payment_data = {
+            "transaction_amount": float(total_amount),
+            "token": request.data.get('token'),
+            "description": f"Pedido #{order.id} - BASE CORPORATIVA",
+            "installments": int(request.data.get('installments', 1)),
+            "payment_method_id": request.data.get('payment_method_id'),
+            "payer": {
+                "email": request.data.get('email'),
+                "first_name": request.data.get('first_name', 'Cliente'),
+                "last_name": request.data.get('last_name', ''),
+            },
+            "external_reference": order.external_reference,
+            "notification_url": settings.MERCADOPAGO_NOTIFICATION_URL,
+            "statement_descriptor": "BASE CORPORATIVA"
+        }
+        
+        # Adicionar CPF se fornecido
+        cpf = request.data.get('cpf', '')
+        if cpf:
+            cpf_clean = ''.join(filter(str.isdigit, cpf))
+            if len(cpf_clean) == 11:
+                payment_data["payer"]["identification"] = {
+                    "type": "CPF",
+                    "number": cpf_clean
+                }
+        
+        # Processar pagamento
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Processando pagamento com cartão para pedido {order.id}")
+        
+        payment_response = sdk.payment().create(payment_data)
+        payment = payment_response.get("response", {})
+        
+        if payment_response.get("status") == 201:
+            # Atualizar pedido com ID do pagamento
+            order.mercadopago_payment_id = payment.get("id")
+            order.status = payment.get("status", "pending")
+            order.save(update_fields=["mercadopago_payment_id", "status"])
+            
+            return Response({
+                'success': True,
+                'payment_id': payment.get("id"),
+                'status': payment.get("status"),
+                'status_detail': payment.get("status_detail"),
+                'order_id': order.id,
+                'external_reference': order.external_reference
+            })
+        else:
+            error_msg = payment.get("message", "Erro ao processar pagamento")
+            logger.error(f"Erro MP: {error_msg}")
+            return Response(
+                {'error': error_msg, 'details': payment}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erro ao processar pagamento: {str(e)}")
         return Response(
             {'error': f'Erro interno: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
