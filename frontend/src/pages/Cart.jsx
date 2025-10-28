@@ -699,14 +699,15 @@ export default function Cart() {
                 </div>
               </div>
 
-              <div className="mt-8 space-y-3">
+              <div className="mt-8 space-y-4">
+                {/* Botão PIX - Principal */}
                 <button 
                   onClick={handleCheckoutPix}
                   disabled={isProcessing}
-                  className={`w-full py-5 px-6 rounded-xl font-bold text-lg transition-all ${
+                  className={`w-full py-6 px-6 rounded-xl transition-all ${
                     isProcessing 
                       ? 'bg-neutral-400 text-neutral-600 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 hover:scale-105 shadow-xl hover:shadow-2xl'
+                      : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 hover:scale-[1.02] shadow-xl hover:shadow-2xl'
                   }`}
                 >
                   {isProcessing ? (
@@ -718,29 +719,36 @@ export default function Cart() {
                       Processando...
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center gap-2">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Pagar com PIX
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="flex items-center gap-3">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-xl font-bold">Pagar com PIX</span>
+                      </div>
+                      <span className="text-sm font-normal opacity-90">Pagamento instantâneo via QR Code</span>
                     </div>
                   )}
                 </button>
 
+                {/* Botão Outros Métodos - Secundário */}
                 <button 
                   onClick={handleCheckout}
                   disabled={isProcessing}
-                  className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all ${
+                  className={`w-full py-6 px-6 rounded-xl transition-all ${
                     isProcessing 
                       ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed' 
-                      : 'bg-white border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400'
+                      : 'bg-white border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400 hover:shadow-lg'
                   }`}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Outros métodos de pagamento
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-3">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                      <span className="text-lg font-bold">Cartão, Boleto e Mais</span>
+                    </div>
+                    <span className="text-sm font-normal text-neutral-600">Parcelamento em até 12x sem juros</span>
                   </div>
                 </button>
               </div>
