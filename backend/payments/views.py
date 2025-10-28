@@ -181,7 +181,6 @@ def create_preference(request):
         try:
             preference_response = sdk.preference().create(preference_data)
         except Exception as mp_error:
-            print(f"Erro ao criar preferência no MP: {str(mp_error)}")
             return Response(
                 {'error': 'Erro ao comunicar com Mercado Pago', 'details': str(mp_error)}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -196,16 +195,12 @@ def create_preference(request):
             })
         else:
             error_msg = preference_response.get("response", {}).get("message", "Erro desconhecido")
-            print(f"Erro MP - Status: {preference_response.get('status')}, Response: {preference_response}")
             return Response(
                 {'error': 'Erro ao criar preferência de pagamento', 'details': error_msg}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
             
     except Exception as e:
-        print(f"Erro geral no create_preference: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return Response(
             {'error': f'Erro interno: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -275,7 +270,6 @@ def webhook(request):
         return Response({'status': 'ok'})
         
     except Exception as e:
-        print(f"Erro no webhook: {str(e)}")
         return Response(
             {'error': str(e)}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
