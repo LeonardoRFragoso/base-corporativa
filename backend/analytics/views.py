@@ -180,32 +180,38 @@ def recent_orders(request):
     """
     Retorna pedidos recentes
     """
-    limit = int(request.GET.get('limit', 10))
-    
-    orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created_at')[:limit]
-    data = []
-    for order in orders:
+    try:
         try:
-            customer = ''
-            if getattr(order, 'user', None) and getattr(order.user, 'email', None):
-                customer = order.user.email
-            elif getattr(order, 'email', None):
-                customer = order.email
-            total = float(order.total_amount or 0)
-            items_count = getattr(order, 'items', None).count() if hasattr(order, 'items') else 0
-            created_iso = order.created_at.isoformat() if getattr(order, 'created_at', None) else ''
-            data.append({
-                'id': order.id,
-                'customer': customer,
-                'status': order.status,
-                'total': total,
-                'items_count': items_count,
-                'created_at': created_iso,
-            })
+            limit = int(request.GET.get('limit', 10))
         except Exception:
-            # Ignora pedidos com dados inválidos, evita 500 no dashboard
-            continue
-    return Response(data)
+            limit = 10
+        orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created_at')[:limit]
+        data = []
+        for order in orders:
+            try:
+                customer = ''
+                if getattr(order, 'user', None) and getattr(order.user, 'email', None):
+                    customer = order.user.email
+                elif getattr(order, 'email', None):
+                    customer = order.email
+                total = float(order.total_amount or 0)
+                items_count = getattr(order, 'items', None).count() if hasattr(order, 'items') else 0
+                created_iso = order.created_at.isoformat() if getattr(order, 'created_at', None) else ''
+                data.append({
+                    'id': order.id,
+                    'customer': customer,
+                    'status': order.status,
+                    'total': total,
+                    'items_count': items_count,
+                    'created_at': created_iso,
+                })
+            except Exception:
+                # Ignora pedidos com dados inválidos, evita 500 no dashboard
+                continue
+        return Response(data)
+    except Exception:
+        # Fallback hardening: nunca quebrar o dashboard
+        return Response([])
 
 
 @api_view(['GET'])
