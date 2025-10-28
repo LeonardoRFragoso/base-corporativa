@@ -35,7 +35,7 @@ export default function Cart() {
   const [couponError, setCouponError] = useState('')
 
   // Guest buyer basic info (for non-authenticated checkout)
-  const [guestInfo, setGuestInfo] = useState({ first_name: '', last_name: '', email: '' })
+  const [guestInfo, setGuestInfo] = useState({ first_name: '', last_name: '', email: '', cpf: '' })
   const [guestError, setGuestError] = useState('')
   // Guest shipping address (for non-authenticated checkout)
   const [guestAddr, setGuestAddr] = useState({
@@ -195,13 +195,19 @@ export default function Cart() {
     setGuestError('')
     setGuestAddrError('')
     if (!isAuthenticated) {
-      const { first_name, last_name, email } = guestInfo
+      const { first_name, last_name, email, cpf } = guestInfo
       if (!first_name || !last_name || !email) {
         setGuestError('Preencha nome, sobrenome e e-mail para concluir a compra.')
         return false
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setGuestError('Informe um e-mail válido.')
+        return false
+      }
+      // Validar CPF (11 dígitos)
+      const cpfDigits = cpf.replace(/\D/g, '')
+      if (!cpfDigits || cpfDigits.length !== 11) {
+        setGuestError('Informe um CPF válido (11 dígitos).')
         return false
       }
       const requiredAddr = ['shipping_street','shipping_number','shipping_city','shipping_state']
@@ -249,6 +255,7 @@ export default function Cart() {
       checkoutData.first_name = guestInfo.first_name
       checkoutData.last_name = guestInfo.last_name
       checkoutData.email = guestInfo.email
+      checkoutData.cpf = guestInfo.cpf.replace(/\D/g, '')
       const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
       checkoutData.shipping_first_name = guestAddr.shipping_first_name || guestInfo.first_name
       checkoutData.shipping_last_name = guestAddr.shipping_last_name || guestInfo.last_name
@@ -573,13 +580,27 @@ export default function Cart() {
                       className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
                     />
                   </div>
-                  <input
-                    type="email"
-                    placeholder="E-mail"
-                    value={guestInfo.email}
-                    onChange={(e) => setGuestInfo(v => ({...v, email: e.target.value}))}
-                    className="mt-3 w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                    <input
+                      type="email"
+                      placeholder="E-mail"
+                      value={guestInfo.email}
+                      onChange={(e) => setGuestInfo(v => ({...v, email: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="CPF (000.000.000-00)"
+                      value={guestInfo.cpf}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '')
+                        const formatted = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+                        setGuestInfo(v => ({...v, cpf: formatted}))
+                      }}
+                      maxLength={14}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
                   {guestError && <div className="text-sm text-error-600 mt-2 font-medium">{guestError}</div>}
                 </div>
               )}

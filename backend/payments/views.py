@@ -165,6 +165,16 @@ def create_preference(request):
             "email": payer_email
         }
         
+        # Adicionar CPF se fornecido (obrigatório para cartão de crédito)
+        cpf = request.data.get('cpf', '')
+        if cpf:
+            cpf_clean = ''.join(filter(str.isdigit, cpf))
+            if len(cpf_clean) == 11:
+                payer_data["identification"] = {
+                    "type": "CPF",
+                    "number": cpf_clean
+                }
+        
         # Adicionar telefone apenas se tiver dados
         phone_number = request.data.get('shipping_phone', '')
         if phone_number:
