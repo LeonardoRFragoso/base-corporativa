@@ -20,11 +20,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_authentication_classes(self):
         """
-        Remove authentication for public actions (list, retrieve)
-        to prevent 401 errors when invalid tokens are sent
+        Mantém autenticação disponível em todas as ações. Como a permissão é AllowAny,
+        usuários anônimos continuam acessando list/retrieve; quando um token é enviado,
+        o request.user será populado (permitindo diferenciar staff).
         """
-        if self.action in ['list', 'retrieve']:
-            return []
         return super().get_authentication_classes()
 
     def get_queryset(self):

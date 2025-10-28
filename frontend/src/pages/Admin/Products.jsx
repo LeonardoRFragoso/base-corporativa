@@ -19,21 +19,27 @@ const Products = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     if (user) {
       fetchProducts();
     }
-  }, [user]);
+  }, [user, page, pageSize]);
 
   const fetchProducts = async () => {
     try {
       const [productsRes, variantsRes] = await Promise.all([
-        api.get(`/api/products/`),
+        api.get(`/api/products/`, { params: { page, page_size: pageSize } }),
         api.get(`/api/products/variants/`)
       ]);
 
-      setProducts(productsRes.data);
+      const pData = productsRes.data;
+      const list = Array.isArray(pData) ? pData : (pData.results || []);
+      setProducts(list);
+      setTotalCount(Number(pData.count ?? list.length));
       setVariants(variantsRes.data);
       setLoading(false);
     } catch (error) {
@@ -76,6 +82,33 @@ const Products = () => {
     
     return matchesSearch && matchesStock && matchesActive && matchesCategory;
   });
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const Pagination = () => (
+    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-lg">
+      <div className="text-sm text-gray-600">Total: {totalCount} produtos</div>
+      <div className="flex items-center gap-2">
+        <button
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page <= 1}
+        >Anterior</button>
+        <span className="text-sm text-gray-700">Página {page} de {totalPages}</span>
+        <button
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page >= totalPages}
+        >Próxima</button>
+        <select
+          className="ml-2 border rounded px-2 py-1 text-sm"
+          value={pageSize}
+          onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+        >
+          {[10,20,50].map(s => <option key={s} value={s}>{s}/página</option>)}
+        </select>
+      </div>
+    </div>
+  );
 
   const ProductModal = ({ product, onClose }) => {
     if (!product) return null;
@@ -394,6 +427,17 @@ const Products = () => {
               </div>
             );
           })}
+        </div>
+
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">Nenhum produto encontrado</p>
+          </div>
+        )}
+
+        <div className="mt-4">
+          <Pagination />
         </div>
 
         {filteredProducts.length === 0 && (
