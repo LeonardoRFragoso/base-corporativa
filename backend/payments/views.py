@@ -214,7 +214,9 @@ def create_preference(request):
             },
             "notification_url": settings.MERCADOPAGO_NOTIFICATION_URL,
             "statement_descriptor": "BASE CORPORATIVA",
-            "external_reference": order.external_reference
+            "external_reference": order.external_reference,
+            "binary_mode": True,  # Retorna direto para success/failure sem pending
+            "purpose": "wallet_purchase"  # Indica que é compra de e-commerce
         }
         
         # Criar preferência no Mercado Pago
