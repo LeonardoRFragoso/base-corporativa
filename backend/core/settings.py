@@ -207,6 +207,9 @@ CORS_ALLOWED_ORIGINS = [o for o in os.environ.get('CORS_ALLOWED_ORIGINS', '').sp
     os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
 ]
 
+# Allow credentials (cookies, authorization headers, etc.)
+CORS_ALLOW_CREDENTIALS = True
+
 # Allow custom headers used by the frontend
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-session-key',
