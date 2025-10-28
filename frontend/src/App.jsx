@@ -15,6 +15,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess.jsx'
 import CheckoutFailure from './pages/CheckoutFailure.jsx'
 import CheckoutPending from './pages/CheckoutPending.jsx'
 import CheckoutPix from './pages/CheckoutPix.jsx'
+import CheckoutCard from './pages/CheckoutCard.jsx'
 import Contact from './pages/Contact.jsx'
 import SizeGuide from './pages/SizeGuide.jsx'
 import Shipping from './pages/Shipping.jsx'
@@ -55,6 +56,7 @@ function App() {
           <Route path="/checkout/failure" element={<CheckoutFailure />} />
           <Route path="/checkout/pending" element={<CheckoutPending />} />
           <Route path="/checkout/pix" element={<CheckoutPix />} />
+          <Route path="/checkout/card" element={<CheckoutCard />} />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
           <Route path="/admin/products/new" element={<ProtectedRoute requireAdmin><AdminProductCreate /></ProtectedRoute>} />

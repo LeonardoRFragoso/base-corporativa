@@ -313,13 +313,8 @@ export default function Cart() {
     
     try {
       const checkoutData = buildCheckoutData()
-      const response = await api.post('/api/payments/create-preference/', checkoutData)
-      
-      if (response.data.init_point) {
-        window.location.href = response.data.init_point
-      } else {
-        throw new Error('Erro ao criar preferência de pagamento')
-      }
+      // Redirecionar para checkout de cartão transparente
+      navigate('/checkout/card', { state: { checkoutData } })
     } catch (error) {
       console.error('Erro no checkout:', error)
       alert('Erro ao processar checkout. Tente novamente.')
