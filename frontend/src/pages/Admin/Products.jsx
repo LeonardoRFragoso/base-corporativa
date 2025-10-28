@@ -1,34 +1,36 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../lib/api';
+import { formatBRL } from '../../utils/format';
+import { useAuth } from '../../context/AuthContext';
 import { Search, Filter, Package, AlertTriangle, CheckCircle, Edit, Trash2, Plus } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Usar baseURL do cliente `api` (controlado por VITE_API_BASE_URL)
 
 const Products = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
   const [variants, setVariants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (user) {
+      fetchProducts();
+    }
+  }, [user]);
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
       const [productsRes, variantsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/products/`),
-        axios.get(`${API_URL}/api/products/variants/`)
+        api.get(`/api/products/`),
+        api.get(`/api/products/variants/`)
       ]);
 
       setProducts(productsRes.data);
@@ -54,6 +56,8 @@ const Products = () => {
     return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100', label: 'Em Estoque' };
   };
 
+  const categories = Array.from(new Set(products.map(p => p.category_name).filter(Boolean)));
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,8 +69,12 @@ const Products = () => {
       (stockFilter === 'out' && stock === 0) ||
       (stockFilter === 'low' && stock > 0 && stock < 10) ||
       (stockFilter === 'ok' && stock >= 10);
+
+    const matchesActive = activeFilter === 'all' || (activeFilter === 'active' && product.is_active) || (activeFilter === 'inactive' && !product.is_active);
+
+    const matchesCategory = categoryFilter === 'all' || product.category_name === categoryFilter;
     
-    return matchesSearch && matchesStock;
+    return matchesSearch && matchesStock && matchesActive && matchesCategory;
   });
 
   const ProductModal = ({ product, onClose }) => {
@@ -280,7 +288,7 @@ const Products = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -302,6 +310,29 @@ const Products = () => {
                 <option value="ok">Em Estoque (≥10)</option>
                 <option value="low">Estoque Baixo (&lt;10)</option>
                 <option value="out">Sem Estoque</option>
+              </select>
+            </div>
+            <div>
+              <select
+                value={activeFilter}
+                onChange={(e) => setActiveFilter(e.target.value)}
+                className="w-full py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              >
+                <option value="all">Todos (Ativos/Inativos)</option>
+                <option value="active">Somente Ativos</option>
+                <option value="inactive">Somente Inativos</option>
+              </select>
+            </div>
+            <div>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              >
+                <option value="all">Todas as Categorias</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -345,7 +376,7 @@ const Products = () => {
                   
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-lg font-bold text-gray-900">
-                      R$ {Number(product.base_price).toFixed(2)}
+                      {formatBRL(product.base_price)}
                     </span>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.color}`}>
                       <status.icon className="w-3 h-3 mr-1" />

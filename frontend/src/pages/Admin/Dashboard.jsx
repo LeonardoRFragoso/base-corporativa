@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
+import { formatBRL, formatNumber } from '../../utils/format';
 import {
   TrendingUp,
   ShoppingCart,
@@ -12,10 +15,11 @@ import {
   Activity
 } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Usar o cliente compartilhado `api` que já resolve baseURL a partir de VITE_API_BASE_URL
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [salesChart, setSalesChart] = useState(null);
@@ -25,28 +29,19 @@ const Dashboard = () => {
   const [period, setPeriod] = useState('30');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
+    if (user) {
+      fetchDashboardData();
     }
-    
-    fetchDashboardData();
-  }, [period]);
+  }, [period, user]);
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      };
-
       const [overview, chart, products, stock, orders] = await Promise.all([
-        axios.get(`${API_URL}/api/analytics/dashboard/`, config),
-        axios.get(`${API_URL}/api/analytics/sales-chart/?period=${period}`, config),
-        axios.get(`${API_URL}/api/analytics/top-products/?limit=5`, config),
-        axios.get(`${API_URL}/api/analytics/low-stock/?threshold=5`, config),
-        axios.get(`${API_URL}/api/analytics/recent-orders/?limit=5`, config)
+        api.get(`/api/analytics/dashboard/`),
+        api.get(`/api/analytics/sales-chart/?period=${period}`),
+        api.get(`/api/analytics/top-products/?limit=5`),
+        api.get(`/api/analytics/low-stock/?threshold=5`),
+        api.get(`/api/analytics/recent-orders/?limit=5`)
       ]);
 
       setDashboardData(overview.data);
@@ -65,8 +60,12 @@ const Dashboard = () => {
     }
   };
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, color }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+  const StatCard = ({ icon: Icon, title, value, subtitle, color, to }) => (
+    <button
+      type="button"
+      onClick={() => to && navigate(to)}
+      className={`text-left w-full bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow ${to ? 'hover:ring-2 hover:ring-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300' : ''}`}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-500 text-sm font-medium">{title}</p>
@@ -77,15 +76,43 @@ const Dashboard = () => {
           <Icon className={`w-8 h-8 ${color}`} />
         </div>
       </div>
+    </button>
+  );
+
+  const EmptyState = ({ title, subtitle }) => (
+    <div className="h-64 flex flex-col items-center justify-center text-gray-400">
+      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">–</div>
+      <p className="font-medium">{title}</p>
+      {subtitle && <p className="text-sm mt-1">{subtitle}</p>}
+    </div>
+  );
+
+  const SkeletonCard = () => (
+    <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+      <div className="h-3 w-24 bg-gray-200 rounded" />
+      <div className="h-8 w-32 bg-gray-200 rounded mt-4" />
+      <div className="h-3 w-40 bg-gray-100 rounded mt-2" />
     </div>
   );
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando dashboard...</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <div className="h-8 w-72 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-56 bg-gray-100 rounded mt-3 animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow-md p-6 h-72 animate-pulse" />
+            <div className="bg-white rounded-lg shadow-md p-6 h-72 animate-pulse" />
+          </div>
         </div>
       </div>
     );
@@ -105,30 +132,34 @@ const Dashboard = () => {
           <StatCard
             icon={DollarSign}
             title="Vendas Totais"
-            value={`R$ ${dashboardData?.sales.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-            subtitle={`R$ ${dashboardData?.sales.last_30_days.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} nos últimos 30 dias`}
+            value={formatBRL(dashboardData?.sales?.total)}
+            subtitle={`${formatBRL(dashboardData?.sales?.last_30_days)} nos últimos 30 dias`}
             color="text-green-600"
+            to="/admin/orders?status=paid"
           />
           <StatCard
             icon={ShoppingCart}
             title="Pedidos"
-            value={dashboardData?.orders.total}
-            subtitle={`${dashboardData?.orders.pending} pendentes`}
+            value={formatNumber(dashboardData?.orders?.total)}
+            subtitle={`${formatNumber(dashboardData?.orders?.pending)} pendentes`}
             color="text-blue-600"
+            to="/admin/orders"
           />
           <StatCard
             icon={Package}
             title="Produtos"
-            value={dashboardData?.products.total}
-            subtitle={`${dashboardData?.products.total_stock} unidades em estoque`}
+            value={formatNumber(dashboardData?.products?.total)}
+            subtitle={`${formatNumber(dashboardData?.products?.total_stock)} unidades em estoque`}
             color="text-purple-600"
+            to="/admin/products"
           />
           <StatCard
             icon={Users}
             title="Clientes"
-            value={dashboardData?.customers.total}
-            subtitle={`${dashboardData?.customers.new_last_30_days} novos este mês`}
+            value={formatNumber(dashboardData?.customers?.total)}
+            subtitle={`${formatNumber(dashboardData?.customers?.new_last_30_days)} novos este mês`}
             color="text-amber-600"
+            to="/admin/orders"
           />
         </div>
 
@@ -151,21 +182,27 @@ const Dashboard = () => {
                 <option value="90">90 dias</option>
               </select>
             </div>
-            <div className="h-64 flex items-end justify-between space-x-2">
-              {salesChart?.sales.map((value, index) => {
-                const maxValue = Math.max(...salesChart.sales);
-                const height = (value / maxValue) * 100;
-                return (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div
-                      className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-md hover:from-amber-700 hover:to-amber-500 transition-colors cursor-pointer"
-                      style={{ height: `${height}%` }}
-                      title={`R$ ${value.toFixed(2)}`}
-                    ></div>
-                    <span className="text-xs text-gray-500 mt-2">{salesChart.labels[index]}</span>
-                  </div>
-                );
-              })}
+            <div className="h-64">
+              {salesChart && salesChart.sales && salesChart.sales.length > 0 ? (
+                <div className="h-full flex items-end justify-between space-x-2">
+                  {salesChart.sales.map((value, index) => {
+                    const maxValue = Math.max(...salesChart.sales);
+                    const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                    return (
+                      <div key={index} className="flex-1 flex flex-col items-center">
+                        <div
+                          className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-md hover:from-amber-700 hover:to-amber-500 transition-colors cursor-pointer"
+                          style={{ height: `${height}%` }}
+                          title={formatBRL(value)}
+                        ></div>
+                        <span className="text-xs text-gray-500 mt-2">{salesChart.labels[index]}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyState title="Nenhuma venda no período" subtitle="Tente outro intervalo de datas." />
+              )}
             </div>
           </div>
 
@@ -176,19 +213,23 @@ const Dashboard = () => {
               Produtos Mais Vendidos
             </h2>
             <div className="space-y-3">
-              {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                    <p className="text-sm text-gray-500">{product.quantity} unidades vendidas</p>
+              {topProducts && topProducts.length > 0 ? (
+                topProducts.map((product, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{product.name}</p>
+                      <p className="text-sm text-gray-500">{formatNumber(product.quantity)} unidades vendidas</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-green-600">
+                        {formatBRL(product.revenue)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-green-600">
-                      R$ {product.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <EmptyState title="Sem dados de produtos" subtitle="Nenhuma venda registrada." />
+              )}
             </div>
           </div>
         </div>
@@ -205,9 +246,7 @@ const Dashboard = () => {
               </span>
             </h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {lowStock.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Nenhum alerta de estoque</p>
-              ) : (
+              {lowStock && lowStock.length > 0 ? (
                 lowStock.map((item) => (
                   <div
                     key={item.id}
@@ -232,6 +271,8 @@ const Dashboard = () => {
                     </span>
                   </div>
                 ))
+              ) : (
+                <EmptyState title="Nenhum alerta de estoque" />
               )}
             </div>
           </div>
@@ -243,7 +284,7 @@ const Dashboard = () => {
               Pedidos Recentes
             </h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {recentOrders.map((order) => (
+              {recentOrders && recentOrders.length > 0 ? recentOrders.map((order) => (
                 <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
                   <div>
                     <p className="font-medium text-gray-900">Pedido #{order.id}</p>
@@ -252,7 +293,7 @@ const Dashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-gray-900">
-                      R$ {order.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      {formatBRL(order.total)}
                     </p>
                     <span
                       className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
@@ -267,7 +308,9 @@ const Dashboard = () => {
                     </span>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <EmptyState title="Sem pedidos recentes" />
+              )}
             </div>
           </div>
         </div>

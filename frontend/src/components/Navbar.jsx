@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
-import Logo from './Logo.jsx'
+import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -18,7 +18,9 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-bronze-400 rounded-lg blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-              <Logo 
+              <img 
+                src={logo}
+                alt="BASE CORPORATIVA"
                 className="relative h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
               />
             </div>
