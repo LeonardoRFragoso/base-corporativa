@@ -15,16 +15,16 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-bronze-400 rounded-lg blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               <img 
                 src={logo}
                 alt="BASE CORPORATIVA"
-                className="relative h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
+                className="relative h-9 sm:h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
               />
             </div>
-            <span className="text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 bg-clip-text text-transparent tracking-wide hidden sm:block">
+            <span className="text-base sm:text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 bg-clip-text text-transparent tracking-wide">
               BASE CORPORATIVA
             </span>
           </Link>

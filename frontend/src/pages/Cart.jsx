@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -7,6 +7,7 @@ import { api } from '../lib/api.js'
 export default function Cart() {
   const { items, update, remove, clear } = useCart()
   const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
   const subtotal = items.reduce((sum, i) => sum + Number(i.price) * i.qty, 0)
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
@@ -190,111 +191,128 @@ export default function Cart() {
     }
   }
 
-  const handleCheckout = async () => {
+  const validateCheckoutData = () => {
+    setGuestError('')
+    setGuestAddrError('')
+    if (!isAuthenticated) {
+      const { first_name, last_name, email } = guestInfo
+      if (!first_name || !last_name || !email) {
+        setGuestError('Preencha nome, sobrenome e e-mail para concluir a compra.')
+        return false
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setGuestError('Informe um e-mail válido.')
+        return false
+      }
+      const requiredAddr = ['shipping_street','shipping_number','shipping_city','shipping_state']
+      for (const k of requiredAddr) {
+        if (!guestAddr[k]) {
+          setGuestAddrError('Preencha rua, número, cidade e estado para entrega.')
+          return false
+        }
+      }
+      const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
+      if (zipNorm.length !== 8) {
+        setGuestAddrError('Informe um CEP válido (8 dígitos) no endereço ou no cálculo de frete.')
+        return false
+      }
+      if (!/^[A-Z]{2}$/.test(normalizeUF(guestAddr.shipping_state))) {
+        setGuestAddrError('Informe a UF com 2 letras (ex: RJ, SP).')
+        return false
+      }
+      const phoneDigits = onlyNumbers(guestAddr.shipping_phone)
+      if (phoneDigits && !(phoneDigits.length === 10 || phoneDigits.length === 11)) {
+        setGuestAddrError('Telefone inválido. Use DDD + número (10 ou 11 dígitos).')
+        return false
+      }
+    }
+    return true
+  }
+
+  const buildCheckoutData = () => {
+    const checkoutData = {
+      destination_zip: formatZip(zipNumbersOnly(zip)),
+      shipping_service_name: selectedQuote?.service_name || '',
+      shipping_carrier: selectedQuote?.carrier || '',
+      items: items.map(item => ({
+        name: item.name,
+        qty: item.qty,
+        price: Number(item.price),
+        size: item.size,
+        color: item.color
+      }))
+    }
+    if (isAuthenticated && selectedAddressId) {
+      checkoutData.address_id = selectedAddressId
+    }
+    if (!isAuthenticated) {
+      checkoutData.first_name = guestInfo.first_name
+      checkoutData.last_name = guestInfo.last_name
+      checkoutData.email = guestInfo.email
+      const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
+      checkoutData.shipping_first_name = guestAddr.shipping_first_name || guestInfo.first_name
+      checkoutData.shipping_last_name = guestAddr.shipping_last_name || guestInfo.last_name
+      checkoutData.shipping_phone = guestAddr.shipping_phone || ''
+      checkoutData.shipping_street = guestAddr.shipping_street
+      checkoutData.shipping_number = guestAddr.shipping_number
+      checkoutData.shipping_complement = guestAddr.shipping_complement
+      checkoutData.shipping_neighborhood = guestAddr.shipping_neighborhood
+      checkoutData.shipping_city = guestAddr.shipping_city
+      checkoutData.shipping_state = normalizeUF(guestAddr.shipping_state)
+      checkoutData.shipping_zip = formatZip(zipNorm)
+    }
+    if (coupon) {
+      checkoutData.coupon_code = coupon.code
+      checkoutData.discount_amount = Number(discount)
+    }
+    if (selectedQuote && Number(selectedQuote.price) > 0) {
+      checkoutData.items.push({ name: 'Frete', qty: 1, price: Number(selectedQuote.price) })
+    }
+    return checkoutData
+  }
+
+  const handleCheckoutPix = async () => {
     if (isProcessing) return
+    if (!validateCheckoutData()) {
+      return
+    }
     
     setIsProcessing(true)
     
     try {
-      setGuestError('')
-      setGuestAddrError('')
-      if (!isAuthenticated) {
-        const { first_name, last_name, email } = guestInfo
-        if (!first_name || !last_name || !email) {
-          setGuestError('Preencha nome, sobrenome e e-mail para concluir a compra.')
-          setIsProcessing(false)
-          return
-        }
-        // Validação simples de email
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          setGuestError('Informe um e-mail válido.')
-          setIsProcessing(false)
-          return
-        }
-        // Validações de endereço do convidado
-        const requiredAddr = ['shipping_street','shipping_number','shipping_city','shipping_state']
-        for (const k of requiredAddr) {
-          if (!guestAddr[k]) {
-            setGuestAddrError('Preencha rua, número, cidade e estado para entrega.')
-            setIsProcessing(false)
-            return
-          }
-        }
-        // CEP: usar o campo geral do frete (zip) se convidado não informou shipping_zip
-        const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
-        if (zipNorm.length !== 8) {
-          setGuestAddrError('Informe um CEP válido (8 dígitos) no endereço ou no cálculo de frete.')
-          setIsProcessing(false)
-          return
-        }
-        // UF deve ter 2 letras
-        if (!/^[A-Z]{2}$/.test(normalizeUF(guestAddr.shipping_state))) {
-          setGuestAddrError('Informe a UF com 2 letras (ex: RJ, SP).')
-          setIsProcessing(false)
-          return
-        }
-        // Telefone opcional, mas se informado deve ter 10 ou 11 dígitos
-        const phoneDigits = onlyNumbers(guestAddr.shipping_phone)
-        if (phoneDigits && !(phoneDigits.length === 10 || phoneDigits.length === 11)) {
-          setGuestAddrError('Telefone inválido. Use DDD + número (10 ou 11 dígitos).')
-          setIsProcessing(false)
-          return
-        }
-      }
-      // Preparar dados do carrinho para o Mercado Pago
-      const checkoutData = {
-        destination_zip: formatZip(zipNumbersOnly(zip)),
-        shipping_service_name: selectedQuote?.service_name || '',
-        shipping_carrier: selectedQuote?.carrier || '',
-        items: [
-          ...items.map(item => ({
-          name: item.name,
-          qty: item.qty,
-          price: Number(item.price),
-          size: item.size,
-          color: item.color
-        })),
-        ]
-      }
-      if (isAuthenticated && selectedAddressId) {
-        checkoutData.address_id = selectedAddressId
-      }
-      if (!isAuthenticated) {
-        checkoutData.first_name = guestInfo.first_name
-        checkoutData.last_name = guestInfo.last_name
-        checkoutData.email = guestInfo.email
-        // shipping fields
-        const zipNorm = zipNumbersOnly(guestAddr.shipping_zip || zip)
-        checkoutData.shipping_first_name = guestAddr.shipping_first_name || guestInfo.first_name
-        checkoutData.shipping_last_name = guestAddr.shipping_last_name || guestInfo.last_name
-        checkoutData.shipping_phone = guestAddr.shipping_phone || ''
-        checkoutData.shipping_street = guestAddr.shipping_street
-        checkoutData.shipping_number = guestAddr.shipping_number
-        checkoutData.shipping_complement = guestAddr.shipping_complement
-        checkoutData.shipping_neighborhood = guestAddr.shipping_neighborhood
-        checkoutData.shipping_city = guestAddr.shipping_city
-        checkoutData.shipping_state = normalizeUF(guestAddr.shipping_state)
-        checkoutData.shipping_zip = formatZip(zipNorm)
-      }
-      if (coupon) {
-        checkoutData.coupon_code = coupon.code
-        checkoutData.discount_amount = Number(discount)
-      }
-      // Add shipping as an item if selected
-      if (selectedQuote && Number(selectedQuote.price) > 0) {
-        checkoutData.items.push({ name: 'Frete', qty: 1, price: Number(selectedQuote.price) })
-      }
+      const checkoutData = buildCheckoutData()
+      const response = await api.post('/api/payments/create-pix/', checkoutData)
       
-      // Criar preferência no Mercado Pago
+      if (response.data.qr_code) {
+        navigate('/checkout/pix', { state: { pixData: response.data } })
+      } else {
+        throw new Error('Erro ao criar pagamento PIX')
+      }
+    } catch (error) {
+      console.error('Erro no checkout PIX:', error)
+      alert('Erro ao processar pagamento PIX. Tente novamente.')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleCheckout = async () => {
+    if (isProcessing) return
+    if (!validateCheckoutData()) {
+      return
+    }
+    
+    setIsProcessing(true)
+    
+    try {
+      const checkoutData = buildCheckoutData()
       const response = await api.post('/api/payments/create-preference/', checkoutData)
       
       if (response.data.init_point) {
-        // Redirecionar para o checkout do Mercado Pago (PRODUÇÃO)
         window.location.href = response.data.init_point
       } else {
         throw new Error('Erro ao criar preferência de pagamento')
       }
-      
     } catch (error) {
       console.error('Erro no checkout:', error)
       alert('Erro ao processar checkout. Tente novamente.')
@@ -681,32 +699,51 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button 
-                onClick={handleCheckout}
-                disabled={isProcessing}
-                className={`w-full mt-8 py-5 px-6 rounded-xl font-bold text-lg transition-all ${
-                  isProcessing 
-                    ? 'bg-neutral-400 text-neutral-600 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700 hover:scale-105 shadow-xl hover:shadow-2xl'
-                }`}
-              >
-                {isProcessing ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processando...
-                  </div>
-                ) : (
+              <div className="mt-8 space-y-3">
+                <button 
+                  onClick={handleCheckoutPix}
+                  disabled={isProcessing}
+                  className={`w-full py-5 px-6 rounded-xl font-bold text-lg transition-all ${
+                    isProcessing 
+                      ? 'bg-neutral-400 text-neutral-600 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 hover:scale-105 shadow-xl hover:shadow-2xl'
+                  }`}
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processando...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Pagar com PIX
+                    </div>
+                  )}
+                </button>
+
+                <button 
+                  onClick={handleCheckout}
+                  disabled={isProcessing}
+                  className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all ${
+                    isProcessing 
+                      ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed' 
+                      : 'bg-white border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400'
+                  }`}
+                >
                   <div className="flex items-center justify-center gap-2">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    Finalizar compra
+                    Outros métodos de pagamento
                   </div>
-                )}
-              </button>
+                </button>
+              </div>
 
               <Link 
                 to="/catalog" 

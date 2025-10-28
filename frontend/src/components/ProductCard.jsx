@@ -94,10 +94,10 @@ export default function ProductCard({ product }) {
             </div>
           )}
           
-          {/* Category badge */}
-          {product.category && (
+          {/* Fabric Type badge */}
+          {product.fabric_type && (
             <div className="absolute top-3 right-3 bg-gradient-to-r from-bronze-700 to-bronze-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-medium backdrop-blur-sm">
-              {product.category.name}
+              {product.fabric_type}
             </div>
           )}
         </div>
