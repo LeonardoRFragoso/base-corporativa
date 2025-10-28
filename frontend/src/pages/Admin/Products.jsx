@@ -12,7 +12,7 @@ const Products = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
-  const [variants, setVariants] = useState([]);
+  const [variants, setVariants] = useState([]); // manter para facilitar buscas, populado a partir dos produtos
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
@@ -31,16 +31,14 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const [productsRes, variantsRes] = await Promise.all([
-        api.get(`/api/products/`, { params: { page, page_size: pageSize } }),
-        api.get(`/api/products/variants/`)
-      ]);
-
+      const productsRes = await api.get(`/api/products/`, { params: { page, page_size: pageSize } });
       const pData = productsRes.data;
       const list = Array.isArray(pData) ? pData : (pData.results || []);
       setProducts(list);
+      // Flatten das variantes embutidas para utilidades que ainda usam "variants"
+      const flatVariants = list.flatMap(p => (p.variants || []).map(v => ({ ...v, product: p.id })));
+      setVariants(flatVariants);
       setTotalCount(Number(pData.count ?? list.length));
-      setVariants(variantsRes.data);
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -49,8 +47,9 @@ const Products = () => {
   };
 
   const getProductStock = (productId) => {
-    const productVariants = variants.filter(v => v.product === productId);
-    return productVariants.reduce((sum, v) => sum + v.stock, 0);
+    const product = products.find(p => p.id === productId);
+    const productVariants = product?.variants || [];
+    return productVariants.reduce((sum, v) => sum + Number(v.stock || 0), 0);
   };
 
   const getStockStatus = (stock) => {
@@ -62,7 +61,7 @@ const Products = () => {
     return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100', label: 'Em Estoque' };
   };
 
-  const categories = Array.from(new Set(products.map(p => p.category_name).filter(Boolean)));
+  const categories = Array.from(new Set(products.map(p => (p.category?.name || p.category_name)).filter(Boolean)));
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
@@ -78,7 +77,8 @@ const Products = () => {
 
     const matchesActive = activeFilter === 'all' || (activeFilter === 'active' && product.is_active) || (activeFilter === 'inactive' && !product.is_active);
 
-    const matchesCategory = categoryFilter === 'all' || product.category_name === categoryFilter;
+    const catName = product.category?.name || product.category_name;
+    const matchesCategory = categoryFilter === 'all' || catName === categoryFilter;
     
     return matchesSearch && matchesStock && matchesActive && matchesCategory;
   });
@@ -113,8 +113,8 @@ const Products = () => {
   const ProductModal = ({ product, onClose }) => {
     if (!product) return null;
 
-    const productVariants = variants.filter(v => v.product === product.id);
-    const totalStock = productVariants.reduce((sum, v) => sum + v.stock, 0);
+    const productVariants = product.variants || [];
+    const totalStock = productVariants.reduce((sum, v) => sum + Number(v.stock || 0), 0);
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -233,7 +233,10 @@ const Products = () => {
 
           <div className="p-6 border-t border-gray-200 flex justify-between">
             <button
-              onClick={() => window.open(`${API_URL}/admin/catalog/product/${product.id}/change/`, '_blank')}
+                onClick={() => {
+                  const base = (api?.defaults?.baseURL || '').replace(/\/$/, '');
+                  window.open(`${base}/admin/catalog/product/${product.id}/change/`, '_blank');
+                }}
               className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center"
             >
               <Edit className="w-4 h-4 mr-2" />
