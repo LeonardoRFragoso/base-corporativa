@@ -34,3 +34,21 @@ class OrderCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         order = serializer.save()
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+
+class OrderStatusUpdateView(generics.UpdateAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return Order.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        order = self.get_object()
+        new_status = (request.data.get('status') or '').lower()
+        allowed = {'pending', 'paid', 'failed', 'canceled'}
+        if new_status not in allowed:
+            return Response({'error': 'status inválido', 'allowed': list(allowed)}, status=status.HTTP_400_BAD_REQUEST)
+        order.status = new_status
+        order.save(update_fields=['status'])
+        return Response(OrderSerializer(order).data)
