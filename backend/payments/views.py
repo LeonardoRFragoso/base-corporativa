@@ -1,6 +1,6 @@
 import mercadopago
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
@@ -12,6 +12,45 @@ from discounts.models import DiscountCode
 # Configurar SDK do Mercado Pago com credenciais reais
 sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def test_mercadopago_credentials(request):
+    """
+    Endpoint de teste para verificar se as credenciais do Mercado Pago estão configuradas
+    """
+    try:
+        has_token = bool(settings.MERCADOPAGO_ACCESS_TOKEN)
+        has_public_key = bool(settings.MERCADOPAGO_PUBLIC_KEY)
+        
+        if not has_token:
+            return Response({
+                'status': 'error',
+                'message': 'MERCADOPAGO_ACCESS_TOKEN não configurado',
+                'has_token': has_token,
+                'has_public_key': has_public_key
+            })
+        
+        # Tentar fazer uma requisição simples ao MP
+        try:
+            test_response = sdk.payment_methods().list_all()
+            mp_working = test_response.get('status') in [200, 201]
+        except Exception as e:
+            mp_working = False
+            error_detail = str(e)
+            
+        return Response({
+            'status': 'ok' if mp_working else 'error',
+            'has_token': has_token,
+            'has_public_key': has_public_key,
+            'mp_api_working': mp_working,
+            'error_detail': error_detail if not mp_working else None
+        })
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_preference(request):
@@ -19,6 +58,13 @@ def create_preference(request):
     Cria uma preferência de pagamento no Mercado Pago
     """
     try:
+        # Validar credenciais do Mercado Pago
+        if not settings.MERCADOPAGO_ACCESS_TOKEN:
+            return Response(
+                {'error': 'Credenciais do Mercado Pago não configuradas'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
         cart_items = request.data.get('items', [])
         
         if not cart_items:
@@ -132,9 +178,16 @@ def create_preference(request):
         }
         
         # Criar preferência no Mercado Pago
-        preference_response = sdk.preference().create(preference_data)
+        try:
+            preference_response = sdk.preference().create(preference_data)
+        except Exception as mp_error:
+            print(f"Erro ao criar preferência no MP: {str(mp_error)}")
+            return Response(
+                {'error': 'Erro ao comunicar com Mercado Pago', 'details': str(mp_error)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         
-        if preference_response["status"] == 201:
+        if preference_response.get("status") == 201:
             return Response({
                 'preference_id': preference_response["response"]["id"],
                 'init_point': preference_response["response"]["init_point"],
@@ -142,12 +195,17 @@ def create_preference(request):
                 'external_reference': order.external_reference,
             })
         else:
+            error_msg = preference_response.get("response", {}).get("message", "Erro desconhecido")
+            print(f"Erro MP - Status: {preference_response.get('status')}, Response: {preference_response}")
             return Response(
-                {'error': 'Erro ao criar preferência de pagamento', 'details': preference_response}, 
+                {'error': 'Erro ao criar preferência de pagamento', 'details': error_msg}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
             
     except Exception as e:
+        print(f"Erro geral no create_preference: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return Response(
             {'error': f'Erro interno: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
