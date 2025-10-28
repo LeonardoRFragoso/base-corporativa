@@ -23,6 +23,9 @@ import Privacy from './pages/Privacy.jsx'
 import Orders from './pages/Orders.jsx'
 import OrderDetail from './pages/OrderDetail.jsx'
 import AdminProductCreate from './pages/AdminProductCreate.jsx'
+import AdminDashboard from './pages/Admin/Dashboard.jsx'
+import AdminOrders from './pages/Admin/Orders.jsx'
+import AdminProducts from './pages/Admin/Products.jsx'
 
 function App() {
   return (
@@ -52,6 +55,9 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/orders/:id" element={<OrderDetail />} />
           <Route path="/admin/products/new" element={<AdminProductCreate />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

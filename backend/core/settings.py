@@ -38,6 +38,8 @@ ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h]
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
     'discounts',
     'newsletter',
     'shipping',
+    'analytics',
 ]
 
 MIDDLEWARE = [
@@ -329,3 +332,7 @@ LOGGING = {
         },
     },
 }
+
+# Admin Interface Configuration
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ['security.W019']

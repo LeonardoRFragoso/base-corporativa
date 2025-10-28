@@ -18,7 +18,15 @@ export default function Register() {
 
   function handleChange(e) {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    let nextValue = value
+    if (name === 'username') {
+      nextValue = value
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9@.+_-]/g, '')
+        .slice(0, 150)
+    }
+    setFormData(prev => ({ ...prev, [name]: nextValue }))
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
@@ -32,6 +40,10 @@ export default function Register() {
       newErrors.username = 'Usuário é obrigatório'
     } else if (formData.username.length < 3) {
       newErrors.username = 'Usuário deve ter pelo menos 3 caracteres'
+    } else if (!/^[\w.@+-]+$/.test(formData.username)) {
+      newErrors.username = 'Use apenas letras, números e @/./+/-/_ (sem espaços)'
+    } else if (formData.username.length > 150) {
+      newErrors.username = 'Usuário deve ter no máximo 150 caracteres'
     }
     
     if (!formData.email.trim()) {
