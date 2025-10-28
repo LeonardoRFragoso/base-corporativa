@@ -159,21 +159,38 @@ def create_preference(request):
         payer_email = request.data.get('email') or (request.user.email if getattr(request, 'user', None) and request.user.is_authenticated else 'cliente@basecorporativa.store')
         payer_name = (request.data.get('first_name') or '') + ' ' + (request.data.get('last_name') or '')
         
+        # Montar objeto payer apenas com campos preenchidos
+        payer_data = {
+            "name": payer_name.strip() or "Cliente",
+            "email": payer_email
+        }
+        
+        # Adicionar telefone apenas se tiver dados
+        phone_number = request.data.get('shipping_phone', '')
+        if phone_number:
+            # Extrair DDD e número
+            phone_clean = ''.join(filter(str.isdigit, phone_number))
+            if len(phone_clean) >= 10:
+                payer_data["phone"] = {
+                    "area_code": phone_clean[:2],
+                    "number": phone_clean[2:]
+                }
+        
+        # Adicionar endereço apenas se tiver CEP
+        zip_code = request.data.get('destination_zip', '').replace('-', '')
+        if zip_code and len(zip_code) == 8:
+            payer_data["address"] = {
+                "zip_code": zip_code
+            }
+            # Adicionar rua e número se disponíveis
+            if request.data.get('shipping_street'):
+                payer_data["address"]["street_name"] = request.data.get('shipping_street', '')
+            if request.data.get('shipping_number'):
+                payer_data["address"]["street_number"] = str(request.data.get('shipping_number', ''))
+        
         preference_data = {
             "items": items,
-            "payer": {
-                "name": payer_name.strip() or "Cliente",
-                "email": payer_email,
-                "phone": {
-                    "area_code": "",
-                    "number": ""
-                },
-                "address": {
-                    "zip_code": request.data.get('destination_zip', '').replace('-', ''),
-                    "street_name": request.data.get('shipping_street', ''),
-                    "street_number": request.data.get('shipping_number', '')
-                }
-            },
+            "payer": payer_data,
             "back_urls": {
                 "success": settings.FRONTEND_BASE_URL.rstrip('/') + "/checkout/success",
                 "failure": settings.FRONTEND_BASE_URL.rstrip('/') + "/checkout/failure", 
@@ -183,37 +200,48 @@ def create_preference(request):
             "payment_methods": {
                 "excluded_payment_methods": [],
                 "excluded_payment_types": [],
-                "installments": 12,
-                "default_payment_method_id": None,
-                "default_installments": None
+                "installments": 12
             },
             "notification_url": settings.MERCADOPAGO_NOTIFICATION_URL,
             "statement_descriptor": "BASE CORPORATIVA",
-            "external_reference": order.external_reference,
-            "expires": False,
-            "binary_mode": False
+            "external_reference": order.external_reference
         }
         
         # Criar preferência no Mercado Pago
         try:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Criando preferência MP para pedido {order.id}")
+            logger.debug(f"Preference data: {preference_data}")
+            
             preference_response = sdk.preference().create(preference_data)
+            logger.info(f"Resposta MP: status={preference_response.get('status')}")
+            
         except Exception as mp_error:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Erro ao criar preferência MP: {str(mp_error)}")
             return Response(
                 {'error': 'Erro ao comunicar com Mercado Pago', 'details': str(mp_error)}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
         if preference_response.get("status") == 201:
+            response_data = preference_response.get("response", {})
             return Response({
-                'preference_id': preference_response["response"]["id"],
-                'init_point': preference_response["response"]["init_point"],
+                'preference_id': response_data.get("id"),
+                'init_point': response_data.get("init_point"),
                 'order_id': order.id,
                 'external_reference': order.external_reference,
             })
         else:
             error_msg = preference_response.get("response", {}).get("message", "Erro desconhecido")
+            error_cause = preference_response.get("response", {}).get("cause", [])
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Erro MP: {error_msg}, cause: {error_cause}")
             return Response(
-                {'error': 'Erro ao criar preferência de pagamento', 'details': error_msg}, 
+                {'error': 'Erro ao criar preferência de pagamento', 'details': error_msg, 'cause': error_cause}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
             
