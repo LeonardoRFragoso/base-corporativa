@@ -33,6 +33,10 @@ export default function Cart() {
   const [coupon, setCoupon] = useState(null)
   const [couponError, setCouponError] = useState('')
 
+  // Guest buyer basic info (for non-authenticated checkout)
+  const [guestInfo, setGuestInfo] = useState({ first_name: '', last_name: '', email: '' })
+  const [guestError, setGuestError] = useState('')
+
   const shipping = selectedQuote ? Number(selectedQuote.price) : 0
   const discount = coupon ? Math.min(
     Number(coupon.amount_off || 0) || (subtotal * (Number(coupon.percent_off || 0) / 100)),
@@ -166,6 +170,21 @@ export default function Cart() {
     setIsProcessing(true)
     
     try {
+      setGuestError('')
+      if (!isAuthenticated) {
+        const { first_name, last_name, email } = guestInfo
+        if (!first_name || !last_name || !email) {
+          setGuestError('Preencha nome, sobrenome e e-mail para concluir a compra.')
+          setIsProcessing(false)
+          return
+        }
+        // Validação simples de email
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setGuestError('Informe um e-mail válido.')
+          setIsProcessing(false)
+          return
+        }
+      }
       // Preparar dados do carrinho para o Mercado Pago
       const checkoutData = {
         destination_zip: formatZip(zipNumbersOnly(zip)),
@@ -183,6 +202,11 @@ export default function Cart() {
       }
       if (isAuthenticated && selectedAddressId) {
         checkoutData.address_id = selectedAddressId
+      }
+      if (!isAuthenticated) {
+        checkoutData.first_name = guestInfo.first_name
+        checkoutData.last_name = guestInfo.last_name
+        checkoutData.email = guestInfo.email
       }
       if (coupon) {
         checkoutData.coupon_code = coupon.code
@@ -441,6 +465,36 @@ export default function Cart() {
                       <button onClick={createAddress} className="mt-1 px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800">Salvar endereço</button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {!isAuthenticated && (
+                <div className="mb-6">
+                  <label className="block text-base font-semibold text-neutral-700 mb-2">Dados do comprador</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Nome"
+                      value={guestInfo.first_name}
+                      onChange={(e) => setGuestInfo(v => ({...v, first_name: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Sobrenome"
+                      value={guestInfo.last_name}
+                      onChange={(e) => setGuestInfo(v => ({...v, last_name: e.target.value}))}
+                      className="px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                    />
+                  </div>
+                  <input
+                    type="email"
+                    placeholder="E-mail"
+                    value={guestInfo.email}
+                    onChange={(e) => setGuestInfo(v => ({...v, email: e.target.value}))}
+                    className="mt-3 w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 font-medium"
+                  />
+                  {guestError && <div className="text-sm text-error-600 mt-2 font-medium">{guestError}</div>}
                 </div>
               )}
 

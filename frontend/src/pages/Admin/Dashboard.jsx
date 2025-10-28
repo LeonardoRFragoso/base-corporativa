@@ -60,6 +60,11 @@ const Dashboard = () => {
     }
   };
 
+  const openDjangoAdmin = () => {
+    const base = (api?.defaults?.baseURL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '');
+    window.open(`${base}/admin/`, '_blank');
+  };
+
   const StatCard = ({ icon: Icon, title, value, subtitle, color, to }) => (
     <button
       type="button"
@@ -332,7 +337,7 @@ const Dashboard = () => {
             Gerenciar Produtos
           </button>
           <button
-            onClick={() => window.open(`${API_URL}/admin/`, '_blank')}
+            onClick={openDjangoAdmin}
             className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
           >
             <Activity className="w-5 h-5 mr-2" />

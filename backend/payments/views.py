@@ -45,6 +45,17 @@ def create_preference(request):
             shipping_service_name=request.data.get('shipping_service_name', ''),
             shipping_carrier=request.data.get('shipping_carrier', ''),
             shipping_price=shipping_price,
+            # Guest shipping address (for non-authenticated checkout)
+            shipping_first_name=request.data.get('shipping_first_name', ''),
+            shipping_last_name=request.data.get('shipping_last_name', ''),
+            shipping_phone=request.data.get('shipping_phone', ''),
+            shipping_street=request.data.get('shipping_street', ''),
+            shipping_number=request.data.get('shipping_number', ''),
+            shipping_complement=request.data.get('shipping_complement', ''),
+            shipping_neighborhood=request.data.get('shipping_neighborhood', ''),
+            shipping_city=request.data.get('shipping_city', ''),
+            shipping_state=request.data.get('shipping_state', ''),
+            shipping_zip=request.data.get('shipping_zip', '') or request.data.get('destination_zip', ''),
         )
 
         # Optionally attach a saved address

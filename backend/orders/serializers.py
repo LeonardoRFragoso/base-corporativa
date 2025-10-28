@@ -18,6 +18,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "id", "status", "currency", "shipping_price", "total_amount",
             "email", "first_name", "last_name",
             "shipping_service_name", "shipping_carrier", "destination_zip",
+            "shipping_first_name", "shipping_last_name", "shipping_phone",
+            "shipping_street", "shipping_number", "shipping_complement",
+            "shipping_neighborhood", "shipping_city", "shipping_state", "shipping_zip",
             "external_reference", "mp_payment_id", "mp_status",
             "created_at", "items"
         )
@@ -39,6 +42,16 @@ class OrderCreateSerializer(serializers.Serializer):
     shipping_service_name = serializers.CharField(required=False, allow_blank=True)
     shipping_carrier = serializers.CharField(required=False, allow_blank=True)
     shipping_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default=0)
+    shipping_first_name = serializers.CharField(required=False, allow_blank=True)
+    shipping_last_name = serializers.CharField(required=False, allow_blank=True)
+    shipping_phone = serializers.CharField(required=False, allow_blank=True)
+    shipping_street = serializers.CharField(required=False, allow_blank=True)
+    shipping_number = serializers.CharField(required=False, allow_blank=True)
+    shipping_complement = serializers.CharField(required=False, allow_blank=True)
+    shipping_neighborhood = serializers.CharField(required=False, allow_blank=True)
+    shipping_city = serializers.CharField(required=False, allow_blank=True)
+    shipping_state = serializers.CharField(required=False, allow_blank=True)
+    shipping_zip = serializers.CharField(required=False, allow_blank=True)
     items = OrderCreateItemInput(many=True)
 
     def create(self, validated_data):
