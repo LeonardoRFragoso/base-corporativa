@@ -110,7 +110,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
-    list_display = ("id", "product_link", "size", "color", "sku", "price_display", "stock_badge", "is_default")
+    list_display = ("id", "product_link", "size", "color", "sku", "price_display", "stock", "stock_badge", "is_default")
     list_filter = ("size", "is_default", "product__category")
     search_fields = ("sku", "product__name", "color")
     list_editable = ("stock",)
