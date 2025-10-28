@@ -77,6 +77,7 @@ const Orders = () => {
         {config.label}
       </span>
     );
+  };
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const Pagination = () => (
@@ -104,7 +105,6 @@ const Orders = () => {
       </div>
     </div>
   );
-  };
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 

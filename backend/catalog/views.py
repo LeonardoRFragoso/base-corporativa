@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, filters, status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -17,14 +18,10 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = (JWTAuthentication,)
 
     def get_authentication_classes(self):
-        """
-        Mantém autenticação disponível em todas as ações. Como a permissão é AllowAny,
-        usuários anônimos continuam acessando list/retrieve; quando um token é enviado,
-        o request.user será populado (permitindo diferenciar staff).
-        """
-        return super().get_authentication_classes()
+        return self.authentication_classes
 
     def get_queryset(self):
         qs = Product.objects.all().select_related('category').prefetch_related('variants', 'images')
