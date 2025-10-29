@@ -271,8 +271,8 @@ def create_card_payment(request):
     Criar pagamento com cartão de crédito (Checkout Transparente)
     """
     try:
-        # Validar dados obrigatórios
-        required_fields = ['token', 'installments', 'payment_method_id', 'email', 'issuer_id']
+        # Validar dados obrigatórios (issuer_id opcional para evitar mismatches)
+        required_fields = ['token', 'installments', 'payment_method_id', 'email']
         for field in required_fields:
             if not request.data.get(field):
                 return Response(
@@ -343,10 +343,18 @@ def create_card_payment(request):
                     "number": cpf_clean
                 }
         
-        # Processar pagamento
+        # Normalizar issuer_id (inteiro) e remover se vazio
         import logging
         logger = logging.getLogger(__name__)
         logger.info(f"Processando pagamento com cartão para pedido {order.id}")
+        issuer_raw = payment_data.get("issuer_id")
+        if issuer_raw is None or issuer_raw == "":
+            payment_data.pop("issuer_id", None)
+        else:
+            try:
+                payment_data["issuer_id"] = int(issuer_raw)
+            except Exception:
+                pass
         
         payment_response = sdk.payment().create(payment_data)
         payment = payment_response.get("response", {})
@@ -368,6 +376,32 @@ def create_card_payment(request):
         else:
             error_msg = payment.get("message", "Erro ao processar pagamento")
             logger.error(f"Erro MP: {error_msg} | details: {payment}")
+            # Fallback: tentar uma vez sem issuer_id em caso de diff_param_bins
+            if error_msg == 'diff_param_bins' and payment_data.get('issuer_id') is not None:
+                logger.info("Tentando novamente sem issuer_id devido a diff_param_bins")
+                retry_data = dict(payment_data)
+                retry_data.pop('issuer_id', None)
+                retry_resp = sdk.payment().create(retry_data)
+                retry_payment = retry_resp.get('response', {})
+                if retry_resp.get('status') == 201:
+                    order.mercadopago_payment_id = retry_payment.get("id")
+                    order.status = retry_payment.get("status", "pending")
+                    order.save(update_fields=["mercadopago_payment_id", "status"])
+                    return Response({
+                        'success': True,
+                        'payment_id': retry_payment.get("id"),
+                        'status': retry_payment.get("status"),
+                        'status_detail': retry_payment.get("status_detail"),
+                        'order_id': order.id,
+                        'external_reference': order.external_reference
+                    })
+                else:
+                    retry_msg = retry_payment.get("message", error_msg)
+                    logger.error(f"Erro MP (retry sem issuer): {retry_msg} | details: {retry_payment}")
+                    return Response(
+                        {'error': retry_msg, 'details': retry_payment},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             return Response(
                 {'error': error_msg, 'details': payment}, 
                 status=status.HTTP_400_BAD_REQUEST

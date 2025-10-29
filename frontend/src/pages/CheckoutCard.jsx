@@ -22,8 +22,11 @@ export default function CheckoutCard() {
   const [paymentMethodId, setPaymentMethodId] = useState('')
   const [issuerId, setIssuerId] = useState('')
 
-  // Calcular total
-  const total = checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0
+  // Calcular totais
+  const itemsTotal = checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0
+  const shipping = Number(checkoutData?.shipping_price || 0)
+  const discount = Number(checkoutData?.discount_amount || 0)
+  const finalTotal = itemsTotal + shipping - discount
 
   useEffect(() => {
     if (!checkoutData) {
@@ -38,7 +41,7 @@ export default function CheckoutCard() {
 
     // Criar instância do CardForm
     const cardFormInstance = mercadopago.cardForm({
-      amount: String(total),
+      amount: String(finalTotal),
       iframe: true,
       form: {
         id: "form-checkout",
@@ -96,7 +99,7 @@ export default function CheckoutCard() {
     })
 
     setCardForm(cardFormInstance)
-  }, [checkoutData, navigate, total])
+  }, [checkoutData, navigate, finalTotal])
 
   const handleSubmit = async (e) => {
     if (e) {
@@ -128,13 +131,17 @@ export default function CheckoutCard() {
         throw new Error('Erro ao processar dados do cartão')
       }
 
+      // Obter dados consolidados do formulário (garante consistência com o BIN)
+      const formData = cardForm.getCardFormData()
+      const resolvedPaymentMethodId = cardData?.payment_method_id || formData.paymentMethodId
       // Preparar dados do pagamento
       const paymentData = {
         ...checkoutData,
         token: tokenId,
-        payment_method_id: cardData.payment_method_id || 'credit_card',
-        installments: parseInt(document.getElementById('form-checkout__installments').value) || 1,
-        issuer_id: document.getElementById('form-checkout__issuer').value,
+        payment_method_id: resolvedPaymentMethodId,
+        installments: Number(formData.installments || 1),
+        issuer_id: formData.issuerId,
+        cpf: formData.identificationNumber,
       }
 
       console.log('Sending payment data:', paymentData)
@@ -381,7 +388,7 @@ export default function CheckoutCard() {
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                       </svg>
-                      <span>Pagar R$ {total.toFixed(2)}</span>
+                      <span>Pagar R$ {finalTotal.toFixed(2)}</span>
                     </div>
                   )}
                 </button>
@@ -427,7 +434,7 @@ export default function CheckoutCard() {
               <div className="border-t-2 border-neutral-200 pt-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-600 font-medium">Subtotal</span>
-                  <span className="font-semibold text-neutral-900">R$ {total.toFixed(2)}</span>
+                  <span className="font-semibold text-neutral-900">R$ {itemsTotal.toFixed(2)}</span>
                 </div>
                 
                 {checkoutData.shipping_price > 0 && (
@@ -462,7 +469,7 @@ export default function CheckoutCard() {
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-neutral-900">Total</span>
                     <span className="text-2xl font-bold text-primary-700">
-                      R$ {(total + Number(checkoutData.shipping_price || 0) - Number(checkoutData.discount_amount || 0)).toFixed(2)}
+                      R$ {finalTotal.toFixed(2)}
                     </span>
                   </div>
                 </div>
