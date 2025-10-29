@@ -605,3 +605,60 @@ def webhook(request):
             {'error': str(e)}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def mercadopago_webhook(request):
+    """
+    Webhook do Mercado Pago para notificações de pagamento
+    """
+    try:
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Log da notificação recebida
+        logger.info(f"Webhook MP recebido: {request.data}")
+        
+        # Extrair dados da notificação
+        topic = request.data.get('topic') or request.data.get('type')
+        resource_id = request.data.get('data', {}).get('id') or request.data.get('id')
+        
+        if not topic or not resource_id:
+            logger.warning(f"Webhook inválido: topic={topic}, id={resource_id}")
+            return Response({'status': 'ok'}, status=status.HTTP_200_OK)
+        
+        # Processar apenas notificações de pagamento
+        if topic == 'payment':
+            # Buscar informações do pagamento no Mercado Pago
+            try:
+                payment_info = sdk.payment().get(resource_id)
+                payment = payment_info.get('response', {})
+                
+                # Extrair informações
+                payment_status = payment.get('status')
+                external_reference = payment.get('external_reference')
+                payment_id = payment.get('id')
+                
+                logger.info(f"Pagamento {payment_id}: status={payment_status}, ref={external_reference}")
+                
+                # Atualizar pedido
+                if external_reference:
+                    try:
+                        order = Order.objects.get(external_reference=external_reference)
+                        order.mercadopago_payment_id = payment_id
+                        order.status = payment_status
+                        order.save(update_fields=['mercadopago_payment_id', 'status'])
+                        logger.info(f"Pedido {order.id} atualizado: {payment_status}")
+                    except Order.DoesNotExist:
+                        logger.error(f"Pedido não encontrado: {external_reference}")
+                        
+            except Exception as e:
+                logger.error(f"Erro ao processar pagamento {resource_id}: {str(e)}")
+        
+        return Response({'status': 'ok'}, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erro no webhook: {str(e)}")
+        return Response({'status': 'error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

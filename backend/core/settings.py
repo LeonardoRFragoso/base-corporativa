@@ -210,10 +210,31 @@ CORS_ALLOWED_ORIGINS = [o for o in os.environ.get('CORS_ALLOWED_ORIGINS', '').sp
 # Allow credentials (cookies, authorization headers, etc.)
 CORS_ALLOW_CREDENTIALS = True
 
+# Allow all methods
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 # Allow custom headers used by the frontend
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-session-key',
+    'content-type',
+    'authorization',
 ]
+
+# Expose headers to frontend
+CORS_EXPOSE_HEADERS = [
+    'content-type',
+    'x-session-key',
+]
+
+# Preflight cache time (in seconds)
+CORS_PREFLIGHT_MAX_AGE = 86400
 
 CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
