@@ -1,9 +1,23 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
+import SEO from '../components/SEO.jsx'
+import { BreadcrumbSchema } from '../components/StructuredData.jsx'
 
 export default function About() {
+  const breadcrumbItems = [
+    { name: 'Início', url: '/' },
+    { name: 'Sobre Nós', url: '/about' }
+  ]
+
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="Sobre Nós - BASE CORPORATIVA | Nossa História e Missão"
+        description="Conheça a BASE CORPORATIVA: nossa missão de fornecer roupas corporativas de qualidade premium para profissionais modernos. Conforto, praticidade e elegância em cada peça."
+        keywords="sobre base corporativa, história empresa, missão roupas corporativas, qualidade premium, profissionais modernos"
+        url="/about"
+      />
+      <BreadcrumbSchema items={breadcrumbItems} />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-bronze-900/30"></div>

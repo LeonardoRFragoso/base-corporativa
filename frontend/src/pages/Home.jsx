@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
+import SEO from '../components/SEO.jsx'
+import { OrganizationSchema, WebsiteSchema } from '../components/StructuredData.jsx'
 
 export default function Home() {
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
@@ -25,6 +27,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="BASE CORPORATIVA - Roupas Corporativas de Qualidade Premium"
+        description="Roupas corporativas minimalistas e de alta qualidade. Conforto e praticidade para o profissional moderno. Frete grátis acima de R$ 200. Mais de 1.000 profissionais já escolheram a BASE CORPORATIVA."
+        keywords="roupas corporativas, uniformes profissionais, camisas polo masculinas, calças sociais, roupas de trabalho, moda corporativa, uniformes empresariais, roupas minimalistas"
+        url="/"
+      />
+      <OrganizationSchema />
+      <WebsiteSchema />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-bronze-900/30"></div>

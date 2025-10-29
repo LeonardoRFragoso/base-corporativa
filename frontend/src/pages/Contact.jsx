@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import axios from 'axios'
+import SEO from '../components/SEO.jsx'
+import { BreadcrumbSchema } from '../components/StructuredData.jsx'
 import { api } from '../lib/api.js'
 
 export default function Contact() {
@@ -24,8 +27,20 @@ export default function Contact() {
     }
   }
 
+  const breadcrumbItems = [
+    { name: 'Início', url: '/' },
+    { name: 'Contato', url: '/contact' }
+  ]
+
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO 
+        title="Contato - BASE CORPORATIVA | Fale Conosco"
+        description="Entre em contato com a BASE CORPORATIVA. Atendimento especializado de segunda a sexta, das 9h às 18h. Tire suas dúvidas sobre roupas corporativas."
+        keywords="contato base corporativa, atendimento roupas corporativas, fale conosco, suporte cliente"
+        url="/contact"
+      />
+      <BreadcrumbSchema items={breadcrumbItems} />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-6">Contato</h1>
         <p className="text-neutral-700 mb-4">

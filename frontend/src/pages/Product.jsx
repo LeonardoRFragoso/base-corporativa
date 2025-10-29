@@ -4,6 +4,8 @@ import { api } from '../lib/api.js'
 import { useCart } from '../context/CartContext.jsx'
 import ProductCard from '../components/ProductCard.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import SEO from '../components/SEO.jsx'
+import { ProductSchema, BreadcrumbSchema } from '../components/StructuredData.jsx'
 
 export default function Product() {
   const { id } = useParams()
@@ -236,8 +238,24 @@ export default function Product() {
   const isInStock = selectedVariant?.stock > 0
   const stockCount = selectedVariant?.stock || 0
 
+  const breadcrumbItems = [
+    { name: 'Início', url: '/' },
+    { name: 'Catálogo', url: '/catalog' },
+    { name: product.name, url: `/product/${product.id}` }
+  ]
+
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO 
+        title={`${product.name} - BASE CORPORATIVA`}
+        description={`${product.description} Compre agora na BASE CORPORATIVA com frete grátis acima de R$ 200. Qualidade premium em roupas corporativas.`}
+        keywords={`${product.name}, ${product.category?.name || 'roupas corporativas'}, uniformes profissionais, BASE CORPORATIVA`}
+        url={`/product/${product.id}`}
+        type="product"
+        image={product.images?.[0]?.image}
+      />
+      <ProductSchema product={product} />
+      <BreadcrumbSchema items={breadcrumbItems} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8">
