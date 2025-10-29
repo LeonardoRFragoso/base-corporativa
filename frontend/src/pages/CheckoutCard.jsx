@@ -120,15 +120,19 @@ export default function CheckoutCard() {
       const cardData = await cardForm.createCardToken()
       console.log('Card token created:', cardData)
       
-      if (!cardData || !cardData.id) {
+      // O Mercado Pago pode retornar {token: '...'} ou {id: '...'}
+      const tokenId = cardData?.token || cardData?.id
+      
+      if (!cardData || !tokenId) {
+        console.error('Invalid card data:', cardData)
         throw new Error('Erro ao processar dados do cartão')
       }
 
       // Preparar dados do pagamento
       const paymentData = {
         ...checkoutData,
-        token: cardData.id,
-        payment_method_id: cardData.payment_method_id,
+        token: tokenId,
+        payment_method_id: cardData.payment_method_id || 'credit_card',
         installments: parseInt(document.getElementById('form-checkout__installments').value) || 1,
         issuer_id: document.getElementById('form-checkout__issuer').value,
       }
