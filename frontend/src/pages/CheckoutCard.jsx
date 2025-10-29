@@ -98,15 +98,27 @@ export default function CheckoutCard() {
     setCardForm(cardFormInstance)
   }, [checkoutData, navigate, total])
 
-  const handleSubmit = async () => {
-    if (isProcessing || !cardForm) return
+  const handleSubmit = async (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    
+    console.log('handleSubmit called', { isProcessing, cardForm })
+    
+    if (isProcessing || !cardForm) {
+      console.log('Skipping submit:', { isProcessing, hasCardForm: !!cardForm })
+      return
+    }
     
     setIsProcessing(true)
     setError('')
 
     try {
+      console.log('Creating card token...')
       // Obter token do cartão
       const cardData = await cardForm.createCardToken()
+      console.log('Card token created:', cardData)
       
       if (!cardData || !cardData.id) {
         throw new Error('Erro ao processar dados do cartão')
@@ -121,8 +133,10 @@ export default function CheckoutCard() {
         issuer_id: document.getElementById('form-checkout__issuer').value,
       }
 
+      console.log('Sending payment data:', paymentData)
       // Enviar para backend
       const response = await api.post('/api/payments/create-card-payment/', paymentData)
+      console.log('Payment response:', response.data)
 
       if (response.data.success) {
         // Redirecionar baseado no status
@@ -339,6 +353,10 @@ export default function CheckoutCard() {
                 {/* Botão de Pagamento */}
                 <button
                   type="submit"
+                  onClick={(e) => {
+                    console.log('Button clicked')
+                    handleSubmit(e)
+                  }}
                   disabled={isProcessing}
                   className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all transform ${
                     isProcessing
