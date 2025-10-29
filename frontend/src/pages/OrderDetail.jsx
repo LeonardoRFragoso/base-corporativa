@@ -39,7 +39,14 @@ export default function OrderDetail() {
         const res = await api.get(`/api/orders/${id}/`)
         setOrder(res.data)
       } catch (e) {
-        setError('Não foi possível carregar o pedido.')
+        console.error('Erro ao carregar pedido:', e)
+        if (e.response?.status === 404) {
+          setError('Pedido não encontrado. Verifique se o ID está correto ou se você tem permissão para visualizá-lo.')
+        } else if (e.response?.status === 403) {
+          setError('Você não tem permissão para visualizar este pedido.')
+        } else {
+          setError('Não foi possível carregar o pedido. Tente novamente.')
+        }
       } finally {
         setLoading(false)
       }

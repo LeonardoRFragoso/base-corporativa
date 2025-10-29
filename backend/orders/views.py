@@ -21,7 +21,11 @@ class OrderDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        qs = Order.objects.all()
+        user = getattr(self.request, 'user', None)
+        if user and user.is_staff:
+            return qs
+        return qs.filter(user=user)
 
 
 class OrderCreateView(generics.CreateAPIView):

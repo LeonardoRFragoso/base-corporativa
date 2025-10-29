@@ -73,7 +73,13 @@ const Dashboard = () => {
       setSelectedOrder(response.data);
     } catch (error) {
       console.error('Erro ao carregar detalhes do pedido:', error);
-      alert('Erro ao carregar detalhes do pedido.');
+      if (error.response?.status === 404) {
+        alert('Pedido não encontrado. Pode ter sido removido ou você não tem permissão para visualizá-lo.');
+      } else if (error.response?.status === 403) {
+        alert('Você não tem permissão para visualizar este pedido.');
+      } else {
+        alert('Erro ao carregar detalhes do pedido. Tente novamente.');
+      }
     }
   };
 
