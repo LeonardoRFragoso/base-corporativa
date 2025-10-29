@@ -4,6 +4,7 @@ import axios from 'axios';
 import { api } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { formatBRL, formatNumber } from '../../utils/format';
+import OrderModal from '../../components/OrderModal';
 import {
   TrendingUp,
   ShoppingCart,
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const [topProducts, setTopProducts] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [period, setPeriod] = useState('30');
 
   useEffect(() => {
@@ -63,6 +65,16 @@ const Dashboard = () => {
   const openDjangoAdmin = () => {
     const base = (api?.defaults?.baseURL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '');
     window.open(`${base}/admin/`, '_blank');
+  };
+
+  const handleOrderClick = async (orderId) => {
+    try {
+      const response = await api.get(`/api/orders/${orderId}/`);
+      setSelectedOrder(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar detalhes do pedido:', error);
+      alert('Erro ao carregar detalhes do pedido.');
+    }
   };
 
   const StatCard = ({ icon: Icon, title, value, subtitle, color, to }) => (
@@ -164,7 +176,7 @@ const Dashboard = () => {
             value={formatNumber(dashboardData?.customers?.total)}
             subtitle={`${formatNumber(dashboardData?.customers?.new_last_30_days)} novos este mês`}
             color="text-amber-600"
-            to="/admin/orders"
+            to="/admin/customers"
           />
         </div>
 
@@ -290,7 +302,11 @@ const Dashboard = () => {
             </h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {recentOrders && recentOrders.length > 0 ? recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <div 
+                  key={order.id} 
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => handleOrderClick(order.id)}
+                >
                   <div>
                     <p className="font-medium text-gray-900">Pedido #{order.id}</p>
                     <p className="text-sm text-gray-600">{order.customer}</p>
@@ -345,6 +361,15 @@ const Dashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Order Details Modal */}
+      {selectedOrder && (
+        <OrderModal 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)}
+          onOrderUpdate={fetchDashboardData}
+        />
+      )}
     </div>
   );
 };

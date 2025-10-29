@@ -28,6 +28,7 @@ import AdminProductCreate from './pages/AdminProductCreate.jsx'
 import AdminDashboard from './pages/Admin/Dashboard.jsx'
 import AdminOrders from './pages/Admin/Orders.jsx'
 import AdminProducts from './pages/Admin/Products.jsx'
+import AdminCustomers from './pages/Admin/Customers.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
           <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
           <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
+          <Route path="/admin/customers" element={<ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

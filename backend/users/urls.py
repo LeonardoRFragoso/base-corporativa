@@ -4,7 +4,7 @@ from .views import (
     PasswordResetRequestView, PasswordResetConfirmView,
     EmailVerificationView, ResendVerificationEmailView,
     WishlistListCreateView, WishlistDeleteView,
-    EmailOrUsernameTokenObtainPairView,
+    EmailOrUsernameTokenObtainPairView, UserListView,
 )
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path('user/profile/', ProfileView.as_view(), name='user_profile'),
     path('user/wishlist/', WishlistListCreateView.as_view(), name='user_wishlist_list_create'),
     path('user/wishlist/<int:product_id>/', WishlistDeleteView.as_view(), name='user_wishlist_delete'),
+    path('users/', UserListView.as_view(), name='user_list'),
 ]

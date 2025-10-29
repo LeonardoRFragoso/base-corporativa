@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import models
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, ProfileSerializer
-from .serializers import WishlistItemSerializer
+from .serializers import WishlistItemSerializer, UserListSerializer
 from .models import WishlistItem, EmailVerificationToken, PasswordResetToken
 from catalog.models import Product
 from .email_utils import send_verification_email, send_password_reset_email
@@ -252,3 +253,37 @@ class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailOrUsernameTokenObtainPairSerializer
+
+
+class UserListView(generics.ListAPIView):
+    """Lista usuários para administradores"""
+    serializer_class = UserListSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        User = get_user_model()
+        queryset = User.objects.all().order_by('-date_joined')
+        
+        # Filtrar apenas clientes (não staff) por padrão
+        is_staff = self.request.query_params.get('is_staff')
+        if is_staff is not None:
+            is_staff_bool = is_staff.lower() in ('true', '1', 'yes')
+            queryset = queryset.filter(is_staff=is_staff_bool)
+        
+        # Filtrar por status ativo
+        is_active = self.request.query_params.get('is_active')
+        if is_active is not None:
+            is_active_bool = is_active.lower() in ('true', '1', 'yes')
+            queryset = queryset.filter(is_active=is_active_bool)
+        
+        # Busca por email, nome ou username
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                models.Q(email__icontains=search) |
+                models.Q(first_name__icontains=search) |
+                models.Q(last_name__icontains=search) |
+                models.Q(username__icontains=search)
+            )
+        
+        return queryset

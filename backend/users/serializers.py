@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from django.db.models import Count, Sum
 from .models import WishlistItem
 
 User = get_user_model()
@@ -47,3 +49,37 @@ class WishlistItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishlistItem
         fields = ("id", "product_id", "product_name", "created_at")
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    total_orders = serializers.SerializerMethodField()
+    total_spent = serializers.SerializerMethodField()
+    days_since_last_order = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "id", "username", "email", "first_name", "last_name", 
+            "is_active", "is_staff", "date_joined", "last_login",
+            "total_orders", "total_spent", "days_since_last_order"
+        )
+
+    def get_total_orders(self, obj):
+        from orders.models import Order
+        return Order.objects.filter(user=obj).count()
+
+    def get_total_spent(self, obj):
+        from orders.models import Order
+        total = Order.objects.filter(user=obj, status='paid').aggregate(
+            total=Sum('total_amount')
+        )['total']
+        return float(total or 0)
+
+    def get_days_since_last_order(self, obj):
+        from orders.models import Order
+        from django.utils import timezone
+        last_order = Order.objects.filter(user=obj).order_by('-created_at').first()
+        if last_order:
+            delta = timezone.now().date() - last_order.created_at.date()
+            return delta.days
+        return None
