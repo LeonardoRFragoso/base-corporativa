@@ -82,6 +82,29 @@ def create_preference(request):
                 except Exception:
                     shipping_price = 0.0
 
+        # Log dados recebidos para debug
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        shipping_data = {
+            'destination_zip': request.data.get('destination_zip', ''),
+            'shipping_service_name': request.data.get('shipping_service_name', ''),
+            'shipping_carrier': request.data.get('shipping_carrier', ''),
+            'shipping_first_name': request.data.get('shipping_first_name', ''),
+            'shipping_last_name': request.data.get('shipping_last_name', ''),
+            'shipping_phone': request.data.get('shipping_phone', ''),
+            'shipping_street': request.data.get('shipping_street', ''),
+            'shipping_number': request.data.get('shipping_number', ''),
+            'shipping_complement': request.data.get('shipping_complement', ''),
+            'shipping_neighborhood': request.data.get('shipping_neighborhood', ''),
+            'shipping_city': request.data.get('shipping_city', ''),
+            'shipping_state': request.data.get('shipping_state', ''),
+            'shipping_zip': request.data.get('shipping_zip', ''),
+        }
+        
+        logger.info(f"🚚 CHECKOUT - Dados de entrega recebidos: {shipping_data}")
+        logger.info(f"📦 CHECKOUT - Todos os dados do request: {dict(request.data)}")
+
         order = Order.objects.create(
             user=request.user if getattr(request, 'user', None) and request.user.is_authenticated else None,
             email=request.data.get('email', ''),
@@ -103,6 +126,8 @@ def create_preference(request):
             shipping_state=request.data.get('shipping_state', ''),
             shipping_zip=request.data.get('shipping_zip', '') or request.data.get('destination_zip', ''),
         )
+        
+        logger.info(f"✅ CHECKOUT - Pedido #{order.id} criado com destination_zip='{order.destination_zip}' shipping_zip='{order.shipping_zip}'")
 
         # Optionally attach a saved address
         try:
@@ -291,7 +316,30 @@ def create_card_payment(request):
         discount_amount = float(request.data.get('discount_amount', 0) or 0)
         total_amount = total_items + float(shipping_price) - float(discount_amount)
         
-        # Criar Order
+        # Log dados recebidos para debug CARTÃO
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        shipping_data_card = {
+            'destination_zip': request.data.get('destination_zip', ''),
+            'shipping_service_name': request.data.get('shipping_service_name', ''),
+            'shipping_carrier': request.data.get('shipping_carrier', ''),
+            'shipping_first_name': request.data.get('shipping_first_name', ''),
+            'shipping_last_name': request.data.get('shipping_last_name', ''),
+            'shipping_phone': request.data.get('shipping_phone', ''),
+            'shipping_street': request.data.get('shipping_street', ''),
+            'shipping_number': request.data.get('shipping_number', ''),
+            'shipping_complement': request.data.get('shipping_complement', ''),
+            'shipping_neighborhood': request.data.get('shipping_neighborhood', ''),
+            'shipping_city': request.data.get('shipping_city', ''),
+            'shipping_state': request.data.get('shipping_state', ''),
+            'shipping_zip': request.data.get('shipping_zip', ''),
+        }
+        
+        logger.info(f"🚚 CARTÃO CHECKOUT - Dados de entrega recebidos: {shipping_data_card}")
+        logger.info(f"📦 CARTÃO CHECKOUT - Todos os dados do request: {dict(request.data)}")
+
+        # Criar Order com TODOS os dados de entrega
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             email=request.data.get('email'),
@@ -300,8 +348,38 @@ def create_card_payment(request):
             status='pending',
             shipping_price=shipping_price,
             discount_amount=discount_amount,
-            total_amount=total_amount
+            total_amount=total_amount,
+            # ADICIONAR CAMPOS DE ENTREGA QUE ESTAVAM FALTANDO!
+            destination_zip=request.data.get('destination_zip', ''),
+            shipping_service_name=request.data.get('shipping_service_name', ''),
+            shipping_carrier=request.data.get('shipping_carrier', ''),
+            # Guest shipping address
+            shipping_first_name=request.data.get('shipping_first_name', ''),
+            shipping_last_name=request.data.get('shipping_last_name', ''),
+            shipping_phone=request.data.get('shipping_phone', ''),
+            shipping_street=request.data.get('shipping_street', ''),
+            shipping_number=request.data.get('shipping_number', ''),
+            shipping_complement=request.data.get('shipping_complement', ''),
+            shipping_neighborhood=request.data.get('shipping_neighborhood', ''),
+            shipping_city=request.data.get('shipping_city', ''),
+            shipping_state=request.data.get('shipping_state', ''),
+            shipping_zip=request.data.get('shipping_zip', '') or request.data.get('destination_zip', ''),
         )
+        
+        logger.info(f"✅ CARTÃO CHECKOUT - Pedido #{order.id} criado com destination_zip='{order.destination_zip}' shipping_zip='{order.shipping_zip}'")
+        
+        # Attach saved address if provided
+        try:
+            address_id = request.data.get('address_id')
+            if address_id and request.user.is_authenticated:
+                from addresses.models import Address
+                addr = Address.objects.filter(id=address_id, user=request.user).first()
+                if addr:
+                    order.shipping_address = addr
+                    order.save(update_fields=["shipping_address"])
+                    logger.info(f"✅ CARTÃO CHECKOUT - Address #{addr.id} vinculado ao pedido #{order.id}")
+        except Exception as e:
+            logger.warning(f"⚠️ CARTÃO CHECKOUT - Erro ao vincular address: {e}")
         
         # Criar OrderItems
         for item_data in items_data:
@@ -465,6 +543,29 @@ def create_pix_payment(request):
                 except Exception:
                     shipping_price = 0.0
 
+        # Log dados recebidos para debug PIX
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        shipping_data_pix = {
+            'destination_zip': request.data.get('destination_zip', ''),
+            'shipping_service_name': request.data.get('shipping_service_name', ''),
+            'shipping_carrier': request.data.get('shipping_carrier', ''),
+            'shipping_first_name': request.data.get('shipping_first_name', ''),
+            'shipping_last_name': request.data.get('shipping_last_name', ''),
+            'shipping_phone': request.data.get('shipping_phone', ''),
+            'shipping_street': request.data.get('shipping_street', ''),
+            'shipping_number': request.data.get('shipping_number', ''),
+            'shipping_complement': request.data.get('shipping_complement', ''),
+            'shipping_neighborhood': request.data.get('shipping_neighborhood', ''),
+            'shipping_city': request.data.get('shipping_city', ''),
+            'shipping_state': request.data.get('shipping_state', ''),
+            'shipping_zip': request.data.get('shipping_zip', ''),
+        }
+        
+        logger.info(f"🚚 PIX CHECKOUT - Dados de entrega recebidos: {shipping_data_pix}")
+        logger.info(f"📦 PIX CHECKOUT - Todos os dados do request: {dict(request.data)}")
+
         order = Order.objects.create(
             user=request.user if getattr(request, 'user', None) and request.user.is_authenticated else None,
             email=request.data.get('email', ''),
@@ -486,6 +587,8 @@ def create_pix_payment(request):
             shipping_state=request.data.get('shipping_state', ''),
             shipping_zip=request.data.get('shipping_zip', '') or request.data.get('destination_zip', ''),
         )
+        
+        logger.info(f"✅ PIX CHECKOUT - Pedido #{order.id} criado com destination_zip='{order.destination_zip}' shipping_zip='{order.shipping_zip}'")
 
         # Attach saved address if provided
         try:
