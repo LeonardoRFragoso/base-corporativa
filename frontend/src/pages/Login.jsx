@@ -133,6 +133,8 @@ export default function Login() {
                 name="username"
                 type="text"
                 autoComplete="username"
+                autoCapitalize="none"
+                autoCorrect="off"
                 required
                 value={formData.username}
                 onChange={handleChange}

@@ -362,8 +362,16 @@ def create_card_payment(request):
         if payment_response.get("status") == 201:
             # Atualizar pedido com ID do pagamento
             order.mp_payment_id = str(payment.get("id"))
-            order.mp_status = payment.get("status") or "pending"
-            order.status = payment.get("status", "pending")
+            mp_status = (payment.get("status") or "").lower()
+            order.mp_status = mp_status or "pending"
+            if mp_status == 'approved':
+                order.status = 'paid'
+            elif mp_status in ('rejected', 'cancelled', 'charged_back'):
+                order.status = 'failed'
+            elif mp_status in ('in_process', 'in_mediation', 'pending'):
+                order.status = 'pending'
+            else:
+                order.status = 'pending'
             order.save(update_fields=["mp_payment_id", "mp_status", "status"])
             
             return Response({
@@ -386,8 +394,16 @@ def create_card_payment(request):
                 retry_payment = retry_resp.get('response', {})
                 if retry_resp.get('status') == 201:
                     order.mp_payment_id = str(retry_payment.get("id"))
-                    order.mp_status = retry_payment.get("status") or "pending"
-                    order.status = retry_payment.get("status", "pending")
+                    mp_status2 = (retry_payment.get("status") or "").lower()
+                    order.mp_status = mp_status2 or "pending"
+                    if mp_status2 == 'approved':
+                        order.status = 'paid'
+                    elif mp_status2 in ('rejected', 'cancelled', 'charged_back'):
+                        order.status = 'failed'
+                    elif mp_status2 in ('in_process', 'in_mediation', 'pending'):
+                        order.status = 'pending'
+                    else:
+                        order.status = 'pending'
                     order.save(update_fields=["mp_payment_id", "mp_status", "status"])
                     return Response({
                         'success': True,
@@ -641,7 +657,7 @@ def webhook(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def mercadopago_webhook(request):
     """
@@ -652,17 +668,39 @@ def mercadopago_webhook(request):
         logger = logging.getLogger(__name__)
         
         # Log da notificação recebida
-        logger.info(f"Webhook MP recebido: {request.data}")
+        logger.info(f"Webhook MP recebido: body={request.data} query={getattr(request, 'query_params', {})}")
         
-        # Extrair dados da notificação
-        topic = request.data.get('topic') or request.data.get('type')
-        resource_id = request.data.get('data', {}).get('id') or request.data.get('id')
+        # Extrair dados da notificação (POST e/ou GET)
+        topic = (
+            request.data.get('topic') or
+            request.data.get('type') or
+            request.query_params.get('topic') or
+            request.query_params.get('type')
+        )
+        resource_id = (
+            (request.data.get('data', {}) or {}).get('id') or
+            request.data.get('id') or
+            request.query_params.get('id')
+        )
+        resource_url = request.data.get('resource') or request.query_params.get('resource')
+
+        # Fallback: quando vem apenas 'resource' (IPN antigo), tentar extrair topic e id
+        if (not topic or not resource_id) and resource_url:
+            try:
+                if 'payments' in resource_url:
+                    topic = topic or 'payment'
+                    resource_id = resource_id or resource_url.rstrip('/').split('/')[-1]
+                elif 'merchant_orders' in resource_url or 'merchant_order' in resource_url:
+                    topic = topic or 'merchant_order'
+                    resource_id = resource_id or resource_url.rstrip('/').split('/')[-1]
+            except Exception:
+                pass
         
         if not topic or not resource_id:
             logger.warning(f"Webhook inválido: topic={topic}, id={resource_id}")
             return Response({'status': 'ok'}, status=status.HTTP_200_OK)
         
-        # Processar apenas notificações de pagamento
+        # Processar notificações de pagamento
         if topic == 'payment':
             # Buscar informações do pagamento no Mercado Pago
             try:
@@ -682,7 +720,15 @@ def mercadopago_webhook(request):
                         order = Order.objects.get(external_reference=external_reference)
                         order.mp_payment_id = str(payment_id)
                         order.mp_status = (payment_status or '').lower()
-                        order.status = (payment_status or '').lower() or 'pending'
+                        mp_status3 = (payment_status or '').lower()
+                        if mp_status3 == 'approved':
+                            order.status = 'paid'
+                        elif mp_status3 in ('rejected', 'cancelled', 'charged_back'):
+                            order.status = 'failed'
+                        elif mp_status3 in ('in_process', 'in_mediation', 'pending'):
+                            order.status = 'pending'
+                        else:
+                            order.status = 'pending'
                         order.save(update_fields=['mp_payment_id', 'mp_status', 'status'])
                         logger.info(f"Pedido {order.id} atualizado: {payment_status}")
                     except Order.DoesNotExist:
@@ -690,6 +736,63 @@ def mercadopago_webhook(request):
                         
             except Exception as e:
                 logger.error(f"Erro ao processar pagamento {resource_id}: {str(e)}")
+        elif topic == 'merchant_order':
+            # Alguns envios do MP usam merchant_order; buscar e extrair payment(s)
+            try:
+                mo_info = sdk.merchant_order().get(resource_id)
+                merchant_order = mo_info.get('response', {})
+                external_reference = merchant_order.get('external_reference')
+                payments = merchant_order.get('payments') or []
+
+                # Tentar achar um pagamento aprovado, senão usar o primeiro
+                payment_id = None
+                for p in payments:
+                    if (p.get('status') or '').lower() == 'approved':
+                        payment_id = p.get('id')
+                        break
+                if not payment_id and payments:
+                    payment_id = payments[0].get('id')
+
+                logger.info(f"MerchantOrder {resource_id}: ref={external_reference}, payment_id={payment_id}")
+
+                # Se temos payment_id, reusar fluxo de payment para obter status e ref definitivos
+                if payment_id:
+                    try:
+                        payment_info = sdk.payment().get(payment_id)
+                        payment = payment_info.get('response', {})
+                        payment_status = payment.get('status')
+                        external_reference = payment.get('external_reference') or external_reference
+
+                        if external_reference:
+                            try:
+                                order = Order.objects.get(external_reference=external_reference)
+                                order.mp_payment_id = str(payment_id)
+                                order.mp_status = (payment_status or '').lower()
+                                mp_status4 = (payment_status or '').lower()
+                                if mp_status4 == 'approved':
+                                    order.status = 'paid'
+                                elif mp_status4 in ('rejected', 'cancelled', 'charged_back'):
+                                    order.status = 'failed'
+                                elif mp_status4 in ('in_process', 'in_mediation', 'pending'):
+                                    order.status = 'pending'
+                                else:
+                                    order.status = 'pending'
+                                order.save(update_fields=['mp_payment_id', 'mp_status', 'status'])
+                                logger.info(f"Pedido {order.id} atualizado via merchant_order: {payment_status}")
+                            except Order.DoesNotExist:
+                                logger.error(f"Pedido não encontrado (merchant_order): {external_reference}")
+                    except Exception as e:
+                        logger.error(f"Erro ao buscar pagamento {payment_id} via merchant_order: {str(e)}")
+                elif external_reference:
+                    # Sem payment_id: ainda tentar marcar pelo external_reference com status pending
+                    try:
+                        order = Order.objects.get(external_reference=external_reference)
+                        order.mp_status = 'pending'
+                        order.save(update_fields=['mp_status'])
+                    except Order.DoesNotExist:
+                        logger.error(f"Pedido não encontrado (merchant_order sem payment): {external_reference}")
+            except Exception as e:
+                logger.error(f"Erro ao processar merchant_order {resource_id}: {str(e)}")
         
         return Response({'status': 'ok'}, status=status.HTTP_200_OK)
         

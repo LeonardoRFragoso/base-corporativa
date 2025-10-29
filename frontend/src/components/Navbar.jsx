@@ -183,30 +183,52 @@ export default function Navbar() {
                   </span>
                 )}
               </NavLink>
-              {isAuthenticated && (
+              {isAuthenticated ? (
+                <>
+                  <NavLink 
+                    to="/orders"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
+                        isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                      }`
+                    }
+                  >
+                    Meus Pedidos
+                  </NavLink>
+                  {user?.is_staff && (
+                    <NavLink 
+                      to="/admin/dashboard"
+                      onClick={() => setIsMenuOpen(false)}
+                      className={({ isActive }) =>
+                        `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
+                          isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white shadow-md' : 'text-neutral-700 hover:bg-bronze-50 hover:text-bronze-700'
+                        }`
+                      }
+                    >
+                      Dashboard Admin
+                    </NavLink>
+                  )}
+                  <button
+                    onClick={() => { logout(); setIsMenuOpen(false) }}
+                    className="px-4 py-3 text-base font-semibold rounded-xl transition-all text-neutral-700 hover:bg-error-50 hover:text-error-700 border-2 border-transparent hover:border-error-300 shadow-md"
+                  >
+                    Sair
+                  </button>
+                </>
+              ) : (
                 <NavLink 
-                  to="/orders"
+                  to="/login"
                   onClick={() => setIsMenuOpen(false)}
                   className={({ isActive }) =>
-                    `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
-                      isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                    `px-4 py-3 text-base font-bold rounded-xl transition-all shadow-md ${
+                      isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white' : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700'
                     }`
                   }
                 >
-                  Meus Pedidos
+                  Entrar
                 </NavLink>
               )}
-              <NavLink 
-                to="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  `px-4 py-3 text-base font-bold rounded-xl transition-all shadow-md ${
-                    isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white' : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700'
-                  }`
-                }
-              >
-                Entrar
-              </NavLink>
             </nav>
           </div>
         )}

@@ -355,6 +355,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'payments': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 
