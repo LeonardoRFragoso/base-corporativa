@@ -361,9 +361,10 @@ def create_card_payment(request):
         
         if payment_response.get("status") == 201:
             # Atualizar pedido com ID do pagamento
-            order.mercadopago_payment_id = payment.get("id")
+            order.mp_payment_id = str(payment.get("id"))
+            order.mp_status = payment.get("status") or "pending"
             order.status = payment.get("status", "pending")
-            order.save(update_fields=["mercadopago_payment_id", "status"])
+            order.save(update_fields=["mp_payment_id", "mp_status", "status"])
             
             return Response({
                 'success': True,
@@ -384,9 +385,10 @@ def create_card_payment(request):
                 retry_resp = sdk.payment().create(retry_data)
                 retry_payment = retry_resp.get('response', {})
                 if retry_resp.get('status') == 201:
-                    order.mercadopago_payment_id = retry_payment.get("id")
+                    order.mp_payment_id = str(retry_payment.get("id"))
+                    order.mp_status = retry_payment.get("status") or "pending"
                     order.status = retry_payment.get("status", "pending")
-                    order.save(update_fields=["mercadopago_payment_id", "status"])
+                    order.save(update_fields=["mp_payment_id", "mp_status", "status"])
                     return Response({
                         'success': True,
                         'payment_id': retry_payment.get("id"),
@@ -678,9 +680,10 @@ def mercadopago_webhook(request):
                 if external_reference:
                     try:
                         order = Order.objects.get(external_reference=external_reference)
-                        order.mercadopago_payment_id = payment_id
-                        order.status = payment_status
-                        order.save(update_fields=['mercadopago_payment_id', 'status'])
+                        order.mp_payment_id = str(payment_id)
+                        order.mp_status = (payment_status or '').lower()
+                        order.status = (payment_status or '').lower() or 'pending'
+                        order.save(update_fields=['mp_payment_id', 'mp_status', 'status'])
                         logger.info(f"Pedido {order.id} atualizado: {payment_status}")
                     except Order.DoesNotExist:
                         logger.error(f"Pedido não encontrado: {external_reference}")
