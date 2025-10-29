@@ -272,7 +272,7 @@ def create_card_payment(request):
     """
     try:
         # Validar dados obrigatórios
-        required_fields = ['token', 'installments', 'payment_method_id', 'email']
+        required_fields = ['token', 'installments', 'payment_method_id', 'email', 'issuer_id']
         for field in required_fields:
             if not request.data.get(field):
                 return Response(
