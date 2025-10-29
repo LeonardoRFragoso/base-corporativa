@@ -322,6 +322,7 @@ def create_card_payment(request):
             "description": f"Pedido #{order.id} - BASE CORPORATIVA",
             "installments": int(request.data.get('installments', 1)),
             "payment_method_id": request.data.get('payment_method_id'),
+            "issuer_id": request.data.get('issuer_id'),
             "payer": {
                 "email": request.data.get('email'),
                 "first_name": request.data.get('first_name', 'Cliente'),
@@ -366,7 +367,7 @@ def create_card_payment(request):
             })
         else:
             error_msg = payment.get("message", "Erro ao processar pagamento")
-            logger.error(f"Erro MP: {error_msg}")
+            logger.error(f"Erro MP: {error_msg} | details: {payment}")
             return Response(
                 {'error': error_msg, 'details': payment}, 
                 status=status.HTTP_400_BAD_REQUEST
