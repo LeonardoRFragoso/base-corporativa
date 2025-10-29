@@ -286,20 +286,20 @@ def create_card_payment(request):
             return Response({'error': 'Carrinho vazio'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Calcular total
-        total_items = sum(item['price'] * item['qty'] for item in items_data)
-        shipping_price = request.data.get('shipping_price', 0)
-        discount_amount = request.data.get('discount_amount', 0)
+        total_items = sum(float(item['price']) * int(item['qty']) for item in items_data)
+        shipping_price = float(request.data.get('shipping_price', 0) or 0)
+        discount_amount = float(request.data.get('discount_amount', 0) or 0)
         total_amount = total_items + float(shipping_price) - float(discount_amount)
         
         # Criar Order
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
-            guest_email=request.data.get('email') if not request.user.is_authenticated else None,
-            guest_first_name=request.data.get('first_name', ''),
-            guest_last_name=request.data.get('last_name', ''),
+            email=request.data.get('email'),
+            first_name=request.data.get('first_name', ''),
+            last_name=request.data.get('last_name', ''),
             status='pending',
-            payment_method='credit_card',
-            shipping_cost=shipping_price,
+            shipping_price=shipping_price,
+            discount_amount=discount_amount,
             total_amount=total_amount
         )
         
@@ -308,10 +308,8 @@ def create_card_payment(request):
             OrderItem.objects.create(
                 order=order,
                 product_name=item_data['name'],
+                unit_price=item_data['price'],
                 quantity=item_data['qty'],
-                price=item_data['price'],
-                size=item_data.get('size', ''),
-                color=item_data.get('color', '')
             )
         
         order.external_reference = f"ORDER-{order.id}"
