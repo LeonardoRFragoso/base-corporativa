@@ -192,19 +192,19 @@ export default function CheckoutCard() {
                   </h3>
 
                   {/* Número do Cartão */}
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
                       Número do Cartão
                     </label>
-                    <div id="form-checkout__cardNumber" className="border-2 border-neutral-300 rounded-xl p-3 transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100"></div>
+                    <div id="form-checkout__cardNumber" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                   </div>
 
                   {/* Nome no Cartão */}
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -213,32 +213,32 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__cardholderName"
-                      className="w-full px-4 py-3.5 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
                       placeholder="Nome como está no cartão"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-5">
+                  <div className="grid grid-cols-2 gap-3 mb-4">
                     {/* Data de Validade */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                         <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         Validade
                       </label>
-                      <div id="form-checkout__expirationDate" className="border-2 border-neutral-300 rounded-xl p-3 transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100"></div>
+                      <div id="form-checkout__expirationDate" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
 
                     {/* CVV */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                         <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         CVV
                       </label>
-                      <div id="form-checkout__securityCode" className="border-2 border-neutral-300 rounded-xl p-3 transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100"></div>
+                      <div id="form-checkout__securityCode" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
                   </div>
                 </div>
@@ -253,8 +253,8 @@ export default function CheckoutCard() {
                   </h3>
 
                   {/* CPF */}
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                       </svg>
@@ -264,15 +264,15 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__identificationNumber"
-                      className="w-full px-4 py-3.5 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
                       placeholder="000.000.000-00"
                       defaultValue={checkoutData.cpf || ''}
                     />
                   </div>
 
                   {/* Email */}
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
@@ -281,7 +281,7 @@ export default function CheckoutCard() {
                     <input
                       type="email"
                       id="form-checkout__cardholderEmail"
-                      className="w-full px-4 py-3.5 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
                       placeholder="seu@email.com"
                       defaultValue={checkoutData.email || ''}
                     />
@@ -298,8 +298,8 @@ export default function CheckoutCard() {
                   </h3>
 
                   {/* Banco Emissor */}
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
@@ -307,13 +307,13 @@ export default function CheckoutCard() {
                     </label>
                     <select
                       id="form-checkout__issuer"
-                      className="w-full px-4 py-3.5 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white text-sm"
                     ></select>
                   </div>
 
                   {/* Parcelas */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
@@ -321,7 +321,7 @@ export default function CheckoutCard() {
                     </label>
                     <select
                       id="form-checkout__installments"
-                      className="w-full px-4 py-3.5 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white text-sm"
                     ></select>
                   </div>
                 </div>
