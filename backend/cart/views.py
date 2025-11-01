@@ -8,6 +8,8 @@ from .models import Cart, CartItem
 from .serializers import CartSerializer
 from catalog.models import ProductVariant
 import threading
+import time
+from django.db.utils import OperationalError
 
 
 def _get_session_key(request):
@@ -122,7 +124,6 @@ def clear_cart(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@transaction.atomic
 def sync_cart(request):
     """
     Sincroniza o carrinho inteiro de uma vez, evitando múltiplas requisições.
@@ -137,7 +138,16 @@ def sync_cart(request):
         return Response({"error": "items deve ser um array"}, status=status.HTTP_400_BAD_REQUEST)
     
     with _get_cart_lock(cart.id):
-        CartItem.objects.filter(cart=cart).delete()
+        for attempt in range(5):
+            try:
+                with transaction.atomic():
+                    CartItem.objects.filter(cart=cart).delete()
+                break
+            except OperationalError as e:
+                if 'database is locked' in str(e).lower() and attempt < 4:
+                    time.sleep(0.05 * (2 ** attempt))
+                    continue
+                raise
         aggregated = {}
         for item_data in items_data:
             variant_id = item_data.get('variant_id')
@@ -161,6 +171,15 @@ def sync_cart(request):
                         quantity=qty
                     ))
             if items_to_create:
-                CartItem.objects.bulk_create(items_to_create)
+                for attempt in range(5):
+                    try:
+                        with transaction.atomic():
+                            CartItem.objects.bulk_create(items_to_create)
+                        break
+                    except OperationalError as e:
+                        if 'database is locked' in str(e).lower() and attempt < 4:
+                            time.sleep(0.05 * (2 ** attempt))
+                            continue
+                        raise
     
     return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
