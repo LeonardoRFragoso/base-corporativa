@@ -30,10 +30,12 @@ import AdminOrders from './pages/Admin/Orders.jsx'
 import AdminProducts from './pages/Admin/Products.jsx'
 import AdminCustomers from './pages/Admin/Customers.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Compare from './pages/Compare.jsx'
+import SupportChat from './components/SupportChat.jsx'
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-lightGray">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
       <Navbar />
       <main className="flex-1">
         <Routes>
@@ -65,10 +67,12 @@ function App() {
           <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
           <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
           <Route path="/admin/customers" element={<ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute>} />
+          <Route path="/compare" element={<Compare />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />
+      <SupportChat />
     </div>
   )
 }

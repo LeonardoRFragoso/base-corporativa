@@ -85,15 +85,15 @@ const Products = () => {
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const Pagination = () => (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-lg">
-      <div className="text-sm text-gray-600">Total: {totalCount} produtos</div>
+    <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-neutral-800/90 backdrop-blur-sm border-t border-gray-200 dark:border-neutral-700 rounded-b-lg">
+      <div className="text-sm text-gray-600 dark:text-neutral-400">Total: {totalCount} produtos</div>
       <div className="flex items-center gap-2">
         <button
           className="px-3 py-1 rounded border text-sm disabled:opacity-50"
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page <= 1}
         >Anterior</button>
-        <span className="text-sm text-gray-700">Página {page} de {totalPages}</span>
+        <span className="text-sm text-gray-700 dark:text-neutral-300">Página {page} de {totalPages}</span>
         <button
           className="px-3 py-1 rounded border text-sm disabled:opacity-50"
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -118,13 +118,13 @@ const Products = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-neutral-200 dark:border-neutral-700">
+          <div className="p-6 border-b border-gray-200 dark:border-neutral-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">{product.name}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-100">{product.name}</h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 text-2xl"
               >
                 ×
               </button>
@@ -134,15 +134,15 @@ const Products = () => {
           <div className="p-6 space-y-6">
             {/* Informações Básicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Informações</h3>
-                <p className="text-sm text-gray-600 mb-1">
+              <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2">Informações</h3>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">
                   <span className="font-medium">Categoria:</span> {product.category_name}
                 </p>
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">
                   <span className="font-medium">Preço Base:</span> R$ {Number(product.base_price).toFixed(2)}
                 </p>
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">
                   <span className="font-medium">Status:</span>{' '}
                   <span className={product.is_active ? 'text-green-600' : 'text-red-600'}>
                     {product.is_active ? 'Ativo' : 'Inativo'}
@@ -151,10 +151,10 @@ const Products = () => {
               </div>
 
               <div className="bg-blue-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Estoque</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2">Estoque</h3>
                 <p className="text-3xl font-bold text-blue-600">{totalStock}</p>
-                <p className="text-sm text-gray-600">unidades totais</p>
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-sm text-gray-600 dark:text-neutral-400">unidades totais</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
                   {productVariants.length} variante(s)
                 </p>
               </div>
@@ -162,35 +162,35 @@ const Products = () => {
 
             {/* Descrição */}
             {product.description && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Descrição</h3>
-                <p className="text-sm text-gray-700">{product.description}</p>
+              <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2">Descrição</h3>
+                <p className="text-sm text-gray-700 dark:text-neutral-300">{product.description}</p>
               </div>
             )}
 
             {/* Variantes */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Variantes</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-3">Variantes</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 dark:bg-neutral-900">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tamanho</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cor</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Preço</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estoque</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-neutral-500 uppercase">SKU</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-neutral-500 uppercase">Tamanho</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-neutral-500 uppercase">Cor</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-neutral-500 uppercase">Preço</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-neutral-500 uppercase">Estoque</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200">
                     {productVariants.map((variant) => {
                       const status = getStockStatus(variant.stock);
                       return (
-                        <tr key={variant.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm text-gray-900">{variant.sku}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{variant.size || '-'}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{variant.color || '-'}</td>
-                          <td className="px-4 py-3 text-sm font-semibold text-gray-900">
+                        <tr key={variant.id} className="hover:bg-gray-50 dark:bg-neutral-900">
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-neutral-100">{variant.sku}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-neutral-100">{variant.size || '-'}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-neutral-100">{variant.color || '-'}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-neutral-100">
                             R$ {Number(variant.price || product.base_price).toFixed(2)}
                           </td>
                           <td className="px-4 py-3">
@@ -210,10 +210,10 @@ const Products = () => {
             {/* Imagens */}
             {product.images && product.images.length > 0 && (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Imagens</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-3">Imagens</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {product.images.map((image, index) => (
-                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-700">
                       <img
                         src={image.image}
                         alt={image.alt_text || product.name}
@@ -231,7 +231,7 @@ const Products = () => {
             )}
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-between">
+          <div className="p-6 border-t border-gray-200 dark:border-neutral-700 flex justify-between">
             <button
                 onClick={() => {
                   const base = (api?.defaults?.baseURL || '').replace(/\/$/, '');
@@ -256,24 +256,24 @@ const Products = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando produtos...</p>
+          <p className="mt-4 text-gray-600 dark:text-neutral-400">Carregando produtos...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Gerenciar Produtos</h1>
-              <p className="text-gray-600 mt-2">Total de {filteredProducts.length} produtos</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-neutral-100">Gerenciar Produtos</h1>
+              <p className="text-gray-600 dark:text-neutral-400 mt-2">Total de {filteredProducts.length} produtos</p>
             </div>
             <div className="flex gap-3">
               <button
@@ -295,9 +295,9 @@ const Products = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-gray-500 text-sm">Total de Produtos</p>
-            <p className="text-2xl font-bold text-gray-900">{products.length}</p>
+          <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-md dark:shadow-neutral-900/50 p-4 border border-neutral-200 dark:border-neutral-700">
+            <p className="text-gray-500 dark:text-neutral-500 text-sm">Total de Produtos</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">{products.length}</p>
           </div>
           <div className="bg-green-50 rounded-lg shadow-md p-4">
             <p className="text-green-700 text-sm">Em Estoque</p>
@@ -323,7 +323,7 @@ const Products = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-md dark:shadow-neutral-900/50 p-6 mb-6 border border-neutral-200 dark:border-neutral-700">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -332,7 +332,7 @@ const Products = () => {
                 placeholder="Buscar por nome ou slug..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               />
             </div>
             <div className="relative">
@@ -340,7 +340,7 @@ const Products = () => {
               <select
                 value={stockFilter}
                 onChange={(e) => setStockFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none"
               >
                 <option value="all">Todos os Estoques</option>
                 <option value="ok">Em Estoque (≥10)</option>
@@ -352,7 +352,7 @@ const Products = () => {
               <select
                 value={activeFilter}
                 onChange={(e) => setActiveFilter(e.target.value)}
-                className="w-full py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                className="w-full py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
                 <option value="all">Todos (Ativos/Inativos)</option>
                 <option value="active">Somente Ativos</option>
@@ -363,7 +363,7 @@ const Products = () => {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                className="w-full py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
                 <option value="all">Todas as Categorias</option>
                 {categories.map((c) => (
@@ -382,9 +382,9 @@ const Products = () => {
             const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
 
             return (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={product.id} className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-md dark:shadow-neutral-900/50 overflow-hidden hover:shadow-lg dark:hover:shadow-primary-500/20 transition-shadow border border-neutral-200 dark:border-neutral-700">
                 {/* Image */}
-                <div className="relative aspect-square bg-gray-100">
+                <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800">
                   {primaryImage ? (
                     <img
                       src={primaryImage.image}
@@ -407,11 +407,11 @@ const Products = () => {
 
                 {/* Content */}
                 <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-1 truncate">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{product.category_name}</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-1 truncate">{product.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-neutral-500 mb-2">{product.category_name}</p>
                   
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-lg font-bold text-gray-900 dark:text-neutral-100">
                       {formatBRL(product.base_price)}
                     </span>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.color}`}>
@@ -435,7 +435,7 @@ const Products = () => {
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">Nenhum produto encontrado</p>
+            <p className="text-gray-500 dark:text-neutral-500 text-lg">Nenhum produto encontrado</p>
           </div>
         )}
 
@@ -444,9 +444,9 @@ const Products = () => {
         </div>
 
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
+          <div className="text-center py-12 bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-md dark:shadow-neutral-900/50 border border-neutral-200 dark:border-neutral-700">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">Nenhum produto encontrado</p>
+            <p className="text-gray-500 dark:text-neutral-500 text-lg">Nenhum produto encontrado</p>
           </div>
         )}
       </div>

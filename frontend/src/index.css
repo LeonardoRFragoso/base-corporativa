@@ -50,3 +50,57 @@
 .animate-fade-in {
   animation: fade-in 1s ease-out;
 }
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 12px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #262626;
+  border-radius: 6px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 6px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+/* Light mode scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4a574;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c49563;
+}
+
+/* Selection colors */
+::selection {
+  background-color: #d4a574;
+  color: white;
+}
+
+.dark ::selection {
+  background-color: #c49563;
+  color: #171717;
+}

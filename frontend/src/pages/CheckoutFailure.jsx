@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 export default function CheckoutFailure() {
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-soft p-8 text-center">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white dark:bg-neutral-800 rounded-lg shadow-soft p-8 text-center">
         <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -14,7 +14,7 @@ export default function CheckoutFailure() {
           Pagamento Não Aprovado
         </h1>
         
-        <p className="text-neutral-600 mb-6">
+        <p className="text-neutral-600 dark:text-neutral-400 mb-6">
           Houve um problema com o processamento do seu pagamento. 
           Não se preocupe, seus itens ainda estão no carrinho.
         </p>
@@ -41,7 +41,7 @@ export default function CheckoutFailure() {
           
           <Link 
             to="/catalog"
-            className="w-full border border-neutral-300 text-neutral-700 py-3 px-6 rounded-lg font-medium hover:bg-neutral-50 transition-all"
+            className="w-full border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 py-3 px-6 rounded-lg font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 transition-all"
           >
             Continuar comprando
           </Link>

@@ -11,8 +11,8 @@ export default function CheckoutSuccess() {
   }, [clear])
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-soft p-8 text-center">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white dark:bg-neutral-800 rounded-lg shadow-soft p-8 text-center">
         <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -23,7 +23,7 @@ export default function CheckoutSuccess() {
           Pagamento Aprovado!
         </h1>
         
-        <p className="text-neutral-600 mb-6">
+        <p className="text-neutral-600 dark:text-neutral-400 mb-6">
           Seu pedido foi processado com sucesso. Você receberá um e-mail de confirmação 
           em breve com os detalhes do seu pedido.
         </p>
@@ -50,7 +50,7 @@ export default function CheckoutSuccess() {
           
           <Link 
             to="/catalog"
-            className="w-full border border-neutral-300 text-neutral-700 py-3 px-6 rounded-lg font-medium hover:bg-neutral-50 transition-all"
+            className="w-full border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 py-3 px-6 rounded-lg font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 transition-all"
           >
             Continuar comprando
           </Link>

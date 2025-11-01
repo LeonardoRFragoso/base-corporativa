@@ -7,10 +7,10 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   // Aguardar inicialização do AuthContext
   if (!initialized) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <p className="mt-4 text-gray-600 dark:text-neutral-400">Carregando...</p>
         </div>
       </div>
     );

@@ -94,14 +94,14 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4">Entrar na sua conta</h1>
-          <p className="text-lg text-neutral-600">Acesse sua conta <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">Entrar na sua conta</h1>
+          <p className="text-lg text-neutral-600 dark:text-neutral-400">Acesse sua conta <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-10">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-10 border border-neutral-200 dark:border-neutral-700">
           <form onSubmit={onSubmit} className="space-y-6">
             {successMessage && (
               <div className="bg-success-50 border-2 border-success-300 text-success-700 px-5 py-4 rounded-xl text-base font-medium">
@@ -125,7 +125,7 @@ export default function Login() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Usuário ou E-mail
               </label>
               <input
@@ -138,8 +138,8 @@ export default function Login() {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                  errors.username ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                className={`w-full px-4 py-4 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                  errors.username ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                 }`}
                 placeholder="Digite seu usuário ou e-mail"
               />
@@ -149,7 +149,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Senha
               </label>
               <div className="relative">
@@ -161,15 +161,15 @@ export default function Login() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                    errors.password ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                  className={`w-full px-4 py-4 pr-12 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                    errors.password ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                   }`}
                   placeholder="Digite sua senha"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -194,9 +194,9 @@ export default function Login() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-5 w-5 text-primary-700 focus:ring-primary-600 border-neutral-300 rounded"
+                  className="h-5 w-5 text-primary-700 focus:ring-primary-600 border-neutral-300 dark:border-neutral-600 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-3 block text-base text-neutral-700 font-medium">
+                <label htmlFor="remember-me" className="ml-3 block text-base text-neutral-700 dark:text-neutral-300 font-medium">
                   Lembrar de mim
                 </label>
               </div>
@@ -225,7 +225,7 @@ export default function Login() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-base text-neutral-600">
+            <p className="text-base text-neutral-600 dark:text-neutral-400">
               Não tem uma conta?{' '}
               <Link to="/register" className="font-bold text-primary-700 hover:text-primary-800">
                 Cadastre-se gratuitamente

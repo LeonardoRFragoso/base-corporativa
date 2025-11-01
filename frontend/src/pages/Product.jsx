@@ -162,11 +162,11 @@ export default function Product() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50">
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mb-4"></div>
-            <p className="text-neutral-600">Carregando produto...</p>
+            <p className="text-neutral-600 dark:text-neutral-400">Carregando produto...</p>
           </div>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function Product() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-bronze-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -183,7 +183,7 @@ export default function Product() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-primary-950 mb-4">Produto não encontrado</h2>
-          <p className="text-neutral-600 mb-6">O produto que você está procurando não existe ou foi removido.</p>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6">O produto que você está procurando não existe ou foi removido.</p>
           <Link 
             to="/catalog" 
             className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-gold-500 to-bronze-500 text-dark-950 font-semibold rounded-lg hover:from-gold-400 hover:to-bronze-400 transition-all duration-200"
@@ -245,7 +245,7 @@ export default function Product() {
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900">
       <SEO 
         title={`${product.name} - BASE CORPORATIVA`}
         description={`${product.description} Compre agora na BASE CORPORATIVA com frete grátis acima de R$ 200. Qualidade premium em roupas corporativas.`}
@@ -259,7 +259,7 @@ export default function Product() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8">
-          <div className="flex items-center space-x-2 text-sm text-neutral-600">
+          <div className="flex items-center space-x-2 text-sm text-neutral-600 dark:text-neutral-400">
             <Link to="/" className="hover:text-primary-950">Início</Link>
             <span>/</span>
             <Link to="/catalog" className="hover:text-primary-950">Catálogo</Link>
@@ -272,7 +272,7 @@ export default function Product() {
           {/* Images */}
           <div className="space-y-4">
             {/* Main image */}
-            <div className="aspect-square bg-white rounded-lg overflow-hidden shadow-soft">
+            <div className="aspect-square bg-white dark:bg-neutral-800 rounded-lg overflow-hidden shadow-soft">
               {images.length > 0 ? (
                 <img 
                   src={images[selectedImage]} 
@@ -314,7 +314,7 @@ export default function Product() {
               </h1>
               <div className="flex items-center gap-3">
                 {product.category && (
-                  <div className="text-neutral-600">
+                  <div className="text-neutral-600 dark:text-neutral-400">
                     <Link to={`/catalog?category=${product.category.id}`} className="hover:text-primary-950">
                       {product.category.name}
                     </Link>
@@ -338,7 +338,7 @@ export default function Product() {
                 R$ {currentPrice.toFixed(2)}
               </div>
               {selectedVariant?.price && Number(selectedVariant.price) !== Number(product.base_price) && (
-                <div className="text-lg text-neutral-500 line-through">
+                <div className="text-lg text-neutral-500 dark:text-neutral-500 line-through">
                   R$ {Number(product.base_price).toFixed(2)}
                 </div>
               )}
@@ -347,21 +347,21 @@ export default function Product() {
             {/* Description */}
             {product.description && (
               <div className="prose prose-neutral max-w-none">
-                <p className="text-neutral-700 leading-relaxed">{product.description}</p>
+                <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{product.description}</p>
               </div>
             )}
 
             {/* Fabric info */}
             {(product.fabric_type || product.composition) && (
-              <div className="bg-white rounded-lg p-4 shadow-soft">
+              <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-soft">
                 <h3 className="font-semibold text-primary-950 mb-2">Informações do tecido</h3>
                 {product.fabric_type && (
-                  <p className="text-sm text-neutral-600 mb-1">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
                     <span className="font-medium">Tipo:</span> {product.fabric_type}
                   </p>
                 )}
                 {product.composition && (
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     <span className="font-medium">Composição:</span> {product.composition}
                   </p>
                 )}
@@ -425,10 +425,10 @@ export default function Product() {
 
             {/* Add to cart */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <div className="flex items-center border border-neutral-300 rounded-lg">
+              <div className="flex items-center border border-neutral-300 dark:border-neutral-600 rounded-lg">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                  className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors"
                 >
                   -
                 </button>
@@ -442,7 +442,7 @@ export default function Product() {
                 />
                 <button
                   onClick={() => setQty(Math.min(stockCount, qty + 1))}
-                  className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                  className="px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors"
                 >
                   +
                 </button>
@@ -479,7 +479,7 @@ export default function Product() {
                 <button
                   type="button"
                   onClick={downloadProductPdf}
-                  className="px-4 py-3 rounded-lg border border-neutral-300 text-neutral-800 hover:bg-neutral-100"
+                  className="px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-600 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800"
                 >
                   Baixar ficha PDF
                 </button>
@@ -488,9 +488,9 @@ export default function Product() {
 
             {/* Care instructions */}
             {product.care_instructions && (
-              <div className="bg-neutral-100 rounded-lg p-4">
+              <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4">
                 <h3 className="font-semibold text-primary-950 mb-2">Cuidados</h3>
-                <p className="text-sm text-neutral-700">{product.care_instructions}</p>
+                <p className="text-sm text-neutral-700 dark:text-neutral-300">{product.care_instructions}</p>
               </div>
             )}
           </div>
@@ -498,12 +498,12 @@ export default function Product() {
         
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-20 pt-16 border-t border-neutral-200">
+          <div className="mt-20 pt-16 border-t border-neutral-200 dark:border-neutral-700">
             <div className="text-center mb-12">
               <h2 className="text-2xl lg:text-3xl font-bold text-primary-950 mb-4">
                 Produtos Relacionados
               </h2>
-              <p className="text-neutral-600">
+              <p className="text-neutral-600 dark:text-neutral-400">
                 Outras peças da categoria {product.category?.name}
               </p>
             </div>
@@ -529,38 +529,38 @@ export default function Product() {
         )}
 
         {/* Reviews */}
-        <div className="mt-16 pt-10 border-t border-neutral-200">
+        <div className="mt-16 pt-10 border-t border-neutral-200 dark:border-neutral-700">
           <h2 className="text-2xl font-bold text-primary-950 mb-4">Avaliações</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <div className="space-y-4">
                 {reviews.length === 0 && (
-                  <div className="text-neutral-600">Ainda não há avaliações.</div>
+                  <div className="text-neutral-600 dark:text-neutral-400">Ainda não há avaliações.</div>
                 )}
                 {reviews.map(r => (
-                  <div key={r.id} className="bg-white rounded-lg p-4 shadow-soft">
+                  <div key={r.id} className="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-soft">
                     <div className="flex items-center justify-between">
                       <div className="font-medium text-primary-950">{r.user_name || 'Cliente'}</div>
                       <div className="text-yellow-600">{'★'.repeat(Number(r.rating)||0)}{'☆'.repeat(5 - (Number(r.rating)||0))}</div>
                     </div>
-                    {r.title && <div className="text-neutral-800 mt-1">{r.title}</div>}
-                    {r.comment && <div className="text-neutral-600 mt-1 text-sm">{r.comment}</div>}
-                    <div className="text-xs text-neutral-500 mt-2">{new Date(r.created_at).toLocaleString()}</div>
+                    {r.title && <div className="text-neutral-800 dark:text-neutral-200 mt-1">{r.title}</div>}
+                    {r.comment && <div className="text-neutral-600 dark:text-neutral-400 mt-1 text-sm">{r.comment}</div>}
+                    <div className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">{new Date(r.created_at).toLocaleString()}</div>
                   </div>
                 ))}
               </div>
             </div>
             <div>
-              <form onSubmit={submitReview} className="bg-white rounded-lg p-4 shadow-soft space-y-3">
+              <form onSubmit={submitReview} className="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-soft space-y-3">
                 <div className="font-semibold text-primary-950">Escreva uma avaliação</div>
                 <div>
-                  <label className="block text-sm text-neutral-700 mb-1">Nota</label>
+                  <label className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1">Nota</label>
                   <select value={ratingInput} onChange={(e)=>setRatingInput(Number(e.target.value))} className="w-full px-3 py-2 border rounded">
                     {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} estrelas</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-700 mb-1">Comentário</label>
+                  <label className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1">Comentário</label>
                   <textarea value={commentInput} onChange={(e)=>setCommentInput(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded" placeholder="Conte sua experiência"></textarea>
                 </div>
                 <button disabled={reviewLoading} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800">Enviar</button>

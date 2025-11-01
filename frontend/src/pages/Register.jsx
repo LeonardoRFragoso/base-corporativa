@@ -107,11 +107,11 @@ export default function Register() {
     <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4">Criar sua conta</h1>
-          <p className="text-lg text-neutral-600">Junte-se à <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">Criar sua conta</h1>
+          <p className="text-lg text-neutral-600 dark:text-neutral-400">Junte-se à <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-10">
+        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-10">
           <form onSubmit={onSubmit} className="space-y-6">
             {errors.general && (
               <div className="bg-error-50 border-2 border-error-300 text-error-700 px-5 py-4 rounded-xl text-base font-medium">
@@ -137,7 +137,7 @@ export default function Register() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="username" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Usuário
               </label>
               <input
@@ -159,7 +159,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="email" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 E-mail
               </label>
               <input
@@ -181,7 +181,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Senha
               </label>
               <div className="relative">
@@ -201,7 +201,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -224,7 +224,7 @@ export default function Register() {
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'medium' || passwordStrength === 'strong' ? passwordStrength === 'medium' ? 'bg-warning-400' : 'bg-success-400' : 'bg-neutral-200'}`}></div>
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'strong' ? 'bg-success-400' : 'bg-neutral-200'}`}></div>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
                     {passwordStrength === 'weak' && 'Senha fraca'}
                     {passwordStrength === 'medium' && 'Senha média'}
                     {passwordStrength === 'strong' && 'Senha forte'}
@@ -238,7 +238,7 @@ export default function Register() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="confirmPassword" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Confirmar Senha
               </label>
               <div className="relative">
@@ -258,7 +258,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
                 >
                   {showConfirmPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -294,7 +294,7 @@ export default function Register() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-base text-neutral-600">
+            <p className="text-base text-neutral-600 dark:text-neutral-400">
               Já tem uma conta?{' '}
               <Link to="/login" className="font-bold text-primary-700 hover:text-primary-800">
                 Faça login

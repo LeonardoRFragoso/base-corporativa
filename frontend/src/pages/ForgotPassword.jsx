@@ -28,17 +28,17 @@ export default function ForgotPassword() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full">
-          <div className="bg-white rounded-2xl shadow-xl p-12">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-12">
             <div className="text-center">
               <div className="flex justify-center mb-6">
                 <div className="rounded-full bg-success-100 p-4">
                   <CheckCircle className="h-20 w-20 text-success-600" />
                 </div>
               </div>
-              <h2 className="text-3xl lg:text-4xl font-display font-bold text-neutral-900 mb-4">
+              <h2 className="text-3xl lg:text-4xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 Email Enviado!
               </h2>
-              <p className="text-lg text-neutral-600 mb-8">
+              <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
                 Se existir uma conta com o email <strong className="text-primary-700">{email}</strong>, você receberá instruções para redefinir sua senha.
               </p>
               <div className="bg-bronze-50 border-2 border-bronze-300 rounded-xl p-5 mb-8">
@@ -64,13 +64,13 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4">Esqueceu sua senha?</h1>
-          <p className="text-lg text-neutral-600">
+          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">Esqueceu sua senha?</h1>
+          <p className="text-lg text-neutral-600 dark:text-neutral-400">
             Digite seu email e enviaremos instruções para redefinir sua senha.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-10">
+        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-error-50 border-2 border-error-300 text-error-700 px-5 py-4 rounded-xl text-base font-medium">
@@ -79,7 +79,7 @@ export default function ForgotPassword() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-base font-semibold text-neutral-700 mb-2">
+              <label htmlFor="email" className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 E-mail
               </label>
               <div className="relative">
@@ -94,7 +94,7 @@ export default function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-14 pr-4 py-4 border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base"
+                  className="w-full pl-14 pr-4 py-4 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base"
                   placeholder="Digite seu e-mail"
                 />
               </div>
@@ -127,7 +127,7 @@ export default function ForgotPassword() {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Voltar para Login
             </Link>
-            <p className="text-base text-neutral-600">
+            <p className="text-base text-neutral-600 dark:text-neutral-400">
               Não tem uma conta?{' '}
               <Link to="/register" className="font-bold text-primary-700 hover:text-primary-800">
                 Cadastre-se

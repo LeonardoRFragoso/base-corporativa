@@ -19,8 +19,9 @@ export default function About() {
       />
       <BreadcrumbSchema items={breadcrumbItems} />
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-bronze-900/30"></div>
+      <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-800 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800 text-white overflow-hidden transition-colors duration-300">
+        {/* Overlay decorativo melhorado */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/5 via-transparent to-bronze-900/5 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-500/5 to-bronze-600/10"></div>
         
         {/* Geometric Pattern Background */}
@@ -70,24 +71,24 @@ export default function About() {
       </section>
 
       {/* Nossa História */}
-      <section className="py-28 bg-white">
+      <section className="py-28 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="animate-fade-in">
-              <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-8">
+              <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-8">
                 Nossa História
               </h2>
-              <p className="text-xl text-neutral-600 mb-6 leading-relaxed">
+              <p className="text-xl text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed">
                 A BASE CORPORATIVA nasceu da necessidade de oferecer ao mercado brasileiro 
-                roupas profissionais que combinam <strong className="text-primary-700">qualidade premium</strong>, 
-                <strong className="text-bronze-700">design minimalista</strong> e <strong className="text-primary-700">preços justos</strong>.
+                roupas profissionais que combinam <strong className="text-primary-700 dark:text-primary-400">qualidade premium</strong>, 
+                <strong className="text-bronze-700 dark:text-bronze-400">design minimalista</strong> e <strong className="text-primary-700 dark:text-primary-400">preços justos</strong>.
               </p>
-              <p className="text-lg text-neutral-600 mb-6 leading-relaxed">
+              <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed">
                 Desenvolvemos cada peça pensando no profissional moderno que valoriza 
                 qualidade, conforto e praticidade no dia a dia, sem comprometer com o 
                 seu guarda-roupa de lifestyle.
               </p>
-              <p className="text-lg text-neutral-600 leading-relaxed">
+              <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Nosso compromisso é democratizar o acesso a roupas corporativas de alta 
                 qualidade, para que todos os profissionais possam se vestir com elegância 
                 e confiança.
@@ -95,23 +96,23 @@ export default function About() {
             </div>
             
             <div className="relative animate-scale-in">
-              <div className="bg-gradient-to-br from-primary-50/50 to-bronze-50/50 rounded-3xl p-10">
+              <div className="bg-gradient-to-br from-primary-50/50 to-bronze-50/50 dark:from-neutral-800/50 dark:to-neutral-800/50 rounded-3xl p-10 transition-colors duration-300">
                 <div className="grid grid-cols-2 gap-8 text-center">
-                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="text-5xl font-bold text-primary-600 mb-3">1000+</div>
-                    <div className="text-base text-neutral-600 font-medium">Profissionais atendidos</div>
+                  <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
+                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">1000+</div>
+                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Profissionais atendidos</div>
                   </div>
-                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="text-5xl font-bold text-bronze-700 mb-3">95%</div>
-                    <div className="text-base text-neutral-600 font-medium">Satisfação dos clientes</div>
+                  <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
+                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">95%</div>
+                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Satisfação dos clientes</div>
                   </div>
-                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="text-5xl font-bold text-primary-600 mb-3">50+</div>
-                    <div className="text-base text-neutral-600 font-medium">Modelos disponíveis</div>
+                  <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
+                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">50+</div>
+                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Modelos disponíveis</div>
                   </div>
-                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="text-5xl font-bold text-bronze-700 mb-3">24h</div>
-                    <div className="text-base text-neutral-600 font-medium">Suporte especializado</div>
+                  <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
+                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">24h</div>
+                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Suporte especializado</div>
                   </div>
                 </div>
               </div>
@@ -121,52 +122,52 @@ export default function About() {
       </section>
 
       {/* Nossos Valores */}
-      <section className="py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20">
+      <section className="py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20 dark:from-neutral-800/50 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-6">
               Nossos Valores
             </h2>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
               Os princípios que guiam cada decisão e cada peça que criamos
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center group animate-fade-in bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{animationDelay: '0.1s'}}>
+            <div className="text-center group animate-fade-in bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-10 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border border-neutral-200 dark:border-neutral-700" style={{animationDelay: '0.1s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-5">Qualidade</h3>
-              <p className="text-base text-neutral-600 leading-relaxed">
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-5">Qualidade</h3>
+              <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Materiais duráveis e confortáveis, selecionados especialmente para resistir 
                 ao uso diário mantendo a elegância e o conforto.
               </p>
             </div>
             
-            <div className="text-center group animate-fade-in bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{animationDelay: '0.2s'}}>
+            <div className="text-center group animate-fade-in bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-10 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-bronze-500/20 transition-all duration-500 hover:-translate-y-2 border border-neutral-200 dark:border-neutral-700" style={{animationDelay: '0.2s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-bronze-700 to-bronze-800 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-5">Design</h3>
-              <p className="text-base text-neutral-600 leading-relaxed">
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-5">Design</h3>
+              <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Peças atemporais com design clean e sofisticado, que combinam perfeitamente 
                 entre si criando looks versáteis e elegantes.
               </p>
             </div>
             
-            <div className="text-center group animate-fade-in bg-white rounded-2xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2" style={{animationDelay: '0.3s'}}>
+            <div className="text-center group animate-fade-in bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-10 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border border-neutral-200 dark:border-neutral-700" style={{animationDelay: '0.3s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-5">Acessibilidade</h3>
-              <p className="text-base text-neutral-600 leading-relaxed">
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-5">Acessibilidade</h3>
+              <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Qualidade premium a preços acessíveis. Acreditamos que roupas de trabalho 
                 de qualidade devem estar ao alcance de todos os profissionais.
               </p>
@@ -176,9 +177,9 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-36 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
-        {/* Background overlays */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-transparent to-bronze-900/40"></div>
+      <section className="relative py-36 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 text-white overflow-hidden transition-colors duration-300">
+        {/* Background overlays melhorados */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/10 via-transparent to-bronze-900/10 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-bronze-900/20 to-transparent"></div>
         
         {/* Background Pattern */}

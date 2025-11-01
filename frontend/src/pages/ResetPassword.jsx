@@ -57,19 +57,19 @@ export default function ResetPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
-          <div className="bg-white rounded-lg shadow-soft p-8">
+          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-soft p-8">
             <div className="text-center">
               <div className="flex justify-center mb-4">
                 <div className="rounded-full bg-success-100 p-3">
                   <CheckCircle className="h-16 w-16 text-success-600" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-2">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
                 Senha Redefinida!
               </h2>
-              <p className="text-neutral-600 mb-6">
+              <p className="text-neutral-600 dark:text-neutral-400 mb-6">
                 Sua senha foi redefinida com sucesso. Você já pode fazer login com sua nova senha.
               </p>
               <div className="bg-success-50 border border-success-200 rounded-lg p-4 mb-6">
@@ -91,16 +91,16 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary-950 mb-2">Redefinir Senha</h1>
-          <p className="text-neutral-600">
+          <p className="text-neutral-600 dark:text-neutral-400">
             Digite sua nova senha abaixo.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-soft p-8">
+        <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-soft p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg text-sm">
@@ -109,7 +109,7 @@ export default function ResetPassword() {
             )}
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Nova Senha
               </label>
               <div className="relative">
@@ -124,13 +124,13 @@ export default function ResetPassword() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  className="w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bronze-600 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-10 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-bronze-600 focus:border-transparent transition-all"
                   placeholder="Digite sua nova senha"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -144,7 +144,7 @@ export default function ResetPassword() {
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'medium' || passwordStrength === 'strong' ? passwordStrength === 'medium' ? 'bg-warning-400' : 'bg-success-400' : 'bg-neutral-200'}`}></div>
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'strong' ? 'bg-success-400' : 'bg-neutral-200'}`}></div>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
                     {passwordStrength === 'weak' && 'Senha fraca'}
                     {passwordStrength === 'medium' && 'Senha média'}
                     {passwordStrength === 'strong' && 'Senha forte'}
@@ -154,7 +154,7 @@ export default function ResetPassword() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Confirmar Nova Senha
               </label>
               <div className="relative">
@@ -169,13 +169,13 @@ export default function ResetPassword() {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  className="w-full pl-10 pr-10 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bronze-600 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-10 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-bronze-600 focus:border-transparent transition-all"
                   placeholder="Confirme sua nova senha"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -199,7 +199,7 @@ export default function ResetPassword() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link to="/login" className="text-sm text-bronze-600 hover:text-bronze-700">
+            <Link to="/login" className="text-sm text-bronze-600 hover:text-bronze-700 dark:hover:text-bronze-400">
               Voltar para Login
             </Link>
           </div>

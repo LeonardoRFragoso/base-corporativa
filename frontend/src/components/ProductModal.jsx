@@ -234,15 +234,15 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl shadow-strong max-w-3xl w-full my-8">
+      <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-strong max-w-3xl w-full my-8">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+        <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-700">
           <h2 className="text-2xl font-display font-bold text-primary-950">
             {product ? 'Editar Produto' : 'Novo Produto'}
           </h2>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-neutral-600 transition-colors"
+            className="text-neutral-400 hover:text-neutral-600 dark:text-neutral-400 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -263,7 +263,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             <h3 className="text-lg font-semibold text-dark-900">Informações Básicas</h3>
             
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Nome do Produto *
               </label>
               <input
@@ -284,7 +284,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Descrição
               </label>
               <textarea
@@ -293,14 +293,14 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
                 rows={3}
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 placeholder="Descreva o produto..."
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="base_price" className="block text-sm font-medium text-neutral-700 mb-2">
+                <label htmlFor="base_price" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Preço Base (R$) *
                 </label>
                 <input
@@ -323,7 +323,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
               </div>
 
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-neutral-700 mb-2">
+                <label htmlFor="category" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Categoria *
                 </label>
                 <select
@@ -348,7 +348,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             </div>
 
             <div>
-              <label htmlFor="fabric_type" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="fabric_type" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Tipo de Tecido
               </label>
               <input
@@ -357,7 +357,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
                 type="text"
                 value={formData.fabric_type}
                 onChange={handleChange}
-                className="w-full px-3 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 placeholder="Ex: Algodão Premium"
               />
             </div>
@@ -369,9 +369,9 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={handleChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 dark:border-neutral-600 rounded"
               />
-              <label htmlFor="is_active" className="ml-2 block text-sm text-neutral-700">
+              <label htmlFor="is_active" className="ml-2 block text-sm text-neutral-700 dark:text-neutral-300">
                 Produto ativo (visível no catálogo)
               </label>
             </div>
@@ -382,19 +382,19 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             <h3 className="text-lg font-semibold text-dark-900">Imagens do Produto</h3>
             
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                 Adicionar Imagens
               </label>
               <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-neutral-300 border-dashed rounded-lg cursor-pointer bg-neutral-50 hover:bg-neutral-100 transition-colors">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-neutral-300 dark:border-neutral-600 border-dashed rounded-lg cursor-pointer bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg className="w-8 h-8 mb-2 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-8 h-8 mb-2 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <p className="mb-1 text-sm text-neutral-500">
+                    <p className="mb-1 text-sm text-neutral-500 dark:text-neutral-500">
                       <span className="font-semibold">Clique para fazer upload</span> ou arraste e solte
                     </p>
-                    <p className="text-xs text-neutral-500">PNG, JPG ou WEBP (máx. 5MB cada)</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-500">PNG, JPG ou WEBP (máx. 5MB cada)</p>
                   </div>
                   <input
                     type="file"
@@ -413,7 +413,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             {/* Image Previews */}
             {imagePreviews.length > 0 && (
               <div>
-                <p className="text-sm text-neutral-600 mb-3">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">
                   {imagePreviews.length} imagem{imagePreviews.length !== 1 ? 's' : ''} selecionada{imagePreviews.length !== 1 ? 's' : ''}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -422,7 +422,7 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
                       <img
                         src={preview.url}
                         alt={`Preview ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg border border-neutral-200"
+                        className="w-full h-32 object-cover rounded-lg border border-neutral-200 dark:border-neutral-700"
                       />
                       <button
                         type="button"
@@ -467,27 +467,27 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
             </div>
 
             {variants.length === 0 ? (
-              <p className="text-sm text-neutral-500 italic">
+              <p className="text-sm text-neutral-500 dark:text-neutral-500 italic">
                 Nenhuma variante adicionada. Clique em "Adicionar Variante" para criar tamanhos e cores.
               </p>
             ) : (
               <div className="space-y-3">
                 {variants.map((variant, index) => (
-                  <div key={index} className="flex gap-3 items-start p-4 bg-neutral-50 rounded-lg">
+                  <div key={index} className="flex gap-3 items-start p-4 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
                     <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3">
                       <input
                         type="text"
                         placeholder="Tamanho (P, M, G)"
                         value={variant.size || ''}
                         onChange={(e) => handleVariantChange(index, 'size', e.target.value)}
-                        className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                        className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                       />
                       <input
                         type="text"
                         placeholder="Cor"
                         value={variant.color || ''}
                         onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
-                        className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                        className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                       />
                       <input
                         type="number"
@@ -495,14 +495,14 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
                         placeholder="Preço (opcional)"
                         value={variant.price || ''}
                         onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
-                        className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                        className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                       />
                       <input
                         type="number"
                         placeholder="Estoque"
                         value={variant.stock || 0}
                         onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
-                        className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                        className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                     <button
@@ -521,11 +521,11 @@ export default function ProductModal({ product, categories, onClose, onSave }) {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition-colors font-medium"
+              className="px-6 py-3 text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 rounded-lg hover:bg-neutral-200 transition-colors font-medium"
             >
               Cancelar
             </button>

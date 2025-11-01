@@ -198,18 +198,18 @@ export default function CheckoutCard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-2">Pagamento com Cartão</h1>
-          <p className="text-base sm:text-lg text-neutral-600">Preencha os dados do seu cartão de crédito com segurança</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Pagamento com Cartão</h1>
+          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">Preencha os dados do seu cartão de crédito com segurança</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Formulário de Cartão */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg border border-neutral-200 p-6 sm:p-8">
+            <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-6 sm:p-8">
               <form id="form-checkout">
                 {/* Seção: Dados do Cartão */}
                 <div className="mb-8">
-                  <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
@@ -218,19 +218,19 @@ export default function CheckoutCard() {
 
                   {/* Número do Cartão */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
                       Número do Cartão
                     </label>
-                    <div id="form-checkout__cardNumber" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                    <div id="form-checkout__cardNumber" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                   </div>
 
                   {/* Nome no Cartão */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       Nome no Cartão
@@ -238,7 +238,7 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__cardholderName"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
                       placeholder="Nome como está no cartão"
                     />
                   </div>
@@ -246,31 +246,31 @@ export default function CheckoutCard() {
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {/* Data de Validade */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                        <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         Validade
                       </label>
-                      <div id="form-checkout__expirationDate" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                      <div id="form-checkout__expirationDate" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
 
                     {/* CVV */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                        <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         CVV
                       </label>
-                      <div id="form-checkout__securityCode" className="border-2 border-neutral-300 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                      <div id="form-checkout__securityCode" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
                   </div>
                 </div>
 
                 {/* Seção: Dados do Titular */}
                 <div className="mb-8 pt-6 border-t-2 border-neutral-100">
-                  <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -279,8 +279,8 @@ export default function CheckoutCard() {
 
                   {/* CPF */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                       </svg>
                       CPF do Titular
@@ -289,7 +289,7 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__identificationNumber"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
                       placeholder="000.000.000-00"
                       defaultValue={checkoutData.cpf || ''}
                     />
@@ -297,8 +297,8 @@ export default function CheckoutCard() {
 
                   {/* Email */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                       E-mail
@@ -306,7 +306,7 @@ export default function CheckoutCard() {
                     <input
                       type="email"
                       id="form-checkout__cardholderEmail"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
                       placeholder="seu@email.com"
                       defaultValue={checkoutData.email || ''}
                     />
@@ -315,7 +315,7 @@ export default function CheckoutCard() {
 
                 {/* Seção: Opções de Pagamento */}
                 <div className="mb-8 pt-6 border-t-2 border-neutral-100">
-                  <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -324,29 +324,29 @@ export default function CheckoutCard() {
 
                   {/* Banco Emissor */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                       Banco Emissor
                     </label>
                     <select
                       id="form-checkout__issuer"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 text-sm"
                     ></select>
                   </div>
 
                   {/* Parcelas */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5 flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
                       Parcelas
                     </label>
                     <select
                       id="form-checkout__installments"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 bg-white text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 text-sm"
                     ></select>
                   </div>
                 </div>
@@ -395,7 +395,7 @@ export default function CheckoutCard() {
 
                 <Link
                   to="/cart"
-                  className="block w-full mt-4 text-center py-3.5 px-6 border-2 border-neutral-300 rounded-xl font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400 transition-all"
+                  className="block w-full mt-4 text-center py-3.5 px-6 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 hover:border-neutral-400 transition-all"
                 >
                   ← Voltar ao carrinho
                 </Link>
@@ -405,47 +405,47 @@ export default function CheckoutCard() {
 
           {/* Resumo do Pedido */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-white to-neutral-50 rounded-2xl shadow-lg border border-neutral-200 p-6 sticky top-4">
+            <div className="bg-gradient-to-br from-white to-neutral-50 rounded-2xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-6 sticky top-4">
               <div className="flex items-center gap-2 mb-5">
                 <svg className="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <h2 className="text-xl font-bold text-neutral-900">Resumo do Pedido</h2>
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Resumo do Pedido</h2>
               </div>
               
               <div className="space-y-3 mb-5">
                 {checkoutData.items?.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start gap-3 p-3 bg-white rounded-lg border border-neutral-100">
+                  <div key={index} className="flex justify-between items-start gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-100">
                     <div className="flex-1">
-                      <span className="text-sm font-medium text-neutral-900 block">
+                      <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100 block">
                         {item.name}
                       </span>
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-500">
                         Quantidade: {item.qty}
                       </span>
                     </div>
-                    <span className="font-bold text-neutral-900 text-sm whitespace-nowrap">
+                    <span className="font-bold text-neutral-900 dark:text-neutral-100 text-sm whitespace-nowrap">
                       R$ {(item.price * item.qty).toFixed(2)}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t-2 border-neutral-200 pt-4 space-y-3">
+              <div className="border-t-2 border-neutral-200 dark:border-neutral-700 pt-4 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-600 font-medium">Subtotal</span>
-                  <span className="font-semibold text-neutral-900">R$ {itemsTotal.toFixed(2)}</span>
+                  <span className="text-neutral-600 dark:text-neutral-400 font-medium">Subtotal</span>
+                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">R$ {itemsTotal.toFixed(2)}</span>
                 </div>
                 
                 {checkoutData.shipping_price > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600 font-medium flex items-center gap-1">
+                    <span className="text-neutral-600 dark:text-neutral-400 font-medium flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                       </svg>
                       Frete
                     </span>
-                    <span className="font-semibold text-neutral-900">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                       R$ {Number(checkoutData.shipping_price).toFixed(2)}
                     </span>
                   </div>
@@ -453,7 +453,7 @@ export default function CheckoutCard() {
 
                 {checkoutData.discount_amount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600 font-medium flex items-center gap-1">
+                    <span className="text-neutral-600 dark:text-neutral-400 font-medium flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
@@ -465,9 +465,9 @@ export default function CheckoutCard() {
                   </div>
                 )}
 
-                <div className="border-t-2 border-neutral-200 pt-4 mt-4">
+                <div className="border-t-2 border-neutral-200 dark:border-neutral-700 pt-4 mt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-neutral-900">Total</span>
+                    <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Total</span>
                     <span className="text-2xl font-bold text-primary-700">
                       R$ {finalTotal.toFixed(2)}
                     </span>
@@ -476,7 +476,7 @@ export default function CheckoutCard() {
               </div>
 
               {/* Selos de Segurança */}
-              <div className="mt-6 pt-6 border-t-2 border-neutral-200">
+              <div className="mt-6 pt-6 border-t-2 border-neutral-200 dark:border-neutral-700">
                 <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
                   <div className="flex items-center justify-center gap-2 text-sm text-green-800 mb-2">
                     <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

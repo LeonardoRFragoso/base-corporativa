@@ -191,15 +191,15 @@ export default function Orders() {
   }
 
   const Pagination = () => (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-neutral-200 rounded-b-lg">
-      <div className="text-sm text-neutral-600">
+    <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-neutral-800/90 backdrop-blur-sm border-t border-neutral-200 dark:border-neutral-700 rounded-b-lg">
+      <div className="text-sm text-neutral-600 dark:text-neutral-400">
         Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredOrders.length)} de {filteredOrders.length} pedidos
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
           disabled={currentPage <= 1}
-          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900"
         >
           Anterior
         </button>
@@ -224,7 +224,7 @@ export default function Orders() {
                 className={`px-3 py-1 rounded text-sm ${
                   currentPage === pageNum
                     ? 'bg-primary-950 text-white'
-                    : 'border hover:bg-neutral-50'
+                    : 'border hover:bg-neutral-50 dark:hover:bg-neutral-800'
                 }`}
               >
                 {pageNum}
@@ -236,7 +236,7 @@ export default function Orders() {
         <button
           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
           disabled={currentPage >= totalPages}
-          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900"
         >
           Próxima
         </button>
@@ -267,7 +267,7 @@ export default function Orders() {
           className={`px-3 py-1 rounded-full text-sm border transition-colors ${
             statusFilter === status
               ? 'bg-primary-950 text-white border-primary-950'
-              : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50'
+              : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
           }`}
         >
           {statusLabels[status]} ({orders.filter(o => status === 'all' || o.status === status).length})
@@ -279,12 +279,12 @@ export default function Orders() {
   if (!isAuthenticated) return null
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
           <div>
             <h1 className="text-3xl lg:text-4xl font-bold text-primary-950">Meus Pedidos</h1>
-            <div className="text-sm text-neutral-600 mt-1">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
               {filteredOrders.length} de {orders.length} pedidos
             </div>
           </div>
@@ -303,11 +303,11 @@ export default function Orders() {
             
             <div className="w-px h-6 bg-neutral-300"></div>
             
-            <span className="text-sm text-neutral-600">Ordenar por:</span>
+            <span className="text-sm text-neutral-600 dark:text-neutral-400">Ordenar por:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="created_at">Data</option>
               <option value="total_amount">Valor</option>
@@ -316,20 +316,20 @@ export default function Orders() {
             </select>
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="p-1 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+              className="p-1 border border-neutral-300 dark:border-neutral-600 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 transition-colors"
               title={`Ordenação ${sortOrder === 'asc' ? 'crescente' : 'decrescente'}`}
             >
               {sortOrder === 'asc' ? (
-                <ArrowUp className="w-4 h-4 text-neutral-600" />
+                <ArrowUp className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
               ) : (
-                <ArrowDown className="w-4 h-4 text-neutral-600" />
+                <ArrowDown className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
               )}
             </button>
           </div>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-soft dark:shadow-neutral-900/50 p-6 mb-6 border border-neutral-200 dark:border-neutral-700">
           <StatusChips />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -340,7 +340,7 @@ export default function Orders() {
                 placeholder="Buscar por ID do pedido, email ou nome..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             
@@ -349,7 +349,7 @@ export default function Orders() {
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none bg-white"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent appearance-none bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white transition-colors"
               >
                 <option value="all">Todos os períodos</option>
                 <option value="today">Hoje</option>
@@ -363,21 +363,21 @@ export default function Orders() {
           {dateFilter === 'custom' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">Data inicial</label>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Data inicial</label>
                 <input
                   type="date"
                   value={customDateFrom}
                   onChange={(e) => setCustomDateFrom(e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">Data final</label>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Data final</label>
                 <input
                   type="date"
                   value={customDateTo}
                   onChange={(e) => setCustomDateTo(e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -392,7 +392,7 @@ export default function Orders() {
                 placeholder="Filtrar por produto..."
                 value={productFilter}
                 onChange={(e) => setProductFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             
@@ -402,7 +402,7 @@ export default function Orders() {
                 placeholder="Valor mínimo (R$)"
                 value={priceMin}
                 onChange={(e) => setPriceMin(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 min="0"
                 step="0.01"
               />
@@ -414,7 +414,7 @@ export default function Orders() {
                 placeholder="Valor máximo (R$)"
                 value={priceMax}
                 onChange={(e) => setPriceMax(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 min="0"
                 step="0.01"
               />
@@ -431,9 +431,9 @@ export default function Orders() {
           <div className="mb-6 p-3 rounded bg-red-50 text-red-700 border border-red-200">{error}</div>
         )}
         {!loading && filteredOrders.length === 0 && orders.length > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-soft text-center">
+          <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm p-6 rounded-lg shadow-soft dark:shadow-neutral-900/50 text-center border border-neutral-200 dark:border-neutral-700">
             <Package className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-            <p className="text-neutral-700">Nenhum pedido encontrado com os filtros aplicados.</p>
+            <p className="text-neutral-700 dark:text-neutral-300">Nenhum pedido encontrado com os filtros aplicados.</p>
             <button 
               onClick={() => {
                 setStatusFilter('all'); 
@@ -452,32 +452,32 @@ export default function Orders() {
           </div>
         )}
         {!loading && orders.length === 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-soft text-center">
+          <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm p-6 rounded-lg shadow-soft dark:shadow-neutral-900/50 text-center border border-neutral-200 dark:border-neutral-700">
             <Package className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-            <p className="text-neutral-700">Você ainda não possui pedidos.</p>
+            <p className="text-neutral-700 dark:text-neutral-300">Você ainda não possui pedidos.</p>
             <Link to="/catalog" className="inline-block mt-3 px-4 py-2 bg-primary-950 text-white rounded-lg hover:bg-primary-800">Ir para o catálogo</Link>
           </div>
         )}
-        <div className="bg-white rounded-lg shadow-soft overflow-hidden">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-soft dark:shadow-neutral-900/50 overflow-hidden border border-neutral-200 dark:border-neutral-700">
           <div className="grid grid-cols-1 gap-4 p-4">
             {paginatedOrders.map((o) => (
-              <Link key={o.id} to={`/orders/${o.id}`} className="bg-neutral-50 p-4 rounded-lg hover:bg-neutral-100 transition block">
+              <Link key={o.id} to={`/orders/${o.id}`} className="bg-neutral-50 dark:bg-neutral-900 p-4 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition block border border-neutral-200 dark:border-neutral-700">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="text-sm font-medium text-neutral-900">Pedido #{o.id}</div>
+                      <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Pedido #{o.id}</div>
                       {getStatusBadge(o.status)}
                     </div>
-                    <div className="text-sm text-neutral-600">{new Date(o.created_at).toLocaleString('pt-BR')}</div>
+                    <div className="text-sm text-neutral-600 dark:text-neutral-400">{new Date(o.created_at).toLocaleString('pt-BR')}</div>
                     {(o.first_name || o.last_name || o.email) && (
-                      <div className="text-sm text-neutral-500 mt-1">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-500 mt-1">
                         {o.first_name} {o.last_name} {o.email && `(${o.email})`}
                       </div>
                     )}
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold text-primary-950">R$ {Number(o.total_amount || 0).toFixed(2)}</div>
-                    <div className="flex items-center text-sm text-neutral-500 mt-1">
+                    <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-500 mt-1">
                       <Eye className="w-4 h-4 mr-1" />
                       Ver detalhes
                     </div>

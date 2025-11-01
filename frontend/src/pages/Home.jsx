@@ -36,8 +36,9 @@ export default function Home() {
       <OrganizationSchema />
       <WebsiteSchema />
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-bronze-900/30"></div>
+      <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-800 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-800 text-white overflow-hidden transition-colors duration-300">
+        {/* Overlay decorativo melhorado */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/5 via-transparent to-bronze-900/5 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-500/5 to-bronze-600/10"></div>
         
         {/* Geometric Pattern Background */}
@@ -72,7 +73,7 @@ export default function Home() {
                 </Link>
                 <Link 
                   to="/about"
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 border-2 border-primary-300/60 text-white font-bold rounded-xl hover:bg-white/10 hover:border-primary-200 backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
+                  className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 border-2 border-neutral-600 dark:border-neutral-500 hover:border-primary-500 dark:hover:border-primary-400 text-neutral-200 dark:text-neutral-300 hover:text-white dark:hover:text-white hover:bg-neutral-800/50 dark:hover:bg-neutral-700/50 font-bold rounded-xl backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
                 >
                   Sobre nós
                 </Link>
@@ -103,56 +104,62 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-white via-neutral-50 to-white">
+      <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-4 sm:mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6 transition-colors duration-300">
               Por que escolher a BASE CORPORATIVA?
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed px-4 transition-colors duration-300">
               Desenvolvemos cada peça pensando no profissional moderno que valoriza qualidade, 
               conforto e praticidade no dia a dia.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-primary-600 relative overflow-hidden text-center">
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-500/5 font-bold text-5xl sm:text-6xl font-display">01</div>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-lg mx-auto">
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 shadow-xl dark:shadow-neutral-900/80 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600/30 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 relative overflow-hidden text-center ring-2 ring-transparent hover:ring-primary-500/30 dark:hover:ring-primary-400/30">
+              {/* Efeito de brilho */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 via-transparent to-bronze-500/0 group-hover:from-primary-500/10 group-hover:to-bronze-500/5 transition-all duration-500 pointer-events-none"></div>
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-500/15 dark:text-primary-400/20 font-bold text-5xl sm:text-6xl font-display group-hover:text-primary-500/25 dark:group-hover:text-primary-400/30 transition-all duration-300">01</div>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-xl dark:shadow-primary-500/40 mx-auto">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-3 sm:mb-4 relative z-10">Tecidos de qualidade</h3>
-              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4 relative z-10">Tecidos de qualidade</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm sm:text-base">
                 Materiais duráveis e confortáveis, selecionados especialmente para resistir ao uso diário 
                 mantendo a elegância e o conforto.
               </p>
             </div>
 
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-bronze-700 relative overflow-hidden text-center">
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-bronze-700/5 font-bold text-5xl sm:text-6xl font-display">02</div>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-bronze-700 to-bronze-800 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-lg mx-auto">
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 shadow-xl dark:shadow-neutral-900/80 hover:shadow-2xl dark:hover:shadow-bronze-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-bronze-700/30 dark:border-bronze-600/50 hover:border-bronze-600 dark:hover:border-bronze-500 relative overflow-hidden text-center ring-2 ring-transparent hover:ring-bronze-500/30 dark:hover:ring-bronze-400/30">
+              {/* Efeito de brilho */}
+              <div className="absolute inset-0 bg-gradient-to-br from-bronze-500/0 via-transparent to-bronze-500/0 group-hover:from-bronze-500/10 group-hover:to-bronze-500/5 transition-all duration-500 pointer-events-none"></div>
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-bronze-700/15 dark:text-bronze-500/20 font-bold text-5xl sm:text-6xl font-display group-hover:text-bronze-700/25 dark:group-hover:text-bronze-500/30 transition-all duration-300">02</div>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-bronze-700 to-bronze-800 dark:from-bronze-600 dark:to-bronze-700 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-lg dark:shadow-bronze-500/30 mx-auto">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-3 sm:mb-4 relative z-10">Design minimalista</h3>
-              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4 relative z-10">Design minimalista</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm sm:text-base">
                 Peças atemporais com design clean e sofisticado, que combinam perfeitamente entre si 
                 criando looks versáteis e elegantes.
               </p>
             </div>
 
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-primary-600 relative overflow-hidden text-center">
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-600/5 font-bold text-5xl sm:text-6xl font-display">03</div>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-lg mx-auto">
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 shadow-xl dark:shadow-neutral-900/80 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600/30 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 relative overflow-hidden text-center ring-2 ring-transparent hover:ring-primary-500/30 dark:hover:ring-primary-400/30">
+              {/* Efeito de brilho */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 via-transparent to-bronze-500/0 group-hover:from-primary-500/10 group-hover:to-bronze-500/5 transition-all duration-500 pointer-events-none"></div>
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-600/15 dark:text-primary-400/20 font-bold text-5xl sm:text-6xl font-display group-hover:text-primary-600/25 dark:group-hover:text-primary-400/30 transition-all duration-300">03</div>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 rounded-xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10 shadow-xl dark:shadow-primary-500/40 mx-auto">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-3 sm:mb-4 relative z-10">Preço justo</h3>
-              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4 relative z-10">Preço justo</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm sm:text-base">
                 Qualidade premium a preços acessíveis. Acreditamos que roupas de trabalho de qualidade 
                 devem estar ao alcance de todos os profissionais.
               </p>
@@ -162,67 +169,67 @@ export default function Home() {
       </section>
 
       {/* Social Proof Section */}
-      <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20">
+      <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20 dark:from-neutral-800/50 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16 lg:mb-20 animate-fade-in">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary-600 to-bronze-700 rounded-full mb-4 sm:mb-6 shadow-xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary-600 to-bronze-700 dark:from-primary-500 dark:to-bronze-600 rounded-full mb-4 sm:mb-6 shadow-xl transition-colors duration-300">
               <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-xs sm:text-sm font-bold text-primary-700 mb-3 sm:mb-4 tracking-widest uppercase">CONFIANÇA PROFISSIONAL</p>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-bold text-neutral-900 mb-4 sm:mb-6 leading-tight px-4">Mais de 1.000 profissionais já escolheram a BASE CORPORATIVA</h3>
-            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed px-4">Junte-se aos profissionais que já descobriram a diferença de vestir qualidade premium todos os dias.</p>
+            <p className="text-xs sm:text-sm font-bold text-primary-700 dark:text-primary-400 mb-3 sm:mb-4 tracking-widest uppercase transition-colors duration-300">CONFIANÇA PROFISSIONAL</p>
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6 leading-tight px-4 transition-colors duration-300">Mais de 1.000 profissionais já escolheram a BASE CORPORATIVA</h3>
+            <p className="text-base sm:text-lg lg:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed px-4 transition-colors duration-300">Junte-se aos profissionais que já descobriram a diferença de vestir qualidade premium todos os dias.</p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-primary-600 animate-fade-in text-center" style={{animationDelay: '0.1s'}}>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600/40 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 animate-fade-in text-center ring-1 ring-neutral-200 dark:ring-neutral-700 hover:ring-primary-500/30" style={{animationDelay: '0.1s'}}>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl dark:shadow-primary-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 sm:mb-3">Frete Grátis</div>
-              <div className="text-neutral-600 text-sm sm:text-base">Acima de R$ 200</div>
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">Frete Grátis</div>
+              <p className="text-neutral-600 dark:text-neutral-300 text-base leading-relaxed">Acima de R$ 200</p>
             </div>
             
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-bronze-700 animate-fade-in text-center" style={{animationDelay: '0.2s'}}>
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-bronze-700 to-bronze-800 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-bronze-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-bronze-700/40 dark:border-bronze-600/50 hover:border-bronze-600 dark:hover:border-bronze-500 animate-fade-in text-center ring-1 ring-neutral-200 dark:ring-neutral-700 hover:ring-bronze-500/30" style={{animationDelay: '0.2s'}}>
+              <div className="w-20 h-20 bg-gradient-to-br from-bronze-700 to-bronze-800 dark:from-bronze-600 dark:to-bronze-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl dark:shadow-bronze-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 sm:mb-3">Garantia</div>
-              <div className="text-neutral-600 text-sm sm:text-base">30 dias para troca</div>
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">Garantia</div>
+              <p className="text-neutral-600 dark:text-neutral-300 text-base leading-relaxed">30 dias para troca</p>
             </div>
             
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-primary-600 animate-fade-in text-center" style={{animationDelay: '0.3s'}}>
+            <div className="group bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-primary-600 animate-fade-in text-center" style={{animationDelay: '0.3s'}}>
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 sm:mb-3">Segurança</div>
-              <div className="text-neutral-600 text-sm sm:text-base">Compra protegida</div>
+              <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2 sm:mb-3">Segurança</div>
+              <div className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base">Compra protegida</div>
             </div>
             
-            <div className="group bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-bronze-800 animate-fade-in text-center" style={{animationDelay: '0.4s'}}>
+            <div className="group bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-t-4 border-bronze-800 animate-fade-in text-center" style={{animationDelay: '0.4s'}}>
               <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-bronze-800 to-bronze-900 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 sm:mb-3">Suporte</div>
-              <div className="text-neutral-600 text-sm sm:text-base">Atendimento especializado</div>
+              <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2 sm:mb-3">Suporte</div>
+              <div className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base">Atendimento especializado</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-16 sm:py-24 lg:py-36 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 text-white overflow-hidden">
-        {/* Background overlays */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-transparent to-bronze-900/40"></div>
+      <section className="relative py-16 sm:py-24 lg:py-36 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 text-white overflow-hidden transition-colors duration-300">
+        {/* Background overlays melhorados */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/10 via-transparent to-bronze-900/10 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-bronze-900/20 to-transparent"></div>
         
         {/* Background Pattern */}
@@ -246,7 +253,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in" style={{animationDelay: '0.2s'}}>
             <Link 
               to="/catalog"
-              className="group inline-flex items-center justify-center w-full sm:w-auto px-12 py-6 bg-gradient-to-r from-bronze-700 to-bronze-800 text-white font-bold text-lg rounded-xl hover:from-bronze-600 hover:to-bronze-700 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105"
+              className="group inline-flex items-center justify-center w-full sm:w-auto px-12 py-6 bg-gradient-to-r from-primary-600 to-bronze-700 hover:from-primary-500 hover:to-bronze-600 text-white font-bold text-lg rounded-xl shadow-2xl hover:shadow-primary-500/50 dark:hover:shadow-primary-400/50 transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
             >
               Explorar catálogo
               <svg className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -254,7 +261,7 @@ export default function Home() {
               </svg>
             </Link>
             
-            <button onClick={handleDownloadCatalog} className="group inline-flex items-center justify-center w-full sm:w-auto px-12 py-6 border-2 border-primary-300/70 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-primary-200 backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1">
+            <button onClick={handleDownloadCatalog} className="group inline-flex items-center justify-center w-full sm:w-auto px-12 py-6 border-2 border-neutral-600 dark:border-neutral-500 hover:border-primary-500 dark:hover:border-primary-400 text-neutral-200 dark:text-neutral-300 hover:text-white dark:hover:text-white hover:bg-neutral-800/50 dark:hover:bg-neutral-700/50 font-bold text-lg rounded-xl backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1">
               <svg className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>

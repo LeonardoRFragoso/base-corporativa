@@ -1,17 +1,24 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
+import { Search, Moon, Sun, GitCompare } from 'lucide-react'
 import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useTheme } from '../context/ThemeContext.jsx'
+import { useCompare } from '../context/CompareContext.jsx'
+import SearchBar from './SearchBar.jsx'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const { items } = useCart()
   const { user, logout, isAuthenticated } = useAuth()
+  const { theme, toggleTheme } = useTheme()
+  const { compareItems } = useCompare()
   const cartItemsCount = items.reduce((sum, item) => sum + item.qty, 0)
 
   return (
-    <header className="bg-white/98 backdrop-blur-lg border-b-2 border-neutral-200 shadow-2xl">
+    <header className="bg-white/98 dark:bg-neutral-800/98 backdrop-blur-lg border-b-2 border-neutral-200 dark:border-neutral-700 shadow-2xl transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -24,18 +31,46 @@ export default function Navbar() {
                 className="relative h-9 sm:h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
               />
             </div>
-            <span className="text-base sm:text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 bg-clip-text text-transparent tracking-wide">
+            <span className="text-base sm:text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 dark:from-primary-400 dark:via-primary-500 dark:to-bronze-400 bg-clip-text text-transparent tracking-wide">
               BASE CORPORATIVA
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-10">
+          <nav className="hidden md:flex items-center space-x-6">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-lg transition-all"
+              aria-label="Buscar produtos"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            
+            <NavLink
+              to="/compare"
+              className="relative p-2 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-lg transition-all"
+              aria-label="Comparar produtos"
+            >
+              <GitCompare className="w-5 h-5" />
+              {compareItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary-600 dark:bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {compareItems.length}
+                </span>
+              )}
+            </NavLink>
+            
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-lg transition-all"
+              aria-label="Alternar tema"
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
             <NavLink 
               to="/about"
               className={({ isActive }) =>
-                `text-base font-semibold transition-all duration-200 hover:text-primary-700 relative group ${
-                  isActive ? 'text-primary-700' : 'text-neutral-700'
+                `text-base font-semibold transition-all duration-200 hover:text-primary-700 dark:hover:text-primary-400 relative group ${
+                  isActive ? 'text-primary-700 dark:text-primary-400' : 'text-neutral-700 dark:text-neutral-200'
                 }`
               }
             >
@@ -45,8 +80,8 @@ export default function Navbar() {
             <NavLink 
               to="/catalog"
               className={({ isActive }) =>
-                `text-base font-semibold transition-all duration-200 hover:text-primary-700 relative group ${
-                  isActive ? 'text-primary-700' : 'text-neutral-700'
+                `text-base font-semibold transition-all duration-200 hover:text-primary-700 dark:hover:text-primary-400 relative group ${
+                  isActive ? 'text-primary-700 dark:text-primary-400' : 'text-neutral-700 dark:text-neutral-200'
                 }`
               }
             >
@@ -56,8 +91,8 @@ export default function Navbar() {
             <NavLink 
               to="/cart"
               className={({ isActive }) =>
-                `relative text-base font-semibold transition-all duration-200 hover:text-primary-700 group ${
-                  isActive ? 'text-primary-700' : 'text-neutral-700'
+                `relative text-base font-semibold transition-all duration-200 hover:text-primary-700 dark:hover:text-primary-400 group ${
+                  isActive ? 'text-primary-700 dark:text-primary-400' : 'text-neutral-700 dark:text-neutral-200'
                 }`
               }
             >
@@ -74,8 +109,8 @@ export default function Navbar() {
                 <NavLink 
                   to="/orders"
                   className={({ isActive }) =>
-                    `text-base font-semibold transition-all duration-200 hover:text-primary-700 relative group ${
-                      isActive ? 'text-primary-700' : 'text-neutral-700'
+                    `text-base font-semibold transition-all duration-200 hover:text-primary-700 dark:hover:text-primary-400 relative group ${
+                      isActive ? 'text-primary-700 dark:text-primary-400' : 'text-neutral-700 dark:text-neutral-200'
                     }`
                   }
                 >
@@ -86,8 +121,8 @@ export default function Navbar() {
                   <NavLink 
                     to="/admin/dashboard"
                     className={({ isActive }) =>
-                      `text-base font-semibold transition-all duration-200 hover:text-bronze-700 relative group ${
-                        isActive ? 'text-bronze-700' : 'text-neutral-700'
+                      `text-base font-semibold transition-all duration-200 hover:text-bronze-700 dark:hover:text-bronze-400 relative group ${
+                        isActive ? 'text-bronze-700 dark:text-bronze-400' : 'text-neutral-700 dark:text-neutral-200'
                       }`
                     }
                   >
@@ -95,8 +130,8 @@ export default function Navbar() {
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-bronze-600 to-bronze-700 transition-all duration-200 group-hover:w-full"></span>
                   </NavLink>
                 )}
-                <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-primary-50 to-bronze-50 rounded-lg border border-primary-200">
-                  <span className="text-base font-medium text-neutral-700">Olá, <span className="text-primary-700 font-bold">{user?.username}</span></span>
+                <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-primary-50 to-bronze-50 dark:from-primary-900/20 dark:to-bronze-900/20 rounded-lg border border-primary-200 dark:border-primary-700">
+                  <span className="text-base font-medium text-neutral-700 dark:text-neutral-200">Olá, <span className="text-primary-700 dark:text-primary-400 font-bold">{user?.username}</span></span>
                   {user?.is_staff && (
                     <span className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-bronze-700 to-bronze-800 text-white rounded-full shadow-lg">
                       ADMIN
@@ -105,7 +140,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={logout}
-                  className="px-5 py-2.5 text-base font-semibold rounded-lg transition-all duration-200 text-neutral-700 hover:bg-error-50 hover:text-error-700 border-2 border-transparent hover:border-error-300 hover:shadow-md"
+                  className="px-5 py-2.5 text-base font-semibold rounded-lg transition-all duration-200 text-neutral-700 dark:text-neutral-200 hover:bg-error-50 dark:hover:bg-error-900/20 hover:text-error-700 dark:hover:text-error-400 border-2 border-transparent hover:border-error-300 dark:hover:border-error-700 hover:shadow-md"
                 >
                   Sair
                 </button>
@@ -117,7 +152,7 @@ export default function Navbar() {
                   `px-6 py-2.5 text-base font-bold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 ${
                     isActive 
                       ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white' 
-                      : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700'
+                      : 'bg-gradient-to-r from-bronze-700 to-bronze-800 dark:from-bronze-600 dark:to-bronze-700 text-white hover:from-bronze-600 hover:to-bronze-700'
                   }`
                 }
               >
@@ -129,7 +164,7 @@ export default function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-3 rounded-lg text-neutral-700 hover:text-primary-700 hover:bg-primary-50 transition-all duration-200"
+            className="md:hidden p-3 rounded-lg text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 transition-all duration-200"
           >
             <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               {isMenuOpen ? (
@@ -143,14 +178,14 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-6 border-t-2 border-neutral-200 animate-slide-up">
+          <div className="md:hidden py-6 border-t-2 border-neutral-200 dark:border-neutral-700 animate-slide-up">
             <nav className="flex flex-col space-y-3">
               <NavLink 
                 to="/about"
                 onClick={() => setIsMenuOpen(false)}
                 className={({ isActive }) =>
                   `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
-                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 dark:text-neutral-200 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-700 dark:hover:text-primary-400'
                   }`
                 }
               >
@@ -161,7 +196,7 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 className={({ isActive }) =>
                   `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
-                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 dark:text-neutral-200 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-700 dark:hover:text-primary-400'
                   }`
                 }
               >
@@ -172,7 +207,7 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 className={({ isActive }) =>
                   `px-4 py-3 text-base font-semibold rounded-xl transition-all flex items-center justify-between ${
-                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                    isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 dark:text-neutral-200 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-700 dark:hover:text-primary-400'
                   }`
                 }
               >
@@ -190,7 +225,7 @@ export default function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                     className={({ isActive }) =>
                       `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
-                        isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 hover:bg-primary-50 hover:text-primary-700'
+                        isActive ? 'bg-gradient-to-r from-primary-700 to-bronze-700 text-white shadow-md' : 'text-neutral-700 dark:text-neutral-200 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-700 dark:hover:text-primary-400'
                       }`
                     }
                   >
@@ -202,7 +237,7 @@ export default function Navbar() {
                       onClick={() => setIsMenuOpen(false)}
                       className={({ isActive }) =>
                         `px-4 py-3 text-base font-semibold rounded-xl transition-all ${
-                          isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white shadow-md' : 'text-neutral-700 hover:bg-bronze-50 hover:text-bronze-700'
+                          isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white shadow-md' : 'text-neutral-700 dark:text-neutral-200 hover:bg-bronze-50 dark:hover:bg-neutral-700 hover:text-bronze-700 dark:hover:text-bronze-400'
                         }`
                       }
                     >
@@ -211,7 +246,7 @@ export default function Navbar() {
                   )}
                   <button
                     onClick={() => { logout(); setIsMenuOpen(false) }}
-                    className="px-4 py-3 text-base font-semibold rounded-xl transition-all text-neutral-700 hover:bg-error-50 hover:text-error-700 border-2 border-transparent hover:border-error-300 shadow-md"
+                    className="px-4 py-3 text-base font-semibold rounded-xl transition-all text-neutral-700 dark:text-neutral-200 hover:bg-error-50 dark:hover:bg-error-900/20 hover:text-error-700 dark:hover:text-error-400 border-2 border-transparent hover:border-error-300 dark:hover:border-error-700 shadow-md"
                   >
                     Sair
                   </button>
@@ -222,7 +257,7 @@ export default function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className={({ isActive }) =>
                     `px-4 py-3 text-base font-bold rounded-xl transition-all shadow-md ${
-                      isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white' : 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white hover:from-bronze-600 hover:to-bronze-700'
+                      isActive ? 'bg-gradient-to-r from-bronze-700 to-bronze-800 text-white' : 'bg-gradient-to-r from-bronze-700 to-bronze-800 dark:from-bronze-600 dark:to-bronze-700 text-white hover:from-bronze-600 hover:to-bronze-700'
                     }`
                   }
                 >
@@ -233,6 +268,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      
+      {/* Search Modal */}
+      {isSearchOpen && <SearchBar onClose={() => setIsSearchOpen(false)} />}
     </header>
   )
 }

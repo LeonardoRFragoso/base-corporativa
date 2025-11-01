@@ -158,7 +158,7 @@ export default function AdminProductCreate() {
         <div>
           <label className="block text-sm font-medium mb-1">Imagens</label>
           <input type="file" multiple accept="image/*" onChange={(e) => setImages(Array.from(e.target.files || []))} />
-          <p className="text-xs text-gray-600 mt-1">A primeira imagem será marcada como principal.</p>
+          <p className="text-xs text-gray-600 dark:text-neutral-400 mt-1">A primeira imagem será marcada como principal.</p>
         </div>
         <div>
           <button disabled={submitting} className="px-4 py-2 rounded bg-black text-white disabled:opacity-60">
