@@ -119,7 +119,8 @@ else:
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
             'OPTIONS': {
-                'timeout': 20,  # Aumenta o timeout para evitar "database is locked"
+                'timeout': 30,  # Aumenta o timeout para evitar "database is locked"
+                'check_same_thread': False,  # Permite múltiplas threads
             }
         }
     }
