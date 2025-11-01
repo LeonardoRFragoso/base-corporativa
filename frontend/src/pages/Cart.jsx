@@ -451,7 +451,7 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-8 sm:sticky sm:top-28 border border-neutral-200 dark:border-neutral-700">
+            <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-8 sm:sticky sm:top-28 overflow-hidden border border-neutral-200 dark:border-neutral-700">
               <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Resumo do pedido</h2>
 
               {/* Shipping: CEP and quotes */}
@@ -674,15 +674,15 @@ export default function Cart() {
 
               <div className="mb-6">
                 <label className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Cupom de desconto</label>
-                <div className="flex gap-3">
+                <div className="flex items-stretch gap-3">
                   <input
                     type="text"
                     placeholder="Digite seu cupom"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                    className="flex-1 min-w-0 px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                   />
-                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all">Aplicar</button>
+                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all shrink-0 whitespace-nowrap">Aplicar</button>
                 </div>
                 {couponError && <div className="text-sm text-error-600 mt-2 font-medium">{couponError}</div>}
                 {coupon && (

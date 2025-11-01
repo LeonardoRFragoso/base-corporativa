@@ -260,11 +260,11 @@ export default function Product() {
         {/* Breadcrumb */}
         <nav className="mb-8">
           <div className="flex items-center space-x-2 text-sm text-neutral-600 dark:text-neutral-400">
-            <Link to="/" className="hover:text-primary-950">Início</Link>
+            <Link to="/" className="hover:text-primary-950 dark:hover:text-primary-300">Início</Link>
             <span>/</span>
-            <Link to="/catalog" className="hover:text-primary-950">Catálogo</Link>
+            <Link to="/catalog" className="hover:text-primary-950 dark:hover:text-primary-300">Catálogo</Link>
             <span>/</span>
-            <span className="text-primary-950">{product.name}</span>
+            <span className="text-primary-950 dark:text-primary-300">{product.name}</span>
           </div>
         </nav>
 
@@ -309,13 +309,13 @@ export default function Product() {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 mb-2">
+              <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 dark:text-primary-300 mb-2">
                 {product.name}
               </h1>
               <div className="flex items-center gap-3">
                 {product.category && (
                   <div className="text-neutral-600 dark:text-neutral-400">
-                    <Link to={`/catalog?category=${product.category.id}`} className="hover:text-primary-950">
+                    <Link to={`/catalog?category=${product.category.id}`} className="hover:text-primary-950 dark:hover:text-primary-300">
                       {product.category.name}
                     </Link>
                   </div>
@@ -324,7 +324,9 @@ export default function Product() {
                   type="button"
                   onClick={toggleWishlist}
                   disabled={wishlistLoading}
-                  className={`ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition ${wishlisted ? 'border-gold-500 text-gold-700 bg-gold-50' : 'border-neutral-300 text-neutral-700 hover:border-primary-950'}`}
+                  className={`ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition ${wishlisted 
+                    ? 'border-gold-500 text-gold-700 bg-gold-50 dark:border-yellow-600 dark:text-yellow-400 dark:bg-yellow-900/20' 
+                    : 'border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200 hover:border-primary-950 dark:hover:border-primary-500'}`}
                 >
                   <svg className="w-5 h-5" fill={wishlisted ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
                   {wishlisted ? 'Salvo' : 'Salvar' }
@@ -354,7 +356,7 @@ export default function Product() {
             {/* Fabric info */}
             {(product.fabric_type || product.composition) && (
               <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-soft">
-                <h3 className="font-semibold text-primary-950 mb-2">Informações do tecido</h3>
+                <h3 className="font-semibold text-primary-950 dark:text-primary-300 mb-2">Informações do tecido</h3>
                 {product.fabric_type && (
                   <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
                     <span className="font-medium">Tipo:</span> {product.fabric_type}
@@ -371,7 +373,7 @@ export default function Product() {
             {/* Size selection */}
             {availableSizes.length > 0 && (
               <div>
-                <h3 className="font-semibold text-primary-950 mb-3">Tamanho</h3>
+                <h3 className="font-semibold text-primary-950 dark:text-primary-300 mb-3">Tamanho</h3>
                 <div className="flex flex-wrap gap-2">
                   {availableSizes.map(size => (
                     <button
@@ -379,8 +381,8 @@ export default function Product() {
                       onClick={() => selectVariant(size, selectedVariant?.color)}
                       className={`px-4 py-2 border rounded-lg transition-all ${
                         selectedVariant?.size === size
-                          ? 'border-primary-950 bg-primary-950 text-white'
-                          : 'border-neutral-300 hover:border-primary-950'
+                          ? 'border-primary-950 bg-primary-950 text-white dark:border-primary-500 dark:bg-primary-700'
+                          : 'border-neutral-300 dark:border-neutral-600 dark:text-neutral-200 hover:border-primary-950 dark:hover:border-primary-500'
                       }`}
                     >
                       {size}
@@ -393,7 +395,7 @@ export default function Product() {
             {/* Color selection */}
             {availableColors.length > 0 && (
               <div>
-                <h3 className="font-semibold text-primary-950 mb-3">Cor</h3>
+                <h3 className="font-semibold text-primary-950 dark:text-primary-300 mb-3">Cor</h3>
                 <div className="flex flex-wrap gap-2">
                   {availableColors.map(color => (
                     <button
@@ -401,8 +403,8 @@ export default function Product() {
                       onClick={() => selectVariant(selectedVariant?.size, color)}
                       className={`px-4 py-2 border rounded-lg transition-all capitalize ${
                         selectedVariant?.color === color
-                          ? 'border-primary-950 bg-primary-950 text-white'
-                          : 'border-neutral-300 hover:border-primary-950'
+                          ? 'border-primary-950 bg-primary-950 text-white dark:border-primary-500 dark:bg-primary-700'
+                          : 'border-neutral-300 dark:border-neutral-600 dark:text-neutral-200 hover:border-primary-950 dark:hover:border-primary-500'
                       }`}
                     >
                       {color}
@@ -438,7 +440,7 @@ export default function Product() {
                   max={stockCount}
                   value={qty}
                   onChange={(e) => setQty(Math.max(1, Math.min(stockCount, parseInt(e.target.value) || 1)))}
-                  className="w-16 text-center py-2 border-0 focus:ring-0"
+                  className="w-16 text-center py-2 border-0 focus:ring-0 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
                 />
                 <button
                   onClick={() => setQty(Math.min(stockCount, qty + 1))}
@@ -489,7 +491,7 @@ export default function Product() {
             {/* Care instructions */}
             {product.care_instructions && (
               <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4">
-                <h3 className="font-semibold text-primary-950 mb-2">Cuidados</h3>
+                <h3 className="font-semibold text-primary-950 dark:text-primary-300 mb-2">Cuidados</h3>
                 <p className="text-sm text-neutral-700 dark:text-neutral-300">{product.care_instructions}</p>
               </div>
             )}
@@ -500,7 +502,7 @@ export default function Product() {
         {relatedProducts.length > 0 && (
           <div className="mt-20 pt-16 border-t border-neutral-200 dark:border-neutral-700">
             <div className="text-center mb-12">
-              <h2 className="text-2xl lg:text-3xl font-bold text-primary-950 mb-4">
+              <h2 className="text-2xl lg:text-3xl font-bold text-primary-950 dark:text-primary-300 mb-4">
                 Produtos Relacionados
               </h2>
               <p className="text-neutral-600 dark:text-neutral-400">
@@ -530,7 +532,7 @@ export default function Product() {
 
         {/* Reviews */}
         <div className="mt-16 pt-10 border-t border-neutral-200 dark:border-neutral-700">
-          <h2 className="text-2xl font-bold text-primary-950 mb-4">Avaliações</h2>
+          <h2 className="text-2xl font-bold text-primary-950 dark:text-primary-300 mb-4">Avaliações</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <div className="space-y-4">
@@ -552,16 +554,16 @@ export default function Product() {
             </div>
             <div>
               <form onSubmit={submitReview} className="bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-soft space-y-3">
-                <div className="font-semibold text-primary-950">Escreva uma avaliação</div>
+                <div className="font-semibold text-primary-950 dark:text-primary-300">Escreva uma avaliação</div>
                 <div>
                   <label className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1">Nota</label>
-                  <select value={ratingInput} onChange={(e)=>setRatingInput(Number(e.target.value))} className="w-full px-3 py-2 border rounded">
+                  <select value={ratingInput} onChange={(e)=>setRatingInput(Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-600">
                     {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} estrelas</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1">Comentário</label>
-                  <textarea value={commentInput} onChange={(e)=>setCommentInput(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded" placeholder="Conte sua experiência"></textarea>
+                  <textarea value={commentInput} onChange={(e)=>setCommentInput(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-600 placeholder-neutral-400 dark:placeholder-neutral-500" placeholder="Conte sua experiência"></textarea>
                 </div>
                 <button disabled={reviewLoading} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800">Enviar</button>
               </form>

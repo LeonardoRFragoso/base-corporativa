@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { api } from '../lib/api'
+import { formatBRL } from '../utils/format'
 
 export default function SearchBar({ onClose }) {
   const [query, setQuery] = useState('')
@@ -47,8 +49,35 @@ export default function SearchBar({ onClose }) {
     onClose?.()
   }
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-20 px-4">
+  const resolveImageSrc = (product) => {
+    const imgs = Array.isArray(product.images) ? product.images : []
+    const primary = imgs.find(i => i?.is_primary) || imgs[0]
+    const path = primary?.image || ''
+    if (!path) return '/placeholder.png'
+    if (typeof path === 'string' && (path.startsWith('http://') || path.startsWith('https://'))) {
+      return path
+    }
+    return `${baseURL}${path}`
+  }
+
+  const resolvePrice = (product) => {
+    const candidates = []
+    // Prefer explicit base_price
+    if (product?.base_price !== undefined && product?.base_price !== null) candidates.push(product.base_price)
+    // Some APIs might expose price at product level
+    if (product?.price !== undefined && product?.price !== null) candidates.push(product.price)
+    // Prefer default variant price if any
+    const defaultVar = Array.isArray(product?.variants) ? product.variants.find(v => v?.is_default && v?.price != null) : null
+    if (defaultVar?.price != null) candidates.push(defaultVar.price)
+    // Any variant with price
+    const anyVar = Array.isArray(product?.variants) ? product.variants.find(v => v?.price != null) : null
+    if (anyVar?.price != null) candidates.push(anyVar.price)
+    const n = Number(candidates.find(v => !Number.isNaN(Number(v))) ?? 0)
+    return Number.isFinite(n) ? n : 0
+  }
+
+  const modal = (
+    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-start justify-center pt-20 px-4">
       <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-2xl animate-scale-in">
         <div className="p-6 border-b border-neutral-200 dark:border-neutral-700">
           <div className="flex items-center gap-3">
@@ -59,7 +88,7 @@ export default function SearchBar({ onClose }) {
               placeholder="Buscar produtos..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 outline-none text-lg"
+              className="flex-1 outline-none text-lg px-4 py-2 rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:ring-2 focus:ring-primary-500"
               aria-label="Buscar produtos"
             />
             <button
@@ -87,7 +116,7 @@ export default function SearchBar({ onClose }) {
 
           {!loading && results.length > 0 && (
             <>
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-700">
                 {results.map((product) => (
                   <button
                     key={product.id}
@@ -95,7 +124,7 @@ export default function SearchBar({ onClose }) {
                     className="w-full p-4 flex items-center gap-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 transition-colors text-left"
                   >
                     <img
-                      src={product.images?.[0]?.image ? `${baseURL}${product.images[0].image}` : '/placeholder.png'}
+                      src={resolveImageSrc(product)}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
@@ -106,8 +135,8 @@ export default function SearchBar({ onClose }) {
                       <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         {product.category?.name}
                       </p>
-                      <p className="text-primary-700 font-bold mt-1">
-                        R$ {Number(product.price).toFixed(2)}
+                      <p className="text-primary-700 dark:text-primary-300 font-bold mt-1">
+                        {formatBRL(resolvePrice(product))}
                       </p>
                     </div>
                   </button>
@@ -128,4 +157,5 @@ export default function SearchBar({ onClose }) {
       </div>
     </div>
   )
+  return createPortal(modal, document.body)
 }

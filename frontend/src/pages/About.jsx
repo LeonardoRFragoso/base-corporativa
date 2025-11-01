@@ -35,13 +35,19 @@ export default function About() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6 bg-gradient-to-r from-white via-primary-100 to-bronze-200 bg-clip-text text-transparent drop-shadow-2xl">
+              <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 animate-fade-in-down">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                </svg>
+                Conheça Nossa História
+              </div>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6 bg-gradient-to-r from-white via-primary-100 to-bronze-200 bg-clip-text text-transparent drop-shadow-2xl animate-fade-in-up">
                 Sobre a BASE CORPORATIVA
               </h1>
-              <p className="text-xl sm:text-2xl lg:text-3xl text-primary-200 mb-6 font-light tracking-wide">
+              <p className="text-xl sm:text-2xl lg:text-3xl text-primary-200 mb-6 font-light tracking-wide animate-fade-in-up" style={{animationDelay: '0.2s'}}>
                 Conforto e praticidade diária
               </p>
-              <p className="text-base sm:text-lg text-neutral-200 mb-10 leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-neutral-200 mb-10 leading-relaxed max-w-xl animate-fade-in-up" style={{animationDelay: '0.4s'}}>
                 Conforto e praticidade diária para o profissional moderno que valoriza qualidade, 
                 elegância e funcionalidade em cada peça do seu guarda-roupa.
               </p>
@@ -140,7 +146,7 @@ export default function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-5">Qualidade</h3>
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4 relative z-10">Qualidade</h3>
               <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Materiais duráveis e confortáveis, selecionados especialmente para resistir 
                 ao uso diário mantendo a elegância e o conforto.

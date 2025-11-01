@@ -51,7 +51,13 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6 bg-gradient-to-r from-white via-primary-100 to-bronze-200 bg-clip-text text-transparent drop-shadow-2xl leading-tight">
+              <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 animate-fade-in-down">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-1.414 1.414l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                Mais de 1.000 profissionais confiam
+              </div>
+              <h1 className="text-5xl lg:text-7xl font-display font-black mb-6 leading-tight tracking-tight animate-fade-in-up">
                 BASE<br className="md:hidden" /> CORPORATIVA
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-primary-200 mb-6 font-light tracking-wide">
@@ -64,16 +70,19 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-5">
                 <Link 
                   to="/catalog"
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-primary-600 to-bronze-700 text-white font-bold rounded-xl hover:from-primary-500 hover:to-bronze-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105"
+                  className="group relative inline-flex items-center px-10 py-5 bg-gradient-to-r from-bronze-600 to-bronze-700 text-white font-bold text-lg rounded-xl hover:from-bronze-500 hover:to-bronze-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 overflow-hidden animate-fade-in-up" style={{animationDelay: '0.4s'}}
                 >
-                  Ver catálogo
-                  <svg className="ml-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                  <span className="relative">
+                    Ver catálogo
+                  </span>
+                  <svg className="ml-3 h-6 w-6 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </Link>
                 <Link 
                   to="/about"
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 border-2 border-neutral-600 dark:border-neutral-500 hover:border-primary-500 dark:hover:border-primary-400 text-neutral-200 dark:text-neutral-300 hover:text-white dark:hover:text-white hover:bg-neutral-800/50 dark:hover:bg-neutral-700/50 font-bold rounded-xl backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
+                  className="inline-flex items-center px-10 py-5 border-2 border-white/30 text-white font-semibold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm transform hover:-translate-y-1 animate-fade-in-up" style={{animationDelay: '0.6s'}}
                 >
                   Sobre nós
                 </Link>
@@ -116,7 +125,9 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+            {/* Linha conectora entre os cards */}
+            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary-200 dark:via-primary-800 to-transparent -z-10 transform -translate-y-1/2"></div>
             <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 shadow-xl dark:shadow-neutral-900/80 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600/30 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 relative overflow-hidden text-center ring-2 ring-transparent hover:ring-primary-500/30 dark:hover:ring-primary-400/30">
               {/* Efeito de brilho */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 via-transparent to-bronze-500/0 group-hover:from-primary-500/10 group-hover:to-bronze-500/5 transition-all duration-500 pointer-events-none"></div>
@@ -172,6 +183,13 @@ export default function Home() {
       <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20 dark:from-neutral-800/50 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16 lg:mb-20 animate-fade-in">
+            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-4 py-2 rounded-full text-sm font-semibold mb-4 animate-soft-pulse">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+              </svg>
+              Frete Grátis acima de R$ 200
+            </div>
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary-600 to-bronze-700 dark:from-primary-500 dark:to-bronze-600 rounded-full mb-4 sm:mb-6 shadow-xl transition-colors duration-300">
               <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -183,7 +201,7 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600/40 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 animate-fade-in text-center ring-1 ring-neutral-200 dark:ring-neutral-700 hover:ring-primary-500/30" style={{animationDelay: '0.1s'}}>
+            <div className="group bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-500 hover:-translate-y-2 border-2 border-primary-600 animate-fade-in text-center ring-1 ring-neutral-200 dark:ring-neutral-700 hover:ring-primary-500/30" style={{animationDelay: '0.1s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl dark:shadow-primary-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />

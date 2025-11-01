@@ -54,16 +54,23 @@ export default function Orders() {
   }
 
   const getStatusBadge = (status) => {
-    const statusConfig = {
-      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pendente' },
-      paid: { bg: 'bg-green-100', text: 'text-green-800', label: 'Pago' },
-      failed: { bg: 'bg-red-100', text: 'text-red-800', label: 'Falhou' },
-      canceled: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Cancelado' }
+    const styles = {
+      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
+      paid: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+      failed: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+      canceled: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300',
     }
-    const config = statusConfig[status] || statusConfig.pending
+    const labels = {
+      pending: 'Pendente',
+      paid: 'Pago',
+      failed: 'Falhou',
+      canceled: 'Cancelado',
+    }
+    const cls = styles[status] || styles.pending
+    const label = labels[status] || labels.pending
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}>
-        {config.label}
+      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${cls}`}>
+        {label}
       </span>
     )
   }
@@ -199,7 +206,7 @@ export default function Orders() {
         <button
           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
           disabled={currentPage <= 1}
-          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200"
         >
           Anterior
         </button>
@@ -236,7 +243,7 @@ export default function Orders() {
         <button
           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
           disabled={currentPage >= totalPages}
-          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200"
         >
           Próxima
         </button>
@@ -247,7 +254,7 @@ export default function Orders() {
             setItemsPerPage(Number(e.target.value))
             setCurrentPage(1)
           }}
-          className="ml-2 border rounded px-2 py-1 text-sm"
+          className="ml-2 border rounded px-2 py-1 text-sm bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white border-neutral-300 dark:border-neutral-600"
         >
           <option value={5}>5/página</option>
           <option value={10}>10/página</option>
@@ -266,8 +273,8 @@ export default function Orders() {
           onClick={() => setStatusFilter(status)}
           className={`px-3 py-1 rounded-full text-sm border transition-colors ${
             statusFilter === status
-              ? 'bg-primary-950 text-white border-primary-950'
-              : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+              ? 'bg-primary-950 text-white border-primary-950 dark:bg-primary-700 dark:border-primary-700'
+              : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-800'
           }`}
         >
           {statusLabels[status]} ({orders.filter(o => status === 'all' || o.status === status).length})
@@ -283,7 +290,7 @@ export default function Orders() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-primary-950">Meus Pedidos</h1>
+            <h1 className="text-3xl lg:text-4xl font-bold text-primary-950 dark:text-primary-300">Meus Pedidos</h1>
             <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
               {filteredOrders.length} de {orders.length} pedidos
             </div>
@@ -301,13 +308,13 @@ export default function Orders() {
               Exportar ({filteredOrders.length})
             </button>
             
-            <div className="w-px h-6 bg-neutral-300"></div>
+            <div className="w-px h-6 bg-neutral-300 dark:bg-neutral-700"></div>
             
             <span className="text-sm text-neutral-600 dark:text-neutral-400">Ordenar por:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
             >
               <option value="created_at">Data</option>
               <option value="total_amount">Valor</option>
@@ -340,7 +347,7 @@ export default function Orders() {
                 placeholder="Buscar por ID do pedido, email ou nome..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400"
               />
             </div>
             
@@ -368,7 +375,7 @@ export default function Orders() {
                   type="date"
                   value={customDateFrom}
                   onChange={(e) => setCustomDateFrom(e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
                 />
               </div>
               <div>
@@ -377,7 +384,7 @@ export default function Orders() {
                   type="date"
                   value={customDateTo}
                   onChange={(e) => setCustomDateTo(e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
                 />
               </div>
             </div>
@@ -392,7 +399,7 @@ export default function Orders() {
                 placeholder="Filtrar por produto..."
                 value={productFilter}
                 onChange={(e) => setProductFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400"
               />
             </div>
             
@@ -402,7 +409,7 @@ export default function Orders() {
                 placeholder="Valor mínimo (R$)"
                 value={priceMin}
                 onChange={(e) => setPriceMin(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400"
                 min="0"
                 step="0.01"
               />
@@ -414,7 +421,7 @@ export default function Orders() {
                 placeholder="Valor máximo (R$)"
                 value={priceMax}
                 onChange={(e) => setPriceMax(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400"
                 min="0"
                 step="0.01"
               />
@@ -476,7 +483,7 @@ export default function Orders() {
                     )}
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-semibold text-primary-950">R$ {Number(o.total_amount || 0).toFixed(2)}</div>
+                    <div className="text-lg font-semibold text-primary-950 dark:text-primary-300">R$ {Number(o.total_amount || 0).toFixed(2)}</div>
                     <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-500 mt-1">
                       <Eye className="w-4 h-4 mr-1" />
                       Ver detalhes
