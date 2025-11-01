@@ -117,13 +117,23 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': os.environ.get('SQLITE_PATH', str(BASE_DIR / 'db.sqlite3')),
             'OPTIONS': {
                 'timeout': 30,  # Aumenta o timeout para evitar "database is locked"
                 'check_same_thread': False,  # Permite múltiplas threads
-            }
+            },
+            'CONN_MAX_AGE': 0,
         }
     }
+
+    if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+        from django.db.backends.signals import connection_created
+        def _sqlite_on_connect(sender, connection, **kwargs):
+            with connection.cursor() as cursor:
+                cursor.execute('PRAGMA journal_mode=WAL;')
+                cursor.execute('PRAGMA synchronous=NORMAL;')
+                cursor.execute('PRAGMA busy_timeout=30000;')
+        connection_created.connect(_sqlite_on_connect)
 
 
 # Password validation

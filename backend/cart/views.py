@@ -7,10 +7,23 @@ from django.db import transaction
 from .models import Cart, CartItem
 from .serializers import CartSerializer
 from catalog.models import ProductVariant
+import threading
 
 
 def _get_session_key(request):
     return request.headers.get('X-Session-Key') or request.query_params.get('session_key')
+
+
+_CART_LOCKS = {}
+_CART_LOCKS_LOCK = threading.Lock()
+
+def _get_cart_lock(cart_id: int):
+    with _CART_LOCKS_LOCK:
+        lock = _CART_LOCKS.get(cart_id)
+        if lock is None:
+            lock = threading.Lock()
+            _CART_LOCKS[cart_id] = lock
+        return lock
 
 
 def _get_or_create_cart_for_request(request):
@@ -123,30 +136,31 @@ def sync_cart(request):
     if not isinstance(items_data, list):
         return Response({"error": "items deve ser um array"}, status=status.HTTP_400_BAD_REQUEST)
     
-    # Limpa o carrinho atual
-    cart.items.all().delete()
-    
-    # Adiciona todos os novos itens
-    for item_data in items_data:
-        variant_id = item_data.get('variant_id')
-        quantity = int(item_data.get('quantity', 1))
-        
-        if not variant_id or quantity < 1:
-            continue
-            
-        try:
-            variant = ProductVariant.objects.select_related('product').get(id=variant_id)
-            unit_price = variant.price or variant.product.base_price
-            product_name = variant.product.name
-            
-            CartItem.objects.create(
-                cart=cart,
-                variant=variant,
-                product_name=product_name,
-                unit_price=unit_price,
-                quantity=quantity
-            )
-        except ProductVariant.DoesNotExist:
-            continue
+    with _get_cart_lock(cart.id):
+        CartItem.objects.filter(cart=cart).delete()
+        aggregated = {}
+        for item_data in items_data:
+            variant_id = item_data.get('variant_id')
+            quantity = int(item_data.get('quantity', 1) or 1)
+            if not variant_id or quantity < 1:
+                continue
+            aggregated[variant_id] = aggregated.get(variant_id, 0) + quantity
+        if aggregated:
+            variants = ProductVariant.objects.select_related('product').filter(id__in=list(aggregated.keys()))
+            items_to_create = []
+            for variant in variants:
+                unit_price = variant.price or variant.product.base_price
+                product_name = variant.product.name
+                qty = aggregated.get(variant.id, 0)
+                if qty > 0:
+                    items_to_create.append(CartItem(
+                        cart=cart,
+                        variant=variant,
+                        product_name=product_name,
+                        unit_price=unit_price,
+                        quantity=qty
+                    ))
+            if items_to_create:
+                CartItem.objects.bulk_create(items_to_create)
     
     return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
