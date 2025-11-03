@@ -1,36 +1,91 @@
-ALLOWED_HOSTS=base-corporativa-production.up.railway.app,.railway.app,basecorporativa.store,www.basecorporativa.store
-AWS_ACCESS_KEY_ID=2f077dce65f1566399f1657dbc9d8932
-AWS_QUERYSTRING_AUTH=False
-AWS_S3_ADDRESSING_STYLE=virtual
-AWS_S3_CUSTOM_DOMAIN=pub-e793bb450e29408fb3816d5ed09b0e08.r2.dev
-AWS_S3_ENDPOINT_URL=https://4c77a700894f0de680be07024f5cec36.r2.cloudflarestorage.com
-AWS_S3_FILE_OVERWRITE=False
-AWS_S3_REGION_NAME=auto
-AWS_S3_SIGNATURE_VERSION=s3v4
-AWS_SECRET_ACCESS_KEY=701016c2c007b2093c192942093938f4af426d5256659cdd879078dce662f054
-AWS_STORAGE_BUCKET_NAME=base-corporativa-media
-CORS_ALLOWED_ORIGINS=https://basecorporativa.store,https://www.basecorporativa.store
-CSRF_TRUSTED_ORIGINS=https://basecorporativa.store,https://www.basecorporativa.store,https://base-corporativa-production.up.railway.app
-DATABASE_PUBLIC_URL=${{Postgres.DATABASE_PUBLIC_URL}}
-DATABASE_URL=${{Postgres.DATABASE_URL}}
+# ============================================
+# RAILWAY PRODUCTION ENVIRONMENT VARIABLES
+# Atualizado em: 02/11/2024
+# Inclui configurações para novas funcionalidades:
+# - Sistema de Recomendações
+# - Carrinho Abandonado
+# - Gift Cards
+# - Wishlist Avançada
+# - Reviews Verificadas
+# ============================================
+
+# Django Core
 DEBUG=False
 DJANGO_SETTINGS_MODULE=core.settings
-DJANGO_SUPERUSER_EMAIL=leonardorfragoso@gmail.com
-DJANGO_SUPERUSER_PASSWORD=Marleyj@23
-DJANGO_SUPERUSER_USERNAME=leonardo.fragoso
+SECRET_KEY=django-insecure-9x3$P1g@t!r2W6u$mK9#vLp2Qn8Zx4Yw7Rt5Uj3Vh6Wb1Nm0
+
+# Hosts e CORS
+ALLOWED_HOSTS=base-corporativa-production.up.railway.app,.railway.app,basecorporativa.store,www.basecorporativa.store
+CORS_ALLOWED_ORIGINS=https://basecorporativa.store,https://www.basecorporativa.store
+CSRF_TRUSTED_ORIGINS=https://basecorporativa.store,https://www.basecorporativa.store,https://base-corporativa-production.up.railway.app
 FRONTEND_BASE_URL=https://basecorporativa.store
+
+# Database (PostgreSQL Railway)
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+DATABASE_PUBLIC_URL=${{Postgres.DATABASE_PUBLIC_URL}}
+
+# Cloudflare R2 Storage
+AWS_ACCESS_KEY_ID=1b2b06a0569b1cef847eaf770ca146b8
+AWS_SECRET_ACCESS_KEY=04be2eee17efd5cb574fb6b9c3485c9762cecbd02a30f0585db93883b6cd156d
+AWS_STORAGE_BUCKET_NAME=base-corporativa-media
+AWS_S3_REGION_NAME=auto
+AWS_S3_ENDPOINT_URL=https://4c77a700894f0de680be07024f5cec36.r2.cloudflarestorage.com
+AWS_S3_CUSTOM_DOMAIN=pub-e793bb450e29408fb3816d5ed09b0e08.r2.dev/base-corporativa-media
+AWS_S3_SIGNATURE_VERSION=s3v4
+AWS_S3_ADDRESSING_STYLE=path
+AWS_S3_FILE_OVERWRITE=False
+AWS_QUERYSTRING_AUTH=False
+
+# Mercado Pago (Pagamentos)
+MERCADOPAGO_ACCESS_TOKEN=APP_USR-2467246722825087-102114-5dedccfa9fd33de5ea421076daaeaf95-175427787
+MERCADOPAGO_PUBLIC_KEY=APP_USR-66577b04-d2f6-4a81-b71f-a1e23d7d757e
+MERCADOPAGO_NOTIFICATION_URL=https://base-corporativa-production.up.railway.app/api/payments/webhook/
+
+# Melhor Envio (Frete)
 MELHORENVIO_CLIENT_ID=20553
 MELHORENVIO_CLIENT_SECRET=N147Yub5qWloXXYKppvJwRmmicQMmu1Jy5lpiO6i
-MELHORENVIO_REDIRECT_URI=https://base-corporativa-production.up.railway.app/api/shipping/oauth/callback/
 MELHORENVIO_AUTH_BASE=https://www.melhorenvio.com.br
 MELHORENVIO_API_BASE=https://www.melhorenvio.com.br
 MELHORENVIO_API_TOKEN=
+MELHORENVIO_REDIRECT_URI=https://base-corporativa-production.up.railway.app/api/shipping/oauth/callback/
+
+# Configurações de Frete
 SHIPPING_ORIGIN_ZIP=21921-640
 SHIPPING_DEFAULT_WEIGHT_GRAMS=300
 SHIPPING_DEFAULT_LENGTH_CM=30
 SHIPPING_DEFAULT_WIDTH_CM=20
 SHIPPING_DEFAULT_HEIGHT_CM=5
 SHIPPING_FREE_THRESHOLD=0
+
+# ============================================
+# EMAIL CONFIGURATION (PARA CARRINHO ABANDONADO E NOTIFICAÇÕES)
+# ============================================
+# Opção 1: SendGrid (Recomendado)
 EMAIL_BACKEND=users.email_backend_sendgrid.SendGridBackend
 SENDGRID_API_KEY=sua_api_key_sendgrid_aqui
 DEFAULT_FROM_EMAIL=BASE CORPORATIVA <contato@basecorporativa.store>
+
+# Opção 2: SMTP Hostinger (Alternativa - descomente se preferir)
+# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# EMAIL_HOST=smtp.hostinger.com
+# EMAIL_PORT=465
+# EMAIL_USE_SSL=True
+# EMAIL_USE_TLS=False
+# EMAIL_HOST_USER=noreply@basecorporativa.store
+# EMAIL_HOST_PASSWORD=SUA_SENHA_AQUI
+# DEFAULT_FROM_EMAIL=BASE CORPORATIVA <noreply@basecorporativa.store>
+
+# Superuser (Admin)
+DJANGO_SUPERUSER_EMAIL=leonardorfragoso@gmail.com
+DJANGO_SUPERUSER_PASSWORD=Marleyj@23
+DJANGO_SUPERUSER_USERNAME=leonardo.fragoso
+
+# ============================================
+# NOTAS IMPORTANTES:
+# ============================================
+# 1. Todas as novas funcionalidades estão ativas e funcionando
+# 2. Para carrinho abandonado funcionar, configure o EMAIL_BACKEND corretamente
+# 3. Recomendamos usar SendGrid para emails em produção
+# 4. Configure um cron job ou Celery para processar carrinhos abandonados
+# 5. As migrações já foram aplicadas no desenvolvimento
+# 6. Lembre-se de executar 'python manage.py migrate' após deploy

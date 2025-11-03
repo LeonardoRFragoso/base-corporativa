@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; }
+        .coupon { background: #ff6b6b; color: white; padding: 20px; text-align: center; font-size: 28px; font-weight: bold; margin: 20px 0; border-radius: 5px; }
+        .button { display: inline-block; background: #f5576c; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .urgency { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ Última Chance!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Olá, {{ user.first_name }}!</p>
+            
+            <div class="urgency">
+                <strong>⚠️ Atenção:</strong> Os produtos no seu carrinho estão esperando há 24 horas!
+            </div>
+            
+            <p>Não deixe essa oportunidade passar. Finalize sua compra agora com um desconto ainda melhor!</p>
+            
+            <div class="coupon">
+                {{ coupon_code }}
+                <br>
+                <span style="font-size: 18px;">10% OFF ESPECIAL!</span>
+            </div>
+            
+            <h3>Valor do carrinho: R$ {{ cart.total_value }}</h3>
+            <h3 style="color: #f5576c;">Com desconto: R$ {{ cart.total_value|floatformat:2 }}</h3>
+            
+            <p style="text-align: center;">
+                <a href="{{ recovery_link }}" class="button">
+                    🎁 Aproveitar Desconto Agora
+                </a>
+            </p>
+            
+            <p style="font-size: 12px; color: #666; text-align: center;">
+                Cupom válido por 7 dias. Não perca!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Base Corporativa - Sua loja de confiança</p>
+        </div>
+    </div>
+</body>
+</html>

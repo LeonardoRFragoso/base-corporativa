@@ -12,9 +12,11 @@ class User(AbstractUser):
         return self.username
 
 
+# DEPRECATED: Migrado para wishlist.WishlistItem (sistema avançado)
+# Mantido temporariamente para compatibilidade com migrações existentes
 class WishlistItem(models.Model):
-    user = models.ForeignKey('users.User', related_name='wishlist', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', related_name='old_wishlist', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='old_wishlist_items')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

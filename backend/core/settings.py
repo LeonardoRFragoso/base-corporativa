@@ -64,6 +64,12 @@ INSTALLED_APPS = [
     'payments',
     'analytics',
     'notifications',
+    'loyalty',
+    'promotions',
+    'recommendations',
+    'abandoned_cart',
+    'giftcards',
+    'wishlist',
 ]
 
 MIDDLEWARE = [

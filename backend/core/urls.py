@@ -48,6 +48,9 @@ urlpatterns = [
     path('api/discounts/', include('discounts.urls')),
     path('api/analytics/', include('analytics.urls')),
     path('api/notifications/', include('notifications.urls')),
+    path('api/', include('recommendations.urls')),
+    path('api/', include('giftcards.urls')),
+    path('api/wishlist/', include('wishlist.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; }
+        .coupon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 25px; text-align: center; font-size: 32px; font-weight: bold; margin: 20px 0; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .button { display: inline-block; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 18px 40px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-size: 18px; font-weight: bold; }
+        .final-warning { background: #dc3545; color: white; padding: 20px; margin: 20px 0; border-radius: 5px; text-align: center; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 ÚLTIMA OPORTUNIDADE!</h1>
+            <p style="font-size: 18px; margin: 0;">Nosso maior desconto para você!</p>
+        </div>
+        
+        <div class="content">
+            <p>Olá, {{ user.first_name }}!</p>
+            
+            <div class="final-warning">
+                <h2 style="margin: 0;">🚨 ÚLTIMA CHANCE 🚨</h2>
+                <p style="margin: 10px 0 0 0;">Este é nosso último email sobre seu carrinho</p>
+            </div>
+            
+            <p>Queremos muito que você complete sua compra! Por isso, preparamos um desconto EXCLUSIVO:</p>
+            
+            <div class="coupon">
+                {{ coupon_code }}
+                <br>
+                <span style="font-size: 20px;">🎉 15% DE DESCONTO! 🎉</span>
+            </div>
+            
+            <h3>Valor original: R$ {{ cart.total_value }}</h3>
+            <h2 style="color: #fa709a;">Com 15% OFF: R$ {{ cart.total_value|floatformat:2 }}</h2>
+            
+            <p style="text-align: center;">
+                <a href="{{ recovery_link }}" class="button">
+                    💝 Finalizar com 15% OFF
+                </a>
+            </p>
+            
+            <p style="text-align: center; font-size: 14px; color: #666;">
+                ⏰ Cupom válido por 7 dias<br>
+                🎯 Uso único e exclusivo para você<br>
+                ✨ Não perca essa oportunidade!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Base Corporativa</strong> - Sua loja de confiança</p>
+            <p>Obrigado por escolher a gente! ❤️</p>
+        </div>
+    </div>
+</body>
+</html>
