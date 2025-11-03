@@ -17,14 +17,14 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             "id", "status", "currency", "shipping_price", "total_amount",
             "email", "first_name", "last_name",
-            "shipping_service_name", "shipping_carrier", "destination_zip",
+            "shipping_service_name", "shipping_carrier", "destination_zip", "tracking_code",
             "shipping_first_name", "shipping_last_name", "shipping_phone",
             "shipping_street", "shipping_number", "shipping_complement",
             "shipping_neighborhood", "shipping_city", "shipping_state", "shipping_zip",
             "external_reference", "mp_payment_id", "mp_status",
             "created_at", "items"
         )
-        read_only_fields = ("id", "status", "external_reference", "mp_payment_id", "mp_status", "created_at")
+        read_only_fields = ("id", "external_reference", "mp_payment_id", "mp_status", "created_at")
 
 
 class OrderCreateItemInput(serializers.Serializer):

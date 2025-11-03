@@ -50,9 +50,17 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         order = self.get_object()
         new_status = (request.data.get('status') or '').lower()
-        allowed = {'pending', 'paid', 'failed', 'canceled'}
+        tracking_code = request.data.get('tracking_code', '')
+        
+        allowed = {'pending', 'paid', 'shipped', 'delivered', 'failed', 'canceled'}
         if new_status not in allowed:
             return Response({'error': 'status inválido', 'allowed': list(allowed)}, status=status.HTTP_400_BAD_REQUEST)
+        
         order.status = new_status
-        order.save(update_fields=['status'])
+        if tracking_code:
+            order.tracking_code = tracking_code
+            order.save(update_fields=['status', 'tracking_code'])
+        else:
+            order.save(update_fields=['status'])
+        
         return Response(OrderSerializer(order).data)

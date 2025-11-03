@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { useCompare } from '../context/CompareContext.jsx'
 import SearchBar from './SearchBar.jsx'
+import NotificationBell from './NotificationBell.jsx'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -58,6 +59,8 @@ export default function Navbar() {
                 </span>
               )}
             </NavLink>
+            
+            <NotificationBell />
             
             <button
               onClick={toggleTheme}

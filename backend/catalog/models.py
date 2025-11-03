@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.text import slugify
+import os
 
 
 class Category(models.Model):

@@ -5,6 +5,7 @@ import { api } from '../../lib/api';
 import { formatBRL } from '../../utils/format';
 import { useAuth } from '../../context/AuthContext';
 import { Search, Filter, Package, AlertTriangle, CheckCircle, Edit, Trash2, Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // Usar baseURL do cliente `api` (controlado por VITE_API_BASE_URL)
 
@@ -43,6 +44,18 @@ const Products = () => {
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Excluir "${product.name}"?`)) return;
+    try {
+      await api.delete(`/api/products/${product.id}/`);
+      setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      setTotalCount((c) => Math.max(0, c - 1));
+      toast.success('Produto excluído');
+    } catch (err) {
+      toast.error('Erro ao excluir produto');
     }
   };
 
@@ -233,14 +246,11 @@ const Products = () => {
 
           <div className="p-6 border-t border-gray-200 dark:border-neutral-700 flex justify-between">
             <button
-                onClick={() => {
-                  const base = (api?.defaults?.baseURL || '').replace(/\/$/, '');
-                  window.open(`${base}/admin/catalog/product/${product.id}/change/`, '_blank');
-                }}
+              onClick={() => navigate(`/admin/products/${product.id}/edit`)}
               className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center"
             >
               <Edit className="w-4 h-4 mr-2" />
-              Editar no Admin
+              Editar
             </button>
             <button
               onClick={onClose}
@@ -277,7 +287,7 @@ const Products = () => {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => window.open(`${API_URL}/admin/catalog/product/add/`, '_blank')}
+                onClick={() => navigate('/admin/products/new')}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center"
               >
                 <Plus className="w-5 h-5 mr-2" />
@@ -396,6 +406,23 @@ const Products = () => {
                       <Package className="w-16 h-16 text-gray-400" />
                     </div>
                   )}
+                  {/* Admin quick actions */}
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <button
+                      title="Editar"
+                      onClick={() => navigate(`/admin/products/${product.id}/edit`)}
+                      className="p-2 rounded bg-amber-600 hover:bg-amber-700 text-white"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      title="Excluir"
+                      onClick={() => handleDelete(product)}
+                      className="p-2 rounded bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                   {!product.is_active && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                       <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">

@@ -17,6 +17,7 @@ import {
 import { api } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { formatBRL, formatNumber } from '../../utils/format';
+import { exportOrders, exportProducts, exportCustomers, exportSalesReport, exportLowStock } from '../../utils/export';
 import OrderModal from '../../components/OrderModal';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import { DashboardCardSkeleton } from '../../components/SkeletonLoader';
@@ -111,9 +112,26 @@ const Dashboard = () => {
     }
   };
 
-  const exportData = (type) => {
-    toast.success(`Exportando ${type}...`);
-    // Implementar exportação real aqui
+  const exportData = async (type) => {
+    switch(type) {
+      case 'dashboard':
+        await exportSalesReport(30);
+        break;
+      case 'orders':
+        await exportOrders();
+        break;
+      case 'products':
+        await exportProducts();
+        break;
+      case 'customers':
+        await exportCustomers();
+        break;
+      case 'low-stock':
+        await exportLowStock();
+        break;
+      default:
+        toast.error('Tipo de exportação não suportado');
+    }
   };
 
   // Chart configurations
@@ -422,7 +440,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
             onClick={() => navigate('/admin/orders')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl flex items-center justify-center gap-3"
@@ -436,6 +454,13 @@ const Dashboard = () => {
           >
             <Package className="w-5 h-5" />
             Gerenciar Produtos
+          </button>
+          <button
+            onClick={() => navigate('/admin/coupons')}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:-translate-y-1 shadow-md hover:shadow-xl flex items-center justify-center gap-3"
+          >
+            <DollarSign className="w-5 h-5" />
+            Cupons
           </button>
           <button
             onClick={() => {

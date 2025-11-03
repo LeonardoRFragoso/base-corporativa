@@ -7,6 +7,8 @@ class Order(models.Model):
     STATUS_CHOICES = (
         ("pending", "Pending"),
         ("paid", "Paid"),
+        ("shipped", "Shipped"),
+        ("delivered", "Delivered"),
         ("failed", "Failed"),
         ("canceled", "Canceled"),
     )
@@ -28,6 +30,7 @@ class Order(models.Model):
     shipping_service_name = models.CharField(max_length=120, blank=True)
     shipping_carrier = models.CharField(max_length=120, blank=True)
     destination_zip = models.CharField(max_length=20, blank=True)
+    tracking_code = models.CharField(max_length=200, blank=True)
     # Guest shipping address fields (for non-authenticated checkout)
     shipping_first_name = models.CharField(max_length=100, blank=True)
     shipping_last_name = models.CharField(max_length=100, blank=True)

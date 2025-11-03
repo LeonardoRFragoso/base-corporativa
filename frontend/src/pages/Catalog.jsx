@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Filter, X, SlidersHorizontal } from 'lucide-react'
 import { api } from '../lib/api.js'
 import ProductCard from '../components/ProductCard.jsx'
@@ -7,13 +7,17 @@ import SEO from '../components/SEO.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { ProductCardSkeleton } from '../components/SkeletonLoader.jsx'
 import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Catalog() {
+  const { isAdmin } = useAuth()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
+  const [deletingProduct, setDeletingProduct] = useState(null)
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -87,6 +91,20 @@ export default function Catalog() {
     toast.success('Filtros limpos')
   }
 
+  async function handleDeleteProduct(product) {
+    if (!window.confirm(`Tem certeza que deseja excluir "${product.name}"?`)) return
+    setDeletingProduct(product.id)
+    try {
+      await api.delete(`/api/products/${product.id}/`)
+      setProducts(prev => prev.filter(p => p.id !== product.id))
+      toast.success('Produto excluído')
+    } catch (error) {
+      toast.error('Erro ao excluir produto')
+    } finally {
+      setDeletingProduct(null)
+    }
+  }
+
   const activeFiltersCount = Object.values(filters).filter(v => v && v !== '-created_at').length
 
   return (
@@ -106,19 +124,36 @@ export default function Catalog() {
               {loading ? 'Carregando...' : `${products.length} produtos encontrados`}
             </p>
           </div>
-          
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg hover:border-primary-600 dark:hover:border-primary-400 transition-colors text-neutral-900 dark:text-neutral-100 font-semibold"
-          >
-            <SlidersHorizontal className="w-5 h-5" />
-            Filtros
-            {activeFiltersCount > 0 && (
-              <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-bold">
-                {activeFiltersCount}
-              </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg hover:border-primary-600 dark:hover:border-primary-400 transition-colors text-neutral-900 dark:text-neutral-100 font-semibold"
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              Filtros
+              {activeFiltersCount > 0 && (
+                <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-bold">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => navigate('/admin/products/new')}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg"
+                >
+                  Novo Produto
+                </button>
+                <button
+                  onClick={() => navigate('/admin/products')}
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg"
+                >
+                  Gerenciar
+                </button>
+              </>
             )}
-          </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -249,7 +284,32 @@ export default function Catalog() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map(product => (
-                  <ProductCard key={product.id} product={product} />
+                  <div key={product.id} className="relative">
+                    <ProductCard product={product} />
+                    {isAdmin && (
+                      <div className="absolute top-2 left-2 flex gap-2 z-10">
+                        <button
+                          onClick={() => navigate(`/admin/products/${product.id}/edit`)}
+                          className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                          title="Editar"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product)}
+                          disabled={deletingProduct === product.id}
+                          className="p-2 bg-error-500 text-white rounded-lg hover:bg-error-600 transition-colors disabled:opacity-50"
+                          title="Excluir"
+                        >
+                          {deletingProduct === product.id ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}

@@ -29,9 +29,12 @@ import AdminDashboard from './pages/Admin/Dashboard.jsx'
 import AdminOrders from './pages/Admin/Orders.jsx'
 import AdminProducts from './pages/Admin/Products.jsx'
 import AdminCustomers from './pages/Admin/Customers.jsx'
+import AdminCoupons from './pages/Admin/Coupons.jsx'
+import AdminReviews from './pages/Admin/Reviews.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Compare from './pages/Compare.jsx'
 import SupportChat from './components/SupportChat.jsx'
+import AdminProductEdit from './pages/AdminProductEdit.jsx'
 
 function App() {
   return (
@@ -63,10 +66,13 @@ function App() {
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
           <Route path="/admin/products/new" element={<ProtectedRoute requireAdmin><AdminProductCreate /></ProtectedRoute>} />
+          <Route path="/admin/products/:id/edit" element={<ProtectedRoute requireAdmin><AdminProductEdit /></ProtectedRoute>} />
           <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
           <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
           <Route path="/admin/customers" element={<ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute>} />
+          <Route path="/admin/coupons" element={<ProtectedRoute requireAdmin><AdminCoupons /></ProtectedRoute>} />
+          <Route path="/admin/reviews" element={<ProtectedRoute requireAdmin><AdminReviews /></ProtectedRoute>} />
           <Route path="/compare" element={<Compare />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

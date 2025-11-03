@@ -5,22 +5,42 @@ import { useCart } from '../context/CartContext'
 import Breadcrumbs from '../components/Breadcrumbs'
 import SEO from '../components/SEO'
 import toast from 'react-hot-toast'
+import { formatBRL } from '../utils/format'
 
 export default function Compare() {
   const { compareItems, removeFromCompare, clearCompare } = useCompare()
   const { add } = useCart()
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
+  const resolvePrice = (product) => {
+    const candidates = []
+    if (product?.base_price != null) candidates.push(product.base_price)
+    if (product?.price != null) candidates.push(product.price)
+    const defVar = Array.isArray(product?.variants) ? product.variants.find(v => v?.is_default && v?.price != null) : null
+    if (defVar?.price != null) candidates.push(defVar.price)
+    const anyVar = Array.isArray(product?.variants) ? product.variants.find(v => v?.price != null) : null
+    if (anyVar?.price != null) candidates.push(anyVar.price)
+    const n = Number(candidates.find(v => !Number.isNaN(Number(v))) ?? 0)
+    return Number.isFinite(n) ? n : 0
+  }
+
+  const resolveImage = (product) => {
+    const raw = product?.images?.[0]?.image
+    if (!raw) return '/placeholder.png'
+    return raw.startsWith('http') ? raw : `${baseURL}${raw}`
+  }
+
   const handleAddToCart = (product) => {
     if (product.variants && product.variants.length > 0) {
       const firstAvailable = product.variants.find(v => v.stock > 0)
       if (firstAvailable) {
+        const price = Number(firstAvailable.price ?? product.base_price ?? 0)
         add({
-          product_id: product.id,
-          variant_id: firstAvailable.id,
+          id: product.id,
+          variantId: firstAvailable.id,
           name: product.name,
-          price: product.price,
-          image: product.images?.[0]?.image,
+          price,
+          image: resolveImage(product),
           size: firstAvailable.size,
           color: firstAvailable.color,
           qty: 1
@@ -109,7 +129,7 @@ export default function Compare() {
                       </button>
                       <Link to={`/product/${product.id}`}>
                         <img
-                          src={product.images?.[0]?.image ? `${baseURL}${product.images[0].image}` : '/placeholder.png'}
+                          src={resolveImage(product)}
                           alt={product.name}
                           className="w-full h-48 object-cover rounded-lg mb-4"
                         />
@@ -124,15 +144,15 @@ export default function Compare() {
             </thead>
             <tbody>
               {features.map((feature, index) => (
-                <tr key={feature.key} className={index % 2 === 0 ? 'bg-neutral-50' : 'bg-white'}>
-                  <td className="p-6 font-semibold text-neutral-900 dark:text-neutral-100 sticky left-0 bg-inherit z-10">
+                <tr key={feature.key} className={index % 2 === 0 ? 'bg-neutral-50 dark:bg-neutral-900/40' : 'bg-white dark:bg-neutral-800'}>
+                  <td className="p-6 font-semibold text-neutral-900 dark:text-neutral-100 sticky left-0 bg-white dark:bg-neutral-800 z-10">
                     {feature.label}
                   </td>
                   {compareItems.map((product) => (
                     <td key={product.id} className="p-6">
                       {feature.key === 'price' && (
-                        <span className="text-2xl font-bold text-primary-700">
-                          R$ {Number(product.price).toFixed(2)}
+                        <span className="text-2xl font-bold text-primary-700 dark:text-primary-300">
+                          {formatBRL(resolvePrice(product))}
                         </span>
                       )}
                       {feature.key === 'category' && (

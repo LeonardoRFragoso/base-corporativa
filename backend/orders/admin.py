@@ -42,6 +42,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
     inlines = [OrderItemInline]
     date_hierarchy = 'created_at'
+    actions = ['mark_as_paid', 'mark_as_shipped', 'mark_as_delivered', 'cancel_orders']
     
     fieldsets = (
         ('Informações do Pedido', {
@@ -94,6 +95,35 @@ class OrderAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related('user', 'shipping_address').prefetch_related('items')
+    
+    def mark_as_paid(self, request, queryset):
+        updated = queryset.update(status='paid')
+        self.message_user(request, f'{updated} pedido(s) marcado(s) como pago.')
+    mark_as_paid.short_description = "Marcar como PAGO"
+    
+    def mark_as_shipped(self, request, queryset):
+        # Criar novo status 'shipped' se necessário
+        updated = 0
+        for order in queryset:
+            order.status = 'shipped'
+            order.save(update_fields=['status'])
+            updated += 1
+        self.message_user(request, f'{updated} pedido(s) marcado(s) como enviado.')
+    mark_as_shipped.short_description = "Marcar como ENVIADO"
+    
+    def mark_as_delivered(self, request, queryset):
+        updated = 0
+        for order in queryset:
+            order.status = 'delivered'
+            order.save(update_fields=['status'])
+            updated += 1
+        self.message_user(request, f'{updated} pedido(s) marcado(s) como entregue.')
+    mark_as_delivered.short_description = "Marcar como ENTREGUE"
+    
+    def cancel_orders(self, request, queryset):
+        updated = queryset.update(status='canceled')
+        self.message_user(request, f'{updated} pedido(s) cancelado(s).')
+    cancel_orders.short_description = "Cancelar pedidos selecionados"
 
 
 @admin.register(OrderItem)

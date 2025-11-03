@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../lib/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { Package, Image as ImageIcon, Layers, DollarSign, Tag, FileText } from 'lucide-react'
@@ -7,9 +7,11 @@ import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import SEO from '../components/SEO.jsx'
 import toast from 'react-hot-toast'
 
-export default function AdminProductCreate() {
+export default function AdminProductEdit() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { id } = useParams()
+
   const [categories, setCategories] = useState([])
   const [form, setForm] = useState({
     name: '',
@@ -20,22 +22,69 @@ export default function AdminProductCreate() {
     base_price: '',
     category: '',
     is_active: true,
+    variants: [],
   })
-  const [images, setImages] = useState([])
+  const [images, setImages] = useState([]) // new uploads
+  const [imagePreviews, setImagePreviews] = useState([]) // {url,isExisting,id}
+  const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get('/api/categories/')
-        setCategories(res.data)
+        const [catRes, prodRes] = await Promise.all([
+          api.get('/api/categories/'),
+          api.get(`/api/products/${id}/`),
+        ])
+        setCategories(catRes.data || [])
+
+        const p = prodRes.data
+        setForm({
+          name: p.name || '',
+          description: p.description || '',
+          fabric_type: p.fabric_type || '',
+          composition: p.composition || '',
+          care_instructions: p.care_instructions || '',
+          base_price: p.base_price ?? '',
+          category: p.category?.id || '',
+          is_active: p.is_active !== false,
+          variants: (p.variants || []).map(v => ({
+            size: v.size || '',
+            color: v.color || '',
+            price: v.price ?? '',
+            stock: v.stock ?? 0,
+            is_default: !!v.is_default,
+            id: v.id,
+          })),
+        })
+
+        const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+        const previews = (p.images || []).map(img => ({
+          url: img.image?.startsWith('http') ? img.image : `${baseURL}${img.image}`,
+          isExisting: true,
+          id: img.id,
+        }))
+        setImagePreviews(previews)
       } catch (e) {
-        setError('Falha ao carregar categorias')
+        setError('Falha ao carregar produto')
+      } finally {
+        setLoading(false)
       }
     }
     load()
-  }, [])
+  }, [id])
+
+  if (!user?.is_staff) {
+    return (
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center p-6">
+        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-8 max-w-md text-center">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Acesso restrito</h1>
+          <p className="text-neutral-600 dark:text-neutral-400">Você precisa ser administrador para acessar esta página.</p>
+        </div>
+      </div>
+    )
+  }
 
   function onChange(e) {
     const { name, value, type, checked } = e.target
@@ -72,6 +121,47 @@ export default function AdminProductCreate() {
     })
   }
 
+  function handleImageChange(e) {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    setImages((prev) => [...prev, ...files])
+    files.forEach((file) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreviews((prev) => [...prev, { url: reader.result, isExisting: false }])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  async function removeImage(index) {
+    const preview = imagePreviews[index]
+    if (preview.isExisting) {
+      try {
+        await api.delete(`/api/products/${id}/images/${preview.id}/`)
+      } catch (e) {
+        setError('Falha ao remover imagem existente')
+        return
+      }
+    } else {
+      // Remove da fila de uploads
+      const nonExistingIndicesBefore = imagePreviews.slice(0, index).filter(p => !p.isExisting).length
+      setImages((prev) => prev.filter((_, i) => i !== nonExistingIndicesBefore))
+    }
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  async function uploadImages(productId) {
+    if (!images.length) return
+    for (let i = 0; i < images.length; i++) {
+      const formData = new FormData()
+      formData.append('image', images[i])
+      formData.append('sort_order', i)
+      formData.append('is_primary', i === 0 ? 'true' : 'false')
+      await api.post(`/api/products/${productId}/upload-image/`, formData)
+    }
+  }
+
   async function onSubmit(e) {
     e.preventDefault()
     setError('')
@@ -106,38 +196,30 @@ export default function AdminProductCreate() {
           color: v.color || '',
           price: v.price ? toNumber(v.price) : toNumber(form.base_price),
           stock: toNumber(v.stock || 0),
-          is_default: Boolean(v.is_default)
+          is_default: Boolean(v.is_default),
+          id: v.id,
         })),
       }
-      const createRes = await api.post('/api/products/', payload)
-      const product = createRes.data
 
-      if (images && images.length) {
-        for (let i = 0; i < images.length; i++) {
-          const file = images[i]
-          const formData = new FormData()
-          formData.append('image', file)
-          formData.append('alt_text', `${form.name} - ${i + 1}`)
-          formData.append('is_primary', i === 0 ? 'true' : 'false')
-          await api.post(`/api/products/${product.id}/upload-image/`, formData)
-        }
+      await api.put(`/api/products/${id}/`, payload)
+      if (images.length) {
+        await uploadImages(id)
       }
-
-      navigate(`/product/${product.id}`)
+      navigate('/admin/products')
     } catch (e) {
       console.error(e)
-      setError('Falha ao criar produto. Verifique os campos e tente novamente.')
+      setError('Falha ao salvar alterações. Verifique os campos e tente novamente.')
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (!user?.is_staff) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center p-6">
-        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-8 max-w-md text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Acesso restrito</h1>
-          <p className="text-neutral-600 dark:text-neutral-400">Você precisa ser administrador para acessar esta página.</p>
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600 dark:text-neutral-400">Carregando produto...</p>
         </div>
       </div>
     )
@@ -145,12 +227,12 @@ export default function AdminProductCreate() {
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
-      <SEO title="Cadastrar Produto - Admin" />
+      <SEO title="Editar Produto - Admin" />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <Breadcrumbs items={[
           { label: 'Admin', path: '/admin/dashboard' },
           { label: 'Produtos', path: '/admin/products' },
-          { label: 'Novo Produto' }
+          { label: 'Editar Produto' }
         ]} />
 
         <div className="flex items-center justify-between mb-8">
@@ -159,8 +241,8 @@ export default function AdminProductCreate() {
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Cadastrar novo produto</h1>
-              <p className="text-neutral-600 dark:text-neutral-400 mt-1">Preencha os dados do produto e suas variantes</p>
+              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Editar produto</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 mt-1">Atualize os dados do produto e suas variantes</p>
             </div>
           </div>
           <button type="button" onClick={() => navigate('/admin/products')} className="px-4 py-2 rounded-lg border-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors font-medium">
@@ -171,7 +253,9 @@ export default function AdminProductCreate() {
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-error-50 dark:bg-error-900/20 border border-error-200 dark:border-error-800 text-error-700 dark:text-error-400">{error}</div>
         )}
+
         <form onSubmit={onSubmit} className="space-y-6">
+          {/* Informações Básicas */}
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-2 mb-6">
               <FileText className="w-5 h-5 text-primary-600" />
@@ -180,15 +264,16 @@ export default function AdminProductCreate() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Nome do Produto *</label>
-                <input name="name" value={form.name} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" placeholder="Ex: Camisa Oversized Premium" required />
+                <input name="name" value={form.name} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" required />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Descrição</label>
-                <textarea name="description" value={form.description} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 resize-none" rows={4} placeholder="Descreva o produto..." />
+                <textarea name="description" value={form.description} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 resize-none" rows={4} />
               </div>
             </div>
           </div>
 
+          {/* Detalhes do Tecido */}
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-2 mb-6">
               <Layers className="w-5 h-5 text-primary-600" />
@@ -197,19 +282,20 @@ export default function AdminProductCreate() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Tipo de tecido</label>
-                <input name="fabric_type" value={form.fabric_type} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" placeholder="Ex: Algodão Premium" />
+                <input name="fabric_type" value={form.fabric_type} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Composição</label>
-                <input name="composition" value={form.composition} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" placeholder="Ex: 100% Algodão" />
+                <input name="composition" value={form.composition} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" />
               </div>
             </div>
             <div className="mt-4">
               <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Instruções de cuidado</label>
-              <input name="care_instructions" value={form.care_instructions} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" placeholder="Ex: Lavar à mão" />
+              <input name="care_instructions" value={form.care_instructions} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" />
             </div>
           </div>
 
+          {/* Preço e Categoria */}
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-2 mb-6">
               <DollarSign className="w-5 h-5 text-primary-600" />
@@ -218,7 +304,7 @@ export default function AdminProductCreate() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Preço base (R$) *</label>
-                <input type="number" step="0.01" name="base_price" value={form.base_price} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" placeholder="59,90" required />
+                <input type="number" step="0.01" name="base_price" value={form.base_price} onChange={onChange} className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400" required />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Categoria *</label>
@@ -236,6 +322,7 @@ export default function AdminProductCreate() {
             </div>
           </div>
 
+          {/* Variantes */}
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
@@ -251,7 +338,6 @@ export default function AdminProductCreate() {
               <div className="text-center py-8 px-4 bg-neutral-50 dark:bg-neutral-900 rounded-lg border-2 border-dashed border-neutral-300 dark:border-neutral-700">
                 <Tag className="w-12 h-12 text-neutral-400 mx-auto mb-3" />
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">Nenhuma variante adicionada</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">Adicione pelo menos uma variante com estoque &gt; 0</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -259,19 +345,19 @@ export default function AdminProductCreate() {
                   <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
                     <div className="md:col-span-2">
                       <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Tamanho</label>
-                      <input value={v.size || ''} onChange={(e)=>updateVariantRow(idx, 'size', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" placeholder="P, M, G" />
+                      <input value={v.size || ''} onChange={(e)=>updateVariantRow(idx, 'size', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" />
                     </div>
                     <div className="md:col-span-3">
                       <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Cor</label>
-                      <input value={v.color || ''} onChange={(e)=>updateVariantRow(idx, 'color', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" placeholder="Preto" />
+                      <input value={v.color || ''} onChange={(e)=>updateVariantRow(idx, 'color', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" />
                     </div>
                     <div className="md:col-span-3">
                       <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Preço (opcional)</label>
-                      <input type="number" step="0.01" value={v.price || ''} onChange={(e)=>updateVariantRow(idx, 'price', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" placeholder="59,90" />
+                      <input type="number" step="0.01" value={v.price ?? ''} onChange={(e)=>updateVariantRow(idx, 'price', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Estoque</label>
-                      <input type="number" value={v.stock || 0} onChange={(e)=>updateVariantRow(idx, 'stock', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm" />
+                      <input type="number" value={v.stock ?? 0} onChange={(e)=>updateVariantRow(idx, 'stock', e.target.value)} className="w-full px-3 py-2 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm" />
                     </div>
                     <div className="md:col-span-2 flex flex-col gap-2">
                       <div className="flex items-center gap-2">
@@ -286,12 +372,13 @@ export default function AdminProductCreate() {
             )}
           </div>
 
+          {/* Imagens */}
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-2 mb-6">
               <ImageIcon className="w-5 h-5 text-primary-600" />
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Imagens do Produto</h2>
             </div>
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-center w-full mb-4">
               <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-neutral-300 dark:border-neutral-600 border-dashed rounded-xl cursor-pointer bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <ImageIcon className="w-10 h-10 mb-3 text-neutral-400" />
@@ -300,15 +387,24 @@ export default function AdminProductCreate() {
                   </p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-500">PNG, JPG ou WEBP (máx. 5MB cada)</p>
                 </div>
-                <input type="file" className="hidden" multiple accept="image/*" onChange={(e) => setImages(Array.from(e.target.files || []))} />
+                <input type="file" className="hidden" multiple accept="image/*" onChange={handleImageChange} />
               </label>
             </div>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-4 flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/></svg>
-              A primeira imagem será marcada como principal.
-            </p>
+            {imagePreviews.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative group">
+                    <img src={preview.url} alt="preview" className="w-full h-32 object-cover rounded-lg border-2 border-neutral-200 dark:border-neutral-700" />
+                    <button type="button" onClick={() => removeImage(index)} className="absolute top-2 right-2 p-1.5 rounded-full bg-error-600 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-700">×</button>
+                    {index === 0 && <span className="absolute bottom-2 left-2 text-xs px-2 py-1 rounded bg-primary-600 text-white font-semibold">Principal</span>}
+                    {preview.isExisting && <span className="absolute top-2 left-2 text-xs px-2 py-1 rounded bg-neutral-800 text-white">Existente</span>}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Actions */}
           <div className="flex items-center justify-end gap-4 pt-4">
             <button type="button" onClick={() => navigate('/admin/products')} className="px-6 py-3 rounded-lg border-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors font-semibold">
               Cancelar
@@ -317,12 +413,12 @@ export default function AdminProductCreate() {
               {submitting ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Criando produto...
+                  Salvando alterações...
                 </>
               ) : (
                 <>
                   <Package className="w-5 h-5" />
-                  Criar produto
+                  Salvar alterações
                 </>
               )}
             </button>

@@ -1,20 +1,42 @@
+import { useState } from 'react';
 import { formatBRL } from '../utils/format';
 import { api } from '../lib/api';
+import toast from 'react-hot-toast';
 
 const OrderModal = ({ order, onClose, onOrderUpdate }) => {
+  const [trackingCode, setTrackingCode] = useState(order?.tracking_code || '');
+  const [showTrackingInput, setShowTrackingInput] = useState(false);
+  
   if (!order) return null;
 
-  const updateOrderStatus = async (newStatus) => {
+  const updateOrderStatus = async (newStatus, withTracking = false) => {
     try {
-      const ok = confirm(`Confirmar alteração do status do pedido #${order.id} para "${newStatus}"?`);
+      const statusLabels = {
+        pending: 'Pendente',
+        paid: 'Pago',
+        shipped: 'Enviado',
+        delivered: 'Entregue',
+        failed: 'Falhou',
+        canceled: 'Cancelado'
+      };
+      
+      const ok = confirm(`Confirmar alteração do status do pedido #${order.id} para "${statusLabels[newStatus]}"?`);
       if (!ok) return;
-      await api.patch(`/api/orders/${order.id}/status/`, { status: newStatus });
+      
+      const payload = { status: newStatus };
+      if (withTracking && trackingCode) {
+        payload.tracking_code = trackingCode;
+      }
+      
+      await api.patch(`/api/orders/${order.id}/status/`, payload);
+      toast.success('Status atualizado com sucesso!');
+      
       if (onOrderUpdate) {
         onOrderUpdate();
       }
       onClose();
     } catch (e) {
-      alert('Falha ao atualizar status.');
+      toast.error('Falha ao atualizar status.');
       console.error(e);
     }
   };
@@ -23,6 +45,8 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
     const statusConfig = {
       pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pendente' },
       paid: { bg: 'bg-green-100', text: 'text-green-800', label: 'Pago' },
+      shipped: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Enviado' },
+      delivered: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Entregue' },
       failed: { bg: 'bg-red-100', text: 'text-red-800', label: 'Falhou' },
       canceled: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Cancelado' }
     };
@@ -123,7 +147,7 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
           )}
 
           {/* Informações de Entrega */}
-          {order.shipping_address && (
+          {(order.shipping_address || order.destination_zip) && (
             <div className="bg-purple-50 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2">Entrega</h3>
               <p className="text-sm text-gray-600 dark:text-neutral-400">CEP: {order.destination_zip}</p>
@@ -133,35 +157,69 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
               {order.shipping_carrier && (
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Transportadora: {order.shipping_carrier}</p>
               )}
+              {order.tracking_code && (
+                <p className="text-sm font-semibold text-blue-600 mt-2">
+                  Código de Rastreamento: {order.tracking_code}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Campo de Rastreamento */}
+          {showTrackingInput && (
+            <div className="bg-blue-50 rounded-lg p-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+                Código de Rastreamento
+              </label>
+              <input
+                type="text"
+                value={trackingCode}
+                onChange={(e) => setTrackingCode(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-neutral-900 text-gray-900 dark:text-neutral-100"
+                placeholder="Ex: BR123456789BR"
+              />
             </div>
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-200 dark:border-neutral-700 flex justify-end">
-          <div className="flex flex-wrap gap-2 mr-auto">
+        <div className="p-6 border-t border-gray-200 dark:border-neutral-700">
+          <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={() => updateOrderStatus('paid')}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >Marcar como Pago</button>
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >✓ Pago</button>
+            <button
+              onClick={() => {
+                setShowTrackingInput(true);
+                setTimeout(() => updateOrderStatus('shipped', true), 100);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >📦 Enviado</button>
+            <button
+              onClick={() => updateOrderStatus('delivered')}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >✓ Entregue</button>
             <button
               onClick={() => updateOrderStatus('pending')}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >Marcar como Pendente</button>
+              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >⏳ Pendente</button>
             <button
               onClick={() => updateOrderStatus('canceled')}
-              className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors"
-            >Cancelar</button>
+              className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >✕ Cancelar</button>
             <button
               onClick={() => updateOrderStatus('failed')}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >Marcar como Falhou</button>
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >✕ Falhou</button>
           </div>
-          <button
-            onClick={onClose}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Fechar
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={onClose}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              Fechar
+            </button>
+          </div>
         </div>
       </div>
     </div>
