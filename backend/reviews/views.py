@@ -24,12 +24,16 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
 
 
 class ReviewListView(generics.ListAPIView):
-    """Lista todas as reviews (apenas para admins)"""
+    """Lista todas as reviews aprovadas (público) ou todas (admins)"""
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     
     def get_queryset(self):
         qs = Review.objects.all().select_related('user', 'product').order_by('-created_at')
+        
+        # Apenas reviews aprovados para não-admins
+        if not (self.request.user and self.request.user.is_staff):
+            qs = qs.filter(approved=True)
         
         # Filtros opcionais
         approved = self.request.query_params.get('approved')
@@ -44,10 +48,21 @@ class ReviewListView(generics.ListAPIView):
 
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Detalhes, atualização e exclusão de review (apenas admins)"""
+    """Detalhes de review (público para leitura, admin para edição)"""
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAdminUser]
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # Apenas reviews aprovados para não-admins
+        if not (self.request.user and self.request.user.is_staff):
+            qs = qs.filter(approved=True)
+        return qs
 
 
 @api_view(['PATCH'])
