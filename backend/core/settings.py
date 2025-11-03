@@ -294,8 +294,8 @@ if AWS_STORAGE_BUCKET_NAME:
     # For Cloudflare R2 with Public Development URL
     # Files are uploaded to the bucket, and accessed via: https://pub-xxx.r2.dev/bucket-name/path
     if AWS_S3_CUSTOM_DOMAIN:
-        # Custom domain points to R2, need to include bucket in URL path
-        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STORAGE_BUCKET_NAME}/"
+        # Custom domain already includes bucket path (e.g., pub-xxx.r2.dev/base-corporativa-media)
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
     
