@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     RegisterView, ProfileView, LogoutView,
     PasswordResetRequestView, PasswordResetConfirmView,
@@ -19,4 +19,7 @@ urlpatterns = [
     path('user/wishlist/', WishlistListCreateView.as_view(), name='user_wishlist_list_create'),
     path('user/wishlist/<int:product_id>/', WishlistDeleteView.as_view(), name='user_wishlist_delete'),
     path('users/', UserListView.as_view(), name='user_list'),
+    
+    # Endpoints de Privacidade e LGPD
+    path('privacy/', include('users.urls_privacy')),
 ]

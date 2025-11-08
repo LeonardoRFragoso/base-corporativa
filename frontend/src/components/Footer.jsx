@@ -67,8 +67,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/terms" className="text-white/80 hover:text-white transition-colors">
+                  Termos de Uso
+                </Link>
+              </li>
+              <li>
                 <Link to="/privacy" className="text-white/80 hover:text-white transition-colors">
                   Política de Privacidade
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-white/80 hover:text-white transition-colors">
+                  Política de Cookies
                 </Link>
               </li>
             </ul>

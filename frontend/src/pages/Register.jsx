@@ -7,7 +7,10 @@ export default function Register() {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    terms_accepted: false,
+    privacy_accepted: false,
+    marketing_accepted: false
   })
   const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
@@ -17,9 +20,10 @@ export default function Register() {
   const navigate = useNavigate()
 
   function handleChange(e) {
-    const { name, value } = e.target
-    let nextValue = value
-    if (name === 'username') {
+    const { name, value, type, checked } = e.target
+    let nextValue = type === 'checkbox' ? checked : value
+    
+    if (name === 'username' && type !== 'checkbox') {
       nextValue = value
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/\s+/g, '_')
@@ -64,6 +68,15 @@ export default function Register() {
       newErrors.confirmPassword = 'As senhas não coincidem'
     }
     
+    // Validação LGPD - Termos obrigatórios
+    if (!formData.terms_accepted) {
+      newErrors.terms_accepted = 'Você deve aceitar os Termos de Uso'
+    }
+    
+    if (!formData.privacy_accepted) {
+      newErrors.privacy_accepted = 'Você deve aceitar a Política de Privacidade'
+    }
+    
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -75,10 +88,14 @@ export default function Register() {
     
     setLoading(true)
     try {
-      const response = await api.post('/api/auth/register/', {
+      const response = await api.post('/api/user/auth/register/', {
         username: formData.username,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        password2: formData.confirmPassword,
+        terms_accepted: formData.terms_accepted,
+        privacy_accepted: formData.privacy_accepted,
+        marketing_accepted: formData.marketing_accepted
       })
       setSuccess(response.data.message || 'Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.')
       // Não redireciona automaticamente - usuário precisa verificar email primeiro
@@ -274,6 +291,58 @@ export default function Register() {
               </div>
               {errors.confirmPassword && (
                 <p className="mt-2 text-sm text-error-600 font-medium">{errors.confirmPassword}</p>
+              )}
+            </div>
+
+            {/* CONSENTIMENTO LGPD - OBRIGATÓRIO */}
+            <div className="bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-300 dark:border-primary-700 p-5 rounded-xl">
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <input
+                    id="terms_accepted"
+                    name="terms_accepted"
+                    type="checkbox"
+                    checked={formData.terms_accepted}
+                    onChange={handleChange}
+                    className="mt-1 h-5 w-5 text-primary-600 border-neutral-300 rounded focus:ring-primary-600"
+                  />
+                  <label htmlFor="terms_accepted" className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                    Li e aceito os{' '}
+                    <Link to="/terms" target="_blank" className="text-primary-600 dark:text-primary-400 hover:underline font-semibold">
+                      Termos de Uso
+                    </Link>
+                    {' '}e a{' '}
+                    <Link to="/privacy" target="_blank" className="text-primary-600 dark:text-primary-400 hover:underline font-semibold">
+                      Política de Privacidade
+                    </Link>
+                    {' '}*
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    id="marketing_accepted"
+                    name="marketing_accepted"
+                    type="checkbox"
+                    checked={formData.marketing_accepted}
+                    onChange={handleChange}
+                    className="mt-1 h-5 w-5 text-primary-600 border-neutral-300 rounded focus:ring-primary-600"
+                  />
+                  <label htmlFor="marketing_accepted" className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                    Aceito receber comunicações de marketing, promoções e novidades por e-mail (opcional)
+                  </label>
+                </div>
+              </div>
+
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-4 italic">
+                * Campos obrigatórios. Seus dados serão tratados conforme a LGPD (Lei 13.709/2018).
+              </p>
+              
+              {(errors.terms_accepted || errors.privacy_accepted) && (
+                <div className="mt-3 text-sm text-error-600 font-medium">
+                  {errors.terms_accepted && <p>• {errors.terms_accepted}</p>}
+                  {errors.privacy_accepted && <p>• {errors.privacy_accepted}</p>}
+                </div>
               )}
             </div>
 

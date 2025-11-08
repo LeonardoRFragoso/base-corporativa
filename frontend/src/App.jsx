@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import CookieBanner from './components/CookieBanner.jsx'
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import Catalog from './pages/Catalog.jsx'
@@ -22,6 +23,8 @@ import Shipping from './pages/Shipping.jsx'
 import Returns from './pages/Returns.jsx'
 import FAQ from './pages/FAQ.jsx'
 import Privacy from './pages/Privacy.jsx'
+import Terms from './pages/Terms.jsx'
+import CookiePolicy from './pages/CookiePolicy.jsx'
 import Orders from './pages/Orders.jsx'
 import OrderDetail from './pages/OrderDetail.jsx'
 import AdminProductCreate from './pages/AdminProductCreate.jsx'
@@ -53,6 +56,8 @@ function App() {
           <Route path="/returns" element={<Returns />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -78,6 +83,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <CookieBanner />
       <SupportChat />
     </div>
   )

@@ -8,6 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, ProfileSerializer
 from .serializers import WishlistItemSerializer, UserListSerializer
+from .serializers_privacy import RegisterWithConsentSerializer
 from .models import WishlistItem, EmailVerificationToken, PasswordResetToken
 from catalog.models import Product
 from .email_utils import send_verification_email, send_password_reset_email
@@ -18,12 +19,13 @@ from django.shortcuts import get_object_or_404
 
 
 class RegisterView(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
+    # Usar o novo serializer com consentimentos LGPD
+    serializer_class = RegisterWithConsentSerializer
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
     
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
@@ -42,8 +44,12 @@ class RegisterView(generics.CreateAPIView):
         
         headers = self.get_success_headers(serializer.data)
         return Response({
-            'user': serializer.data,
-            'message': 'Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.'
+            'user': {
+                'username': user.username,
+                'email': user.email,
+            },
+            'message': 'Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.',
+            'consents_registered': True
         }, status=status.HTTP_201_CREATED, headers=headers)
 
 
