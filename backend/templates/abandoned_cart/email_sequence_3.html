@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÚLTIMA CHANCE: 15% OFF!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.7; }
+        }
+        .mega-discount {
+            background: white;
+            color: #ff0000;
+            display: inline-block;
+            padding: 25px 50px;
+            border-radius: 12px;
+            font-size: 48px;
+            font-weight: 900;
+            margin: 20px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            animation: shake 3s infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30%, 50%, 70%, 90% { transform: rotate(-2deg); }
+            20%, 40%, 60%, 80% { transform: rotate(2deg); }
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .final-chance {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border: 3px solid #ff0000;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .coupon-box {
+            background: #fff;
+            border: 3px dashed #ff0000;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .coupon-text {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff0000;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .cta-mega {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: white !important;
+            padding: 22px 60px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+            text-transform: uppercase;
+            box-shadow: 0 6px 20px rgba(255,0,0,0.4);
+            animation: pulse-big 2s infinite;
+        }
+        @keyframes pulse-big {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .countdown {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 ÚLTIMA CHANCE 🚨</h1>
+            <div class="mega-discount">15% OFF</div>
+            <p style="font-size: 18px; margin: 10px 0;">DESCONTO EXCLUSIVO EXPIRANDO!</p>
+        </div>
+        
+        <div class="content">
+            <p style="font-size: 20px; font-weight: 700; color: #ff0000; text-align: center;">
+                Esta é sua ÚLTIMA OPORTUNIDADE!
+            </p>
+            
+            <p style="font-size: 16px; line-height: 1.8; text-align: center;">
+                Seu carrinho está esperando há 3 dias e não queremos que você perca essa chance. 
+                Por isso, preparamos nosso <strong>MAIOR DESCONTO:</strong>
+            </p>
+            
+            <div class="final-chance">
+                <h2 style="margin-top: 0; color: #ff0000; font-size: 28px;">
+                    🎁 CUPOM ESPECIAL DE 15% OFF
+                </h2>
+                <div class="coupon-box">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                        SEU CÓDIGO EXCLUSIVO:
+                    </div>
+                    <div class="coupon-text">{{ discount_code }}</div>
+                </div>
+                <p style="font-size: 14px; color: #666;">
+                    ⚠️ Este cupom expira em 7 dias e só pode ser usado UMA vez!
+                </p>
+            </div>
+            
+            <center>
+                <a href="{{ frontend_url }}/cart" class="cta-mega">
+                    🔥 Resgatar 15% OFF Agora!
+                </a>
+            </center>
+            
+            <div class="countdown">
+                ⏰ ATENÇÃO: Este é nosso último e-mail sobre seu carrinho!<br>
+                Após este prazo, o carrinho será limpo e o cupom expirará.
+            </div>
+            
+            <div style="background-color: #f0f8ff; border-radius: 8px; padding: 25px; margin: 30px 0;">
+                <h3 style="margin-top: 0; color: #1a5490;">💎 O que você ganha:</h3>
+                <ul style="padding-left: 20px; font-size: 15px;">
+                    <li><strong>15% de desconto</strong> em todo seu pedido</li>
+                    <li><strong>Frete GRÁTIS</strong> em compras acima de R$ 200</li>
+                    <li><strong>Garantia total</strong> de 30 dias</li>
+                    <li><strong>Troca facilitada</strong> sem complicação</li>
+                    <li><strong>Pagamento 100% seguro</strong></li>
+                </ul>
+            </div>
+            
+            <div style="background-color: #fff9f0; border-left: 4px solid #d4a574; padding: 20px; margin: 30px 0;">
+                <p style="margin: 0; font-size: 15px; font-style: italic;">
+                    <strong>👔 Depoimento de cliente:</strong><br>
+                    "As roupas da BASE CORPORATIVA mudaram minha rotina profissional. Qualidade excepcional e conforto incomparável!" 
+                    - João Silva, Advogado
+                </p>
+            </div>
+            
+            <p style="font-size: 18px; line-height: 1.8; text-align: center; font-weight: 600; color: #ff0000;">
+                Não deixe para depois!<br>
+                Esta é sua ÚLTIMA chance de garantir 15% OFF.
+            </p>
+            
+            <center style="margin: 40px 0;">
+                <a href="{{ frontend_url }}/cart" class="cta-mega">
+                    Finalizar Compra com 15% OFF →
+                </a>
+            </center>
+            
+            <p style="margin-top: 50px; text-align: center;">
+                Atenciosamente,<br>
+                <strong>Equipe BASE CORPORATIVA</strong><br>
+                <span style="font-size: 14px; color: #666;">Sua parceira em elegância profissional</span>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <strong>BASE CORPORATIVA</strong><br>
+                Roupas Corporativas de Qualidade Premium<br>
+                <a href="{{ frontend_url }}" style="color: #d4a574; text-decoration: none;">basecorporativa.store</a>
+            </p>
+            <div style="margin: 20px 0;">
+                <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Instagram</a> | 
+                <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Facebook</a> | 
+                <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">WhatsApp</a>
+            </div>
+            <p style="font-size: 12px; color: #999; margin-top: 20px;">
+                Este é o último e-mail sobre seu carrinho abandonado.<br>
+                Se não deseja receber mais comunicações, <a href="#" style="color: #999;">cancele aqui</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

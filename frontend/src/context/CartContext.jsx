@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
 import { api } from '../lib/api.js'
+import { trackAddToCart, trackRemoveFromCart } from '../utils/analytics.js'
 
 const CartContext = createContext(null)
 
@@ -82,7 +83,19 @@ export function CartProvider({ children }) {
     sync()
   }, [state.items])
   const value = useMemo(
-    () => ({ items: state.items, add: (item) => dispatch({ type: 'add', item }), remove: (item) => dispatch({ type: 'remove', item }), update: (item, qty) => dispatch({ type: 'update', item, qty }), clear: () => dispatch({ type: 'clear' }) }),
+    () => ({ 
+      items: state.items, 
+      add: (item) => {
+        dispatch({ type: 'add', item })
+        trackAddToCart(item)
+      }, 
+      remove: (item) => {
+        dispatch({ type: 'remove', item })
+        trackRemoveFromCart(item)
+      }, 
+      update: (item, qty) => dispatch({ type: 'update', item, qty }), 
+      clear: () => dispatch({ type: 'clear' }) 
+    }),
     [state.items]
   )
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

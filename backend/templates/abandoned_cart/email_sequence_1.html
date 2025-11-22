@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Você esqueceu algo no carrinho</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #d4a574 0%, #5d2e0f 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .cart-items {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4a574 0%, #c89558 100%);
+            color: white !important;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .benefits {
+            background-color: #fff9f0;
+            border-left: 4px solid #d4a574;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .benefits ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .benefits li {
+            margin: 8px 0;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #d4a574;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 BASE CORPORATIVA</h1>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">Olá!</p>
+            
+            <p class="message">
+                Percebemos que você deixou alguns itens no seu carrinho e não quer que você perca essa oportunidade de renovar seu guarda-roupa profissional.
+            </p>
+            
+            <div class="cart-items">
+                <h3 style="margin-top: 0;">Seus itens:</h3>
+                {% if cart.items %}
+                    <ul>
+                    {% for item in cart.items %}
+                        <li><strong>{{ item.product_name }}</strong> - R$ {{ item.price }} (Qtd: {{ item.quantity }})</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Você tem itens esperando por você no carrinho!</p>
+                {% endif %}
+            </div>
+            
+            <center>
+                <a href="{{ frontend_url }}/cart" class="cta-button">
+                    Finalizar Minha Compra →
+                </a>
+            </center>
+            
+            <div class="benefits">
+                <strong>🎁 Lembre-se dos nossos benefícios:</strong>
+                <ul>
+                    <li>✅ Frete GRÁTIS acima de R$ 200</li>
+                    <li>✅ Garantia de 30 dias</li>
+                    <li>✅ Troca facilitada</li>
+                    <li>✅ Pagamento seguro</li>
+                </ul>
+            </div>
+            
+            <p class="message">
+                Não perca tempo! Os nossos produtos são populares e o estoque pode acabar rapidamente.
+            </p>
+            
+            <p class="message">
+                Qualquer dúvida, estamos à disposição para ajudar!
+            </p>
+            
+            <p style="margin-top: 30px;">
+                Atenciosamente,<br>
+                <strong>Equipe BASE CORPORATIVA</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">Instagram</a> | 
+                <a href="#">Facebook</a> | 
+                <a href="#">WhatsApp</a>
+            </div>
+            <p>
+                BASE CORPORATIVA - Roupas Corporativas de Qualidade<br>
+                <a href="{{ frontend_url }}" style="color: #d4a574;">basecorporativa.store</a>
+            </p>
+            <p style="font-size: 12px; color: #999; margin-top: 20px;">
+                Você recebeu este e-mail porque deixou itens no carrinho.<br>
+                Se não quiser mais receber esses e-mails, <a href="#" style="color: #999;">clique aqui</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

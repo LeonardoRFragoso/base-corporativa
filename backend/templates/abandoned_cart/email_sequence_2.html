@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10% OFF no seu carrinho!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #d4a574 0%, #5d2e0f 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .discount-badge {
+            background-color: #ff4444;
+            color: white;
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(255,68,68,0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .coupon-code {
+            background: linear-gradient(135deg, #fff9f0 0%, #ffe8c8 100%);
+            border: 2px dashed #d4a574;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .coupon-code-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #5d2e0f;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white !important;
+            padding: 18px 50px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(255,68,68,0.3);
+        }
+        .urgency {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ SEU CARRINHO ESTÁ ESPERANDO</h1>
+            <div class="discount-badge">10% OFF</div>
+        </div>
+        
+        <div class="content">
+            <p style="font-size: 18px; font-weight: 600;">Olá!</p>
+            
+            <p style="font-size: 16px; line-height: 1.8;">
+                Notamos que você ainda não finalizou sua compra. Como um incentivo especial, 
+                preparamos um <strong>cupom de 10% de desconto</strong> exclusivo para você!
+            </p>
+            
+            <div class="coupon-code">
+                <div style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                    Use este cupom no checkout:
+                </div>
+                <div class="coupon-code-text">{{ discount_code }}</div>
+                <div style="font-size: 14px; color: #999; margin-top: 10px;">
+                    📋 Copie e cole no carrinho
+                </div>
+            </div>
+            
+            <center>
+                <a href="{{ frontend_url }}/cart" class="cta-button">
+                    🛒 Resgatar Meu Desconto Agora →
+                </a>
+            </center>
+            
+            <div class="urgency">
+                <strong>⏰ Atenção:</strong> Este cupom é válido por apenas 7 dias e pode ser usado uma única vez. Não perca essa oportunidade!
+            </div>
+            
+            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h3 style="margin-top: 0;">Por que escolher BASE CORPORATIVA?</h3>
+                <ul style="padding-left: 20px;">
+                    <li>✨ Tecidos premium de alta qualidade</li>
+                    <li>🎯 Design minimalista e elegante</li>
+                    <li>💰 Preço justo e acessível</li>
+                    <li>🚚 Frete GRÁTIS acima de R$ 200</li>
+                    <li>🔄 30 dias para trocar ou devolver</li>
+                </ul>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.8;">
+                Não deixe para depois! Finalize agora e aproveite este desconto exclusivo.
+            </p>
+            
+            <p style="margin-top: 40px;">
+                Abraços,<br>
+                <strong>Equipe BASE CORPORATIVA</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                BASE CORPORATIVA - Roupas Corporativas de Qualidade<br>
+                <a href="{{ frontend_url }}" style="color: #d4a574; text-decoration: none;">basecorporativa.store</a>
+            </p>
+            <p style="font-size: 12px; color: #999; margin-top: 20px;">
+                Este é um e-mail automático sobre seu carrinho abandonado.<br>
+                Se não quiser mais receber, <a href="#" style="color: #999;">cancele aqui</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

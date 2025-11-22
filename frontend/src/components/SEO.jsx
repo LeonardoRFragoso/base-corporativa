@@ -10,7 +10,7 @@ export default function SEO({
   noindex = false,
   canonical = null
 }) {
-  const baseUrl = 'https://basecorporativa.com.br'
+  const baseUrl = 'https://basecorporativa.store'
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl
   const fullImageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`
 

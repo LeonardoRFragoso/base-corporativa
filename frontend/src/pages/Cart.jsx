@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../lib/api.js'
+import { trackBeginCheckout } from '../utils/analytics.js'
 
 export default function Cart() {
   const { items, update, remove, clear } = useCart()
@@ -284,6 +285,9 @@ export default function Cart() {
       return
     }
     
+    // Track begin checkout
+    trackBeginCheckout(items, total)
+    
     setIsProcessing(true)
     
     try {
@@ -308,6 +312,9 @@ export default function Cart() {
     if (!validateCheckoutData()) {
       return
     }
+    
+    // Track begin checkout
+    trackBeginCheckout(items, total)
     
     setIsProcessing(true)
     

@@ -6,6 +6,8 @@ import ProductCard from '../components/ProductCard.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import SEO from '../components/SEO.jsx'
 import { ProductSchema, BreadcrumbSchema } from '../components/StructuredData.jsx'
+import OptimizedImage from '../components/OptimizedImage.jsx'
+import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics.js'
 
 export default function Product() {
   const { id } = useParams()
@@ -46,6 +48,8 @@ export default function Product() {
       } else {
         await api.post('/api/user/wishlist/', { product_id: product.id })
         setWishlisted(true)
+        // Track add to wishlist
+        trackAddToWishlist(product)
       }
     } catch (e) {
       // noop
@@ -76,6 +80,10 @@ export default function Product() {
       try {
         const res = await api.get(`/api/products/${id}/`)
         setProduct(res.data)
+        
+        // Track product view
+        trackViewItem(res.data)
+        
         // Select first available variant
         if (res.data.variants && res.data.variants.length > 0) {
           const firstAvailable = res.data.variants.find(v => v.stock > 0) || res.data.variants[0]
