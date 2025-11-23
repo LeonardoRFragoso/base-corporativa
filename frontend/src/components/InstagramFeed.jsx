@@ -6,49 +6,50 @@ import OptimizedImage from './OptimizedImage.jsx';
  * Grid de fotos com link para perfil
  */
 export default function InstagramFeed() {
-  // Placeholder - substituir por API real do Instagram ou imagens estáticas
+  // Imagens placeholder - inspiradas no feed real @base.corporativa
+  // TODO: Conectar com Instagram API ou usar imagens reais do feed
   const instagramPosts = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&h=600&fit=crop',
-      likes: 243,
-      comments: 18,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop',
+      likes: 45,
+      comments: 3,
+      link: 'https://www.instagram.com/base.corporativa/'
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1594938291221-94f18cbb5660?w=600&h=600&fit=crop',
-      likes: 312,
-      comments: 24,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&h=600&fit=crop',
+      likes: 52,
+      comments: 5,
+      link: 'https://www.instagram.com/base.corporativa/'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=600&fit=crop',
-      likes: 189,
-      comments: 12,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=600&fit=crop',
+      likes: 38,
+      comments: 2,
+      link: 'https://www.instagram.com/base.corporativa/'
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=600&h=600&fit=crop',
-      likes: 278,
-      comments: 21,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&h=600&fit=crop',
+      likes: 67,
+      comments: 8,
+      link: 'https://www.instagram.com/base.corporativa/'
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop',
-      likes: 156,
-      comments: 9,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1622445275576-721325763afe?w=600&h=600&fit=crop',
+      likes: 41,
+      comments: 4,
+      link: 'https://www.instagram.com/base.corporativa/'
     },
     {
       id: 6,
-      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=600&fit=crop',
-      likes: 421,
-      comments: 35,
-      link: 'https://instagram.com/basecorporativa'
+      image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&h=600&fit=crop',
+      likes: 58,
+      comments: 6,
+      link: 'https://www.instagram.com/base.corporativa/'
     }
   ];
 
@@ -62,15 +63,16 @@ export default function InstagramFeed() {
           </div>
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-            Siga @basecorporativa
+            Siga @base.corporativa
           </h2>
           
           <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
-            Inspiração diária, lançamentos e bastidores. Faça parte da nossa comunidade!
+            Camisas minimalistas premium | Design atemporal | Tecido de qualidade<br />
+            <span className="text-sm text-primary-600 dark:text-primary-400 font-semibold">466 seguidores • 9 posts</span>
           </p>
 
           <a
-            href="https://instagram.com/basecorporativa"
+            href="https://www.instagram.com/base.corporativa/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
@@ -91,7 +93,7 @@ export default function InstagramFeed() {
         {/* CTA Bottom */}
         <div className="text-center mt-12">
           <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-            📸 Marque <span className="font-bold text-primary-600 dark:text-primary-400">@basecorporativa</span> nas suas fotos e apareça aqui!
+            📸 Marque <span className="font-bold text-primary-600 dark:text-primary-400">@base.corporativa</span> nas suas fotos e apareça aqui!
           </p>
         </div>
       </div>

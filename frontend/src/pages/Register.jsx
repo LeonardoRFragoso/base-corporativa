@@ -121,14 +121,14 @@ export default function Register() {
                           formData.password.length > 0 ? 'weak' : 'none'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-lg w-full space-y-10">
         <div className="text-center">
           <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">Criar sua conta</h1>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400">Junte-se à <span className="text-primary-700 font-semibold">BASE CORPORATIVA</span></p>
+          <p className="text-lg text-neutral-600 dark:text-neutral-400">Junte-se à <span className="text-primary-700 dark:text-primary-400 font-semibold">BASE CORPORATIVA</span></p>
         </div>
 
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-10">
+        <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-10 border border-neutral-200 dark:border-neutral-700">
           <form onSubmit={onSubmit} className="space-y-6">
             {errors.general && (
               <div className="bg-error-50 border-2 border-error-300 text-error-700 px-5 py-4 rounded-xl text-base font-medium">
@@ -165,8 +165,8 @@ export default function Register() {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                  errors.username ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                className={`w-full px-4 py-4 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                  errors.username ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                 }`}
                 placeholder="Escolha um nome de usuário"
               />
@@ -187,8 +187,8 @@ export default function Register() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                  errors.email ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                className={`w-full px-4 py-4 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                  errors.email ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                 }`}
                 placeholder="Digite seu e-mail"
               />
@@ -210,15 +210,15 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                    errors.password ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                  className={`w-full px-4 py-4 pr-12 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                    errors.password ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                   }`}
                   placeholder="Crie uma senha segura"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -241,7 +241,7 @@ export default function Register() {
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'medium' || passwordStrength === 'strong' ? passwordStrength === 'medium' ? 'bg-warning-400' : 'bg-success-400' : 'bg-neutral-200'}`}></div>
                     <div className={`h-1 w-1/3 rounded ${passwordStrength === 'strong' ? 'bg-success-400' : 'bg-neutral-200'}`}></div>
                   </div>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                     {passwordStrength === 'weak' && 'Senha fraca'}
                     {passwordStrength === 'medium' && 'Senha média'}
                     {passwordStrength === 'strong' && 'Senha forte'}
@@ -267,15 +267,15 @@ export default function Register() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all text-base ${
-                    errors.confirmPassword ? 'border-error-300 bg-error-50' : 'border-neutral-300'
+                  className={`w-full px-4 py-4 pr-12 bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 transition-all text-base text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 ${
+                    errors.confirmPassword ? 'border-error-300 bg-error-50 dark:bg-error-900/20 dark:border-error-600' : 'border-neutral-300 dark:border-neutral-600'
                   }`}
                   placeholder="Confirme sua senha"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:text-neutral-400"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                 >
                   {showConfirmPassword ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,7 +304,7 @@ export default function Register() {
                     type="checkbox"
                     checked={formData.terms_accepted}
                     onChange={handleChange}
-                    className="mt-1 h-5 w-5 text-primary-600 border-neutral-300 rounded focus:ring-primary-600"
+                    className="mt-1 h-5 w-5 text-primary-600 dark:text-primary-500 border-neutral-300 dark:border-neutral-600 rounded focus:ring-primary-600 dark:focus:ring-primary-500"
                   />
                   <label htmlFor="terms_accepted" className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
                     Li e aceito os{' '}
@@ -326,7 +326,7 @@ export default function Register() {
                     type="checkbox"
                     checked={formData.marketing_accepted}
                     onChange={handleChange}
-                    className="mt-1 h-5 w-5 text-primary-600 border-neutral-300 rounded focus:ring-primary-600"
+                    className="mt-1 h-5 w-5 text-primary-600 dark:text-primary-500 border-neutral-300 dark:border-neutral-600 rounded focus:ring-primary-600 dark:focus:ring-primary-500"
                   />
                   <label htmlFor="marketing_accepted" className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
                     Aceito receber comunicações de marketing, promoções e novidades por e-mail (opcional)
@@ -349,7 +349,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-2xl"
+              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-95"
             >
               {loading ? (
                 <div className="flex items-center">
@@ -365,7 +365,7 @@ export default function Register() {
           <div className="mt-8 text-center">
             <p className="text-base text-neutral-600 dark:text-neutral-400">
               Já tem uma conta?{' '}
-              <Link to="/login" className="font-bold text-primary-700 hover:text-primary-800">
+              <Link to="/login" className="font-bold text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
                 Faça login
               </Link>
             </p>

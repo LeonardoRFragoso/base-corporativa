@@ -16,15 +16,22 @@ export default function PromoBanner() {
   });
 
   // Data final da promoção (ajuste conforme necessário)
-  const promoEndDate = new Date('2024-12-31T23:59:59');
+  const promoEndDate = new Date('2025-12-31T23:59:59');
 
   useEffect(() => {
     // Verificar se banner foi fechado antes
     const dismissed = localStorage.getItem('promoBannerDismissed');
-    if (dismissed) {
+    const dismissedPromoDate = localStorage.getItem('promoBannerPromoDate');
+    const currentPromoDate = promoEndDate.toISOString();
+
+    // Se a data da promoção mudou, limpar o dismiss anterior
+    if (dismissedPromoDate !== currentPromoDate) {
+      localStorage.removeItem('promoBannerDismissed');
+      localStorage.setItem('promoBannerPromoDate', currentPromoDate);
+    } else if (dismissed) {
+      // Verificar se foi fechado recentemente (nas últimas 24 horas)
       const dismissedDate = new Date(dismissed);
       const now = new Date();
-      // Mostrar novamente após 24 horas
       if (now - dismissedDate < 24 * 60 * 60 * 1000) {
         setIsVisible(false);
         return;
@@ -44,13 +51,14 @@ export default function PromoBanner() {
           seconds: Math.floor((difference / 1000) % 60)
         });
       } else {
+        // Promoção expirada - esconder banner
         setIsVisible(false);
         clearInterval(interval);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [promoEndDate]);
 
   const handleDismiss = () => {
     setIsVisible(false);

@@ -211,7 +211,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-2xl"
+              className="w-full flex justify-center py-5 px-6 border border-transparent rounded-xl shadow-xl text-lg font-bold text-white bg-gradient-to-r from-bronze-700 to-bronze-800 hover:from-bronze-600 hover:to-bronze-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bronze-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-95"
             >
               {loading ? (
                 <div className="flex items-center">
@@ -227,7 +227,7 @@ export default function Login() {
           <div className="mt-8 text-center">
             <p className="text-base text-neutral-600 dark:text-neutral-400">
               Não tem uma conta?{' '}
-              <Link to="/register" className="font-bold text-primary-700 hover:text-primary-800">
+              <Link to="/register" className="font-bold text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
                 Cadastre-se gratuitamente
               </Link>
             </p>

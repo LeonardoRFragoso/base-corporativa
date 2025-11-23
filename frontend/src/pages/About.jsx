@@ -1,13 +1,75 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Award, Shield, Truck, Heart, Users, Sparkles, Package } from 'lucide-react'
 import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
 import SEO from '../components/SEO.jsx'
 import { BreadcrumbSchema } from '../components/StructuredData.jsx'
+import TestimonialsAbout from '../components/TestimonialsAbout.jsx'
+import OurProcess from '../components/OurProcess.jsx'
+import TrustBadges from '../components/TrustBadges.jsx'
+import FAQ from '../components/FAQ.jsx'
 
 export default function About() {
+  const [counters, setCounters] = useState({
+    clients: 0,
+    satisfaction: 0,
+    models: 0,
+    support: 0
+  })
+  const [isVisible, setIsVisible] = useState(false)
+
   const breadcrumbItems = [
     { name: 'Início', url: '/' },
     { name: 'Sobre Nós', url: '/about' }
   ]
+
+  // Animação dos contadores quando entram no viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    const element = document.getElementById('stats-section')
+    if (element) observer.observe(element)
+
+    return () => {
+      if (element) observer.unobserve(element)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return
+
+    const targets = { clients: 1247, satisfaction: 95, models: 50, support: 24 }
+    const duration = 2000
+    const steps = 60
+    const interval = duration / steps
+
+    let currentStep = 0
+    const timer = setInterval(() => {
+      currentStep++
+      const progress = currentStep / steps
+
+      setCounters({
+        clients: Math.floor(targets.clients * progress),
+        satisfaction: Math.floor(targets.satisfaction * progress),
+        models: Math.floor(targets.models * progress),
+        support: Math.floor(targets.support * progress)
+      })
+
+      if (currentStep >= steps) {
+        clearInterval(timer)
+        setCounters(targets)
+      }
+    }, interval)
+
+    return () => clearInterval(timer)
+  }, [isVisible])
 
   return (
     <div className="min-h-screen">
@@ -101,23 +163,23 @@ export default function About() {
               </p>
             </div>
             
-            <div className="relative animate-scale-in">
+            <div id="stats-section" className="relative animate-scale-in">
               <div className="bg-gradient-to-br from-primary-50/50 to-bronze-50/50 dark:from-neutral-800/50 dark:to-neutral-800/50 rounded-3xl p-10 transition-colors duration-300">
                 <div className="grid grid-cols-2 gap-8 text-center">
                   <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
-                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">1000+</div>
+                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">{counters.clients}+</div>
                     <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Profissionais atendidos</div>
                   </div>
                   <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
-                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">95%</div>
+                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">{counters.satisfaction}%</div>
                     <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Satisfação dos clientes</div>
                   </div>
                   <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
-                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">50+</div>
-                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Modelos disponíveis</div>
+                    <div className="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-3">{counters.models}+</div>
+                    <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Modelos de camisas</div>
                   </div>
                   <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral-200 dark:border-neutral-700">
-                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">24h</div>
+                    <div className="text-5xl font-bold text-bronze-700 dark:text-bronze-400 mb-3">{counters.support}h</div>
                     <div className="text-base text-neutral-600 dark:text-neutral-400 font-medium">Suporte especializado</div>
                   </div>
                 </div>
@@ -181,6 +243,74 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      {/* Depoimentos de Clientes */}
+      <TestimonialsAbout />
+
+      {/* Nosso Processo de Produção */}
+      <OurProcess />
+
+      {/* Garantias e Benefícios */}
+      <section className="py-28 bg-white dark:bg-neutral-900 transition-colors duration-300">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-6">
+              Garantias e Benefícios
+            </h2>
+            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
+              Sua satisfação é nossa prioridade. Compre com total tranquilidade
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-green-200 dark:border-green-800">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Truck className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">Frete Grátis</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                Acima de R$ 200 para todo Brasil
+              </p>
+            </div>
+
+            <div className="group bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-blue-200 dark:border-blue-800">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">Garantia 30 Dias</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                Troca ou devolução facilitada
+              </p>
+            </div>
+
+            <div className="group bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-purple-200 dark:border-purple-800">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Package className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">Entrega Rápida</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                5-10 dias úteis em média
+              </p>
+            </div>
+
+            <div className="group bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-pink-200 dark:border-pink-800">
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">Suporte 24h</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                Atendimento via WhatsApp
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Badges de Confiança */}
+      <TrustBadges />
+
+      {/* Perguntas Frequentes */}
+      <FAQ />
 
       {/* CTA Section */}
       <section className="relative py-36 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 text-white overflow-hidden transition-colors duration-300">

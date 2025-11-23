@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Filter, X, SlidersHorizontal } from 'lucide-react'
+import { Filter, X, SlidersHorizontal, Grid3x3, List, Eye } from 'lucide-react'
 import { api } from '../lib/api.js'
 import ProductCard from '../components/ProductCard.jsx'
 import SEO from '../components/SEO.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { ProductCardSkeleton } from '../components/SkeletonLoader.jsx'
+import CatalogHeroBanner from '../components/CatalogHeroBanner.jsx'
+import FeaturedProductsBanner from '../components/FeaturedProductsBanner.jsx'
+import QuickViewModal from '../components/QuickViewModal.jsx'
+import NewsletterCatalog from '../components/NewsletterCatalog.jsx'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -18,6 +22,8 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
   const [deletingProduct, setDeletingProduct] = useState(null)
+  const [viewMode, setViewMode] = useState('grid') // 'grid' ou 'list'
+  const [quickViewProduct, setQuickViewProduct] = useState(null)
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -116,6 +122,9 @@ export default function Catalog() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Breadcrumbs items={[{ label: 'Catálogo' }]} />
+
+        {/* Hero Banner */}
+        <CatalogHeroBanner />
         
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -125,6 +134,32 @@ export default function Catalog() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            {/* View Mode Toggle */}
+            <div className="hidden md:flex items-center gap-1 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                }`}
+                title="Visualização em grade"
+              >
+                <Grid3x3 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                }`}
+                title="Visualização em lista"
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
+
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg hover:border-primary-600 dark:hover:border-primary-400 transition-colors text-neutral-900 dark:text-neutral-100 font-semibold"
@@ -155,6 +190,57 @@ export default function Catalog() {
             )}
           </div>
         </div>
+
+        {/* Active Filters Chips */}
+        {activeFiltersCount > 0 && (
+          <div className="mb-6 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              Filtros ativos:
+            </span>
+            {filters.category && (
+              <button
+                onClick={() => handleFilterChange('category', '')}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+              >
+                {categories.find(c => c.id === filters.category)?.name || 'Categoria'}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {filters.min_price && (
+              <button
+                onClick={() => handleFilterChange('min_price', '')}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+              >
+                Min: R$ {filters.min_price}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {filters.max_price && (
+              <button
+                onClick={() => handleFilterChange('max_price', '')}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+              >
+                Max: R$ {filters.max_price}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {filters.in_stock && (
+              <button
+                onClick={() => handleFilterChange('in_stock', false)}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+              >
+                Em estoque
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            <button
+              onClick={clearFilters}
+              className="text-sm text-error-600 hover:text-error-700 font-semibold underline"
+            >
+              Limpar todos
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
@@ -255,6 +341,9 @@ export default function Catalog() {
 
           {/* Products Grid */}
           <div className="lg:col-span-3">
+            {/* Featured Products Banner */}
+            {!loading && products.length > 0 && <FeaturedProductsBanner products={products} />}
+
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
@@ -282,10 +371,24 @@ export default function Catalog() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={`grid gap-6 ${
+                viewMode === 'grid'
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-1'
+              }`}>
                 {products.map(product => (
-                  <div key={product.id} className="relative">
+                  <div key={product.id} className="relative group">
                     <ProductCard product={product} />
+                    
+                    {/* Quick View Button */}
+                    <button
+                      onClick={() => setQuickViewProduct(product)}
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20 px-4 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 font-semibold rounded-lg shadow-xl flex items-center gap-2 hover:scale-105"
+                    >
+                      <Eye className="w-5 h-5" />
+                      Visualização Rápida
+                    </button>
+
                     {isAdmin && (
                       <div className="absolute top-2 left-2 flex gap-2 z-10">
                         <button
@@ -315,7 +418,17 @@ export default function Catalog() {
             )}
           </div>
         </div>
+
+        {/* Newsletter CTA */}
+        {!loading && products.length > 0 && <NewsletterCatalog />}
       </div>
+
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
     </div>
   )
 }

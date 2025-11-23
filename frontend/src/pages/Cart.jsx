@@ -4,6 +4,11 @@ import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { api } from '../lib/api.js'
 import { trackBeginCheckout } from '../utils/analytics.js'
+import CartProgressIndicator from '../components/CartProgressIndicator.jsx'
+import FreeShippingBar from '../components/FreeShippingBar.jsx'
+import CartTrustBadges from '../components/CartTrustBadges.jsx'
+import PaymentMethodsPreview from '../components/PaymentMethodsPreview.jsx'
+import SavingsBadge from '../components/SavingsBadge.jsx'
 
 export default function Cart() {
   const { items, update, remove, clear } = useCart()
@@ -52,6 +57,13 @@ export default function Cart() {
     shipping_zip: ''
   })
   const [guestAddrError, setGuestAddrError] = useState('')
+  const [loadingAddress, setLoadingAddress] = useState(false)
+  const [addressFilled, setAddressFilled] = useState(false)
+  
+  // Validação em tempo real
+  const [emailValid, setEmailValid] = useState(true)
+  const [cpfValid, setCpfValid] = useState(true)
+  const [phoneValid, setPhoneValid] = useState(true)
 
   const shipping = selectedQuote ? Number(selectedQuote.price) : 0
   const discount = coupon ? Math.min(
@@ -154,6 +166,70 @@ export default function Cart() {
     if (n.length <= 10) return `(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}`
     // 11 digits (mobile)
     return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`
+  }
+
+  // Formatar CPF
+  function formatCPF(v) {
+    const n = onlyNumbers(v).slice(0, 11)
+    if (n.length <= 3) return n
+    if (n.length <= 6) return `${n.slice(0,3)}.${n.slice(3)}`
+    if (n.length <= 9) return `${n.slice(0,3)}.${n.slice(3,6)}.${n.slice(6)}`
+    return `${n.slice(0,3)}.${n.slice(3,6)}.${n.slice(6,9)}-${n.slice(9)}`
+  }
+
+  // Validar email
+  function validateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return regex.test(email)
+  }
+
+  // Validar CPF
+  function validateCPF(cpf) {
+    const cleanCpf = onlyNumbers(cpf)
+    return cleanCpf.length === 11
+  }
+
+  // Validar telefone
+  function validatePhone(phone) {
+    const cleanPhone = onlyNumbers(phone)
+    return cleanPhone.length === 0 || cleanPhone.length === 10 || cleanPhone.length === 11
+  }
+
+  // Buscar endereço pelo CEP via ViaCEP
+  async function fetchAddressByZip(cep) {
+    setLoadingAddress(true)
+    setGuestAddrError('')
+    try {
+      const cleanCep = zipNumbersOnly(cep)
+      if (cleanCep.length !== 8) {
+        setGuestAddrError('CEP deve conter 8 dígitos')
+        return
+      }
+      
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await response.json()
+      
+      if (data.erro) {
+        setGuestAddrError('CEP não encontrado')
+        return
+      }
+      
+      setGuestAddr(prev => ({
+        ...prev,
+        shipping_street: data.logradouro || prev.shipping_street,
+        shipping_neighborhood: data.bairro || prev.shipping_neighborhood,
+        shipping_city: data.localidade || prev.shipping_city,
+        shipping_state: data.uf || prev.shipping_state,
+        shipping_zip: formatZip(cleanCep)
+      }))
+      setAddressFilled(true)
+      setGuestAddrError('')
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error)
+      setGuestAddrError('Erro ao buscar endereço. Preencha manualmente.')
+    } finally {
+      setLoadingAddress(false)
+    }
   }
   function normalizeUF(v) {
     return (v || '').replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 2)
@@ -360,8 +436,11 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        {/* Progress Indicator */}
+        <CartProgressIndicator currentStep={1} />
+
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3">
             Carrinho de Compras
           </h1>
@@ -369,6 +448,9 @@ export default function Cart() {
             {items.length} {items.length === 1 ? 'item' : 'itens'} no seu <span className="text-primary-700 font-medium">carrinho</span>
           </p>
         </div>
+
+        {/* Free Shipping Progress Bar */}
+        <FreeShippingBar subtotal={subtotal} freeShippingThreshold={200} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Cart Items */}
@@ -457,9 +539,13 @@ export default function Cart() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-8 sm:sticky sm:top-28 overflow-hidden border border-neutral-200 dark:border-neutral-700">
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Resumo do pedido</h2>
+          <div className="lg:col-span-1 space-y-6">
+            {/* Savings Badge */}
+            <div className="lg:sticky lg:top-24 space-y-6">
+              <SavingsBadge discount={discount} freeShipping={subtotal >= 200} />
+
+              <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-8 overflow-hidden border border-neutral-200 dark:border-neutral-700">
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Resumo do pedido</h2>
 
               {/* Shipping: CEP and quotes */}
               <div className="mb-6">
@@ -476,7 +562,7 @@ export default function Cart() {
                   <button
                     onClick={calculateShipping}
                     disabled={loadingQuotes || items.length === 0}
-                    className="w-full px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 disabled:opacity-50 transition-all"
+                    className="w-full px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-95"
                   >
                     {loadingQuotes ? 'Calculando...' : 'Calcular'}
                   </button>
@@ -484,7 +570,24 @@ export default function Cart() {
                 {quoteError && <div className="text-sm text-error-600 mt-2 font-medium">{quoteError}</div>}
               </div>
 
-              {quotes.length > 0 && (
+              {loadingQuotes && (
+                <div className="mb-6 space-y-3">
+                  {[1, 2].map(i => (
+                    <div key={i} className="animate-pulse flex items-center justify-between p-4 rounded-xl border-2 border-neutral-200 dark:border-neutral-700">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-8 h-8 bg-neutral-200 dark:bg-neutral-700 rounded"></div>
+                        <div className="space-y-2 flex-1">
+                          <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4"></div>
+                          <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-16"></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {quotes.length > 0 && !loadingQuotes && (
                 <div className="mb-6 space-y-3">
                   {quotes.map(q => (
                     <label key={q.service_id} className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedQuote?.service_id === q.service_id ? 'border-primary-600 dark:border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 hover:shadow-md'}`}>
@@ -583,25 +686,63 @@ export default function Cart() {
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <input
-                      type="email"
-                      placeholder="E-mail"
-                      value={guestInfo.email}
-                      onChange={(e) => setGuestInfo(v => ({...v, email: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
-                    />
-                    <input
-                      type="text"
-                      placeholder="CPF (000.000.000-00)"
-                      value={guestInfo.cpf}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '')
-                        const formatted = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-                        setGuestInfo(v => ({...v, cpf: formatted}))
-                      }}
-                      maxLength={14}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
-                    />
+                    <div className="relative">
+                      <input
+                        type="email"
+                        placeholder="E-mail"
+                        value={guestInfo.email}
+                        onChange={(e) => {
+                          const email = e.target.value
+                          setGuestInfo(v => ({...v, email}))
+                          setEmailValid(email === '' || validateEmail(email))
+                        }}
+                        onBlur={() => setEmailValid(guestInfo.email === '' || validateEmail(guestInfo.email))}
+                        aria-label="E-mail"
+                        aria-invalid={!emailValid}
+                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                          emailValid 
+                            ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
+                            : 'border-error-500 focus:border-error-600'
+                        }`}
+                      />
+                      {!emailValid && guestInfo.email && (
+                        <div className="flex items-center gap-1 text-xs text-error-600 mt-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          E-mail inválido
+                        </div>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="CPF (000.000.000-00)"
+                        value={guestInfo.cpf}
+                        onChange={(e) => {
+                          const formatted = formatCPF(e.target.value)
+                          setGuestInfo(v => ({...v, cpf: formatted}))
+                          setCpfValid(formatted === '' || validateCPF(formatted))
+                        }}
+                        onBlur={() => setCpfValid(guestInfo.cpf === '' || validateCPF(guestInfo.cpf))}
+                        maxLength={14}
+                        aria-label="CPF"
+                        aria-invalid={!cpfValid}
+                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                          cpfValid 
+                            ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
+                            : 'border-error-500 focus:border-error-600'
+                        }`}
+                      />
+                      {!cpfValid && guestInfo.cpf && (
+                        <div className="flex items-center gap-1 text-xs text-error-600 mt-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          CPF deve conter 11 dígitos
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {guestError && <div className="text-sm text-error-600 mt-2 font-medium">{guestError}</div>}
                 </div>
@@ -609,14 +750,63 @@ export default function Cart() {
 
               {!isAuthenticated && (
                 <div className="mb-6">
-                  <label className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Endereço de entrega</label>
+                  <label className="flex items-center gap-2 text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
+                    Endereço de entrega
+                    {addressFilled && (
+                      <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded-full font-medium">
+                        ✓ Preenchido automaticamente
+                      </span>
+                    )}
+                  </label>
+                  
+                  {/* CEP com auto-preenchimento */}
+                  <div className="mb-4">
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="CEP (00000-000)"
+                          value={formatZip(guestAddr.shipping_zip)}
+                          onChange={(e) => {
+                            const value = e.target.value
+                            setGuestAddr(v => ({...v, shipping_zip: value}))
+                            setAddressFilled(false)
+                          }}
+                          onBlur={() => {
+                            const cleanCep = zipNumbersOnly(guestAddr.shipping_zip)
+                            if (cleanCep.length === 8) {
+                              fetchAddressByZip(cleanCep)
+                            }
+                          }}
+                          className="w-full px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => fetchAddressByZip(guestAddr.shipping_zip)}
+                        disabled={loadingAddress || zipNumbersOnly(guestAddr.shipping_zip).length !== 8}
+                        className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 disabled:opacity-50 transition-all shrink-0 hover:scale-[1.02] active:scale-95"
+                      >
+                        {loadingAddress ? (
+                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : 'Buscar'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Digite o CEP e o endereço será preenchido automaticamente</p>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="text"
                       placeholder="Rua"
                       value={guestAddr.shipping_street}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_street: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      disabled={loadingAddress}
+                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <input
                       type="text"
@@ -629,7 +819,7 @@ export default function Cart() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                     <input
                       type="text"
-                      placeholder="Complemento"
+                      placeholder="Complemento (opcional)"
                       value={guestAddr.shipping_complement}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_complement: e.target.value}))}
                       className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
@@ -639,7 +829,8 @@ export default function Cart() {
                       placeholder="Bairro"
                       value={guestAddr.shipping_neighborhood}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_neighborhood: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      disabled={loadingAddress}
+                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
@@ -648,39 +839,73 @@ export default function Cart() {
                       placeholder="Cidade"
                       value={guestAddr.shipping_city}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_city: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      disabled={loadingAddress}
+                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <input
                       type="text"
                       placeholder="Estado (UF)"
-                      value={guestAddr.shipping_state}
+                      value={normalizeUF(guestAddr.shipping_state)}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_state: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      maxLength={2}
+                      disabled={loadingAddress}
+                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="CEP"
-                      value={formatZip(guestAddr.shipping_zip)}
-                      onChange={(e) => setGuestAddr(v => ({...v, shipping_zip: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Telefone (opcional)"
-                      value={guestAddr.shipping_phone}
-                      onChange={(e) => setGuestAddr(v => ({...v, shipping_phone: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
-                    />
+                  <div className="grid grid-cols-1 gap-3 mt-3">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Telefone (opcional) - (00) 00000-0000"
+                        value={formatPhoneBR(guestAddr.shipping_phone)}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          setGuestAddr(v => ({...v, shipping_phone: value}))
+                          setPhoneValid(validatePhone(value))
+                        }}
+                        onBlur={() => setPhoneValid(validatePhone(guestAddr.shipping_phone))}
+                        maxLength={15}
+                        aria-label="Telefone"
+                        aria-invalid={!phoneValid}
+                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                          phoneValid 
+                            ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
+                            : 'border-error-500 focus:border-error-600'
+                        }`}
+                      />
+                      {!phoneValid && guestAddr.shipping_phone && (
+                        <div className="flex items-center gap-1 text-xs text-error-600 mt-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          Telefone inválido (use DDD + número)
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {guestAddrError && <div className="text-sm text-error-600 mt-2 font-medium">{guestAddrError}</div>}
                 </div>
               )}
 
               <div className="mb-6">
-                <label className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Cupom de desconto</label>
+                <label className="flex items-center gap-2 text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
+                  Cupom de desconto
+                  <button
+                    type="button"
+                    className="group relative"
+                    aria-label="Informações sobre cupom de desconto"
+                  >
+                    <svg className="w-4 h-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <span className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-neutral-900 text-white text-xs rounded-lg whitespace-nowrap z-10">
+                      Digite o código do cupom para obter desconto
+                      <svg className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-2 h-2 text-neutral-900" viewBox="0 0 8 8">
+                        <path fill="currentColor" d="M0 0l4 4 4-4z" />
+                      </svg>
+                    </span>
+                  </button>
+                </label>
                 <div className="flex items-stretch gap-3">
                   <input
                     type="text"
@@ -689,7 +914,7 @@ export default function Cart() {
                     onChange={(e) => setCouponCode(e.target.value)}
                     className="flex-1 min-w-0 px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                   />
-                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all shrink-0 whitespace-nowrap">Aplicar</button>
+                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all shrink-0 whitespace-nowrap hover:scale-[1.02] active:scale-95">Aplicar</button>
                 </div>
                 {couponError && <div className="text-sm text-error-600 mt-2 font-medium">{couponError}</div>}
                 {coupon && (
@@ -717,8 +942,25 @@ export default function Cart() {
                 <div className="border-t-2 border-neutral-200 dark:border-neutral-700 pt-5">
                   <div className="flex justify-between text-2xl font-bold">
                     <span className="text-neutral-900 dark:text-neutral-100">Total</span>
-                    <span className="text-primary-700">R$ {total.toFixed(2)}</span>
+                    <span className="text-primary-700 dark:text-primary-400">R$ {total.toFixed(2)}</span>
                   </div>
+                  {discount > 0 && (
+                    <div className="flex items-center gap-2 mt-3 text-sm text-success-700 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-4 py-2 rounded-lg">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-semibold">Você está economizando R$ {discount.toFixed(2)}!</span>
+                    </div>
+                  )}
+                  {subtotal >= 200 && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-success-700 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-4 py-2 rounded-lg">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                      </svg>
+                      <span className="font-semibold">Frete grátis!</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -778,21 +1020,18 @@ export default function Cart() {
 
               <Link 
                 to="/catalog" 
-                className="block w-full mt-4 text-center py-4 px-6 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 hover:border-neutral-400 transition-all"
+                className="block w-full mt-4 text-center py-4 px-6 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:bg-neutral-900 hover:border-neutral-400 transition-all hover:scale-[1.01] active:scale-99"
               >
                 Continuar comprando
               </Link>
-
-              {/* Security badges */}
-              <div className="mt-8 pt-8 border-t-2 border-neutral-200 dark:border-neutral-700">
-                <div className="flex items-center justify-center gap-3 text-base text-neutral-600 dark:text-neutral-400">
-                  <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span className="font-semibold">Compra 100% segura</span>
-                </div>
-              </div>
             </div>
+            </div>
+
+            {/* Payment Methods Preview */}
+            <PaymentMethodsPreview />
+
+            {/* Trust Badges */}
+            <CartTrustBadges />
           </div>
         </div>
       </div>

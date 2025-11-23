@@ -10,38 +10,38 @@ export default function FeaturedCategories() {
   const categories = [
     {
       id: 1,
-      name: 'Camisas Polo',
-      slug: 'camisas-polo',
-      description: 'Conforto e elegância',
-      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=800&fit=crop',
-      productsCount: 24,
-      color: 'from-primary-600/90 to-primary-800/90'
-    },
-    {
-      id: 2,
-      name: 'Calças Sociais',
-      slug: 'calcas-sociais',
-      description: 'Alfaiataria impecável',
-      image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop',
-      productsCount: 18,
-      color: 'from-bronze-700/90 to-bronze-900/90'
-    },
-    {
-      id: 3,
-      name: 'Blazers',
-      slug: 'blazers',
-      description: 'Sofisticação profissional',
-      image: 'https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=600&h=800&fit=crop',
+      name: 'Camisas Básicas',
+      slug: 'camisas-basicas',
+      description: 'Essenciais e atemporais',
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=800&fit=crop',
       productsCount: 15,
       color: 'from-neutral-700/90 to-neutral-900/90'
     },
     {
+      id: 2,
+      name: 'Camisas Oversized',
+      slug: 'camisas-oversized',
+      description: 'Conforto moderno',
+      image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&h=800&fit=crop',
+      productsCount: 12,
+      color: 'from-primary-600/90 to-primary-800/90'
+    },
+    {
+      id: 3,
+      name: 'Camisas Longline',
+      slug: 'camisas-longline',
+      description: 'Estilo alongado',
+      image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=800&fit=crop',
+      productsCount: 8,
+      color: 'from-bronze-700/90 to-bronze-900/90'
+    },
+    {
       id: 4,
-      name: 'Acessórios',
-      slug: 'acessorios',
-      description: 'Complete seu look',
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=800&fit=crop',
-      productsCount: 32,
+      name: 'Camisas Premium',
+      slug: 'camisas-premium',
+      description: 'Qualidade superior',
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&h=800&fit=crop',
+      productsCount: 10,
       color: 'from-primary-600/90 to-bronze-700/90'
     }
   ];
@@ -56,11 +56,11 @@ export default function FeaturedCategories() {
           </p>
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-            Encontre o que Procura
+            Encontre seu Corte Ideal
           </h2>
           
           <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Navegue por nossas categorias e descubra peças essenciais para seu guarda-roupa corporativo
+            Camisas minimalistas premium em diversos cortes para seu estilo profissional
           </p>
         </div>
 

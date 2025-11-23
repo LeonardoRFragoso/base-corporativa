@@ -38,10 +38,12 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Compare from './pages/Compare.jsx'
 import SupportChat from './components/SupportChat.jsx'
 import AdminProductEdit from './pages/AdminProductEdit.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
 
 function App() {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
+      <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <Routes>
