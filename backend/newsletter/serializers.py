@@ -13,6 +13,19 @@ class NewsletterSubscriberSerializer(serializers.ModelSerializer):
         model = NewsletterSubscriber
         fields = ['id', 'email', 'is_active', 'subscribed_at']
         read_only_fields = ['id', 'subscribed_at']
+        # Remove validação unique do email para permitir reutilização
+        extra_kwargs = {
+            'email': {'validators': []},
+        }
+
+    def validate_email(self, value):
+        """
+        Validação customizada de email (formato).
+        A unicidade será tratada no create() com get_or_create.
+        """
+        if not value or '@' not in value:
+            raise serializers.ValidationError("Email inválido.")
+        return value.lower().strip()
 
     def create(self, validated_data):
         email = validated_data['email']
