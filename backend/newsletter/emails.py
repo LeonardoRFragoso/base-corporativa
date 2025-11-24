@@ -1,4 +1,4 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -111,14 +111,26 @@ BASE CORPORATIVA - Estilo Profissional
     """
     
     try:
-        send_mail(
+        # Criar email com headers customizados
+        msg = EmailMultiAlternatives(
             subject=subject,
-            message=plain_message,
+            body=plain_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            html_message=html_message,
-            fail_silently=False,
+            to=[email],
         )
+        
+        # Adicionar versão HTML
+        msg.attach_alternative(html_message, "text/html")
+        
+        # Adicionar headers para melhorar deliverability
+        msg.extra_headers = {
+            'List-Unsubscribe': f'<{settings.FRONTEND_BASE_URL}/unsubscribe>',
+            'X-Entity-Ref-ID': 'newsletter-welcome',
+        }
+        
+        # Enviar email
+        msg.send(fail_silently=False)
+        
         logger.info(f"Email de boas-vindas enviado com sucesso para {email}")
         return True
     except Exception as e:
