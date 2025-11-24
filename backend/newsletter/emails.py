@@ -17,7 +17,7 @@ def send_welcome_email(email):
     Returns:
         bool: True se o email foi enviado com sucesso, False caso contrário
     """
-    subject = '🎉 Bem-vindo à Newsletter - Ganhe 10% OFF na Primeira Compra!'
+    subject = 'Bem-vindo a BASE CORPORATIVA - 10% OFF na Primeira Compra'
     
     # HTML content
     html_message = f"""
@@ -41,7 +41,7 @@ def send_welcome_email(email):
     <body>
         <div class="container">
             <div class="header">
-                <h1>🎉 Bem-vindo à BASE CORPORATIVA!</h1>
+                <h1>Bem-vindo a BASE CORPORATIVA!</h1>
                 <p>Obrigado por se inscrever em nossa newsletter</p>
             </div>
             <div class="content">
@@ -57,15 +57,15 @@ def send_welcome_email(email):
                 <div class="benefits">
                     <h3>O que você receberá:</h3>
                     <div class="benefit-item">
-                        <span class="benefit-icon">🎁</span>
+                        <span class="benefit-icon">*</span>
                         <span><strong>Ofertas Exclusivas:</strong> Descontos e promoções especiais para assinantes</span>
                     </div>
                     <div class="benefit-item">
-                        <span class="benefit-icon">🚀</span>
+                        <span class="benefit-icon">*</span>
                         <span><strong>Lançamentos:</strong> Seja o primeiro a conhecer nossos novos produtos</span>
                     </div>
                     <div class="benefit-item">
-                        <span class="benefit-icon">💼</span>
+                        <span class="benefit-icon">*</span>
                         <span><strong>Dicas de Estilo:</strong> Conselhos profissionais de moda corporativa</span>
                     </div>
                 </div>
@@ -89,25 +89,25 @@ def send_welcome_email(email):
     
     # Plain text fallback
     plain_message = f"""
-    Bem-vindo à BASE CORPORATIVA!
-    
-    Obrigado por se inscrever em nossa newsletter!
-    
-    Como agradecimento, você ganhou 10% OFF na sua primeira compra!
-    O desconto será aplicado automaticamente no checkout.
-    
-    O que você receberá:
-    
-    🎁 Ofertas Exclusivas: Descontos e promoções especiais para assinantes
-    🚀 Lançamentos: Seja o primeiro a conhecer nossos novos produtos
-    💼 Dicas de Estilo: Conselhos profissionais de moda corporativa
-    
-    Visite nossa loja: {settings.FRONTEND_BASE_URL}
-    
-    Seus dados estão seguros. Enviamos apenas conteúdo relevante.
-    Cancele quando quiser.
-    
-    BASE CORPORATIVA - Estilo Profissional
+Bem-vindo a BASE CORPORATIVA!
+
+Obrigado por se inscrever em nossa newsletter!
+
+Como agradecimento, você ganhou 10% OFF na sua primeira compra!
+O desconto será aplicado automaticamente no checkout.
+
+O que você receberá:
+
+* Ofertas Exclusivas: Descontos e promoções especiais para assinantes
+* Lançamentos: Seja o primeiro a conhecer nossos novos produtos
+* Dicas de Estilo: Conselhos profissionais de moda corporativa
+
+Visite nossa loja: {settings.FRONTEND_BASE_URL}
+
+Seus dados estão seguros. Enviamos apenas conteúdo relevante.
+Cancele quando quiser.
+
+BASE CORPORATIVA - Estilo Profissional
     """
     
     try:

@@ -64,15 +64,21 @@ class SendGridBackend(BaseEmailBackend):
                 # Enviar via SendGrid
                 response = self.client.send(mail)
                 
+                # Extrair headers relevantes
+                message_id = response.headers.get('X-Message-Id', 'N/A')
+                
                 if response.status_code in [200, 201, 202]:
                     num_sent += 1
                     logger.info(f"✅ Email enviado via SendGrid de contato@basecorporativa.store para: {message.to}")
+                    logger.info(f"   SendGrid Message ID: {message_id} | Status: {response.status_code}")
+                    logger.info(f"   Assunto: {subject}")
                 else:
                     try:
                         body = response.body.decode() if hasattr(response.body, 'decode') else str(response.body)
                     except Exception:
                         body = str(response.body)
                     logger.error(f"❌ Erro SendGrid: Status {response.status_code} Body: {body}")
+                    logger.error(f"   Para: {message.to} | Assunto: {subject}")
                     if not self.fail_silently:
                         raise Exception(f"SendGrid returned status {response.status_code}")
                         
