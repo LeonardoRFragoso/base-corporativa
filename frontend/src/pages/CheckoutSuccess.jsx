@@ -19,7 +19,7 @@ export default function CheckoutSuccess() {
           </svg>
         </div>
         
-        <h1 className="text-2xl font-bold text-primary-950 mb-4">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
           Pagamento Aprovado!
         </h1>
         
@@ -28,14 +28,14 @@ export default function CheckoutSuccess() {
           em breve com os detalhes do seu pedido.
         </p>
         
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-2 text-green-800">
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2 text-green-800 dark:text-green-300">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span className="font-medium">Pagamento confirmado</span>
           </div>
-          <p className="text-green-700 text-sm mt-1">
+          <p className="text-green-700 dark:text-green-300 text-sm mt-1">
             Seu pedido será processado e enviado em até 2 dias úteis.
           </p>
         </div>

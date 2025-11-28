@@ -58,7 +58,7 @@ export default function CheckoutPix() {
 
   if (!pixData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-neutral-600 dark:text-neutral-400">Carregando...</p>
@@ -68,11 +68,11 @@ export default function CheckoutPix() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-100 to-bronze-100 rounded-full mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-100 to-bronze-100 dark:from-primary-900/30 dark:to-bronze-900/30 rounded-full mb-6">
             <svg className="w-10 h-10 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -103,7 +103,7 @@ export default function CheckoutPix() {
           )}
 
           {/* Valor */}
-          <div className="text-center py-6 bg-gradient-to-r from-primary-50 to-bronze-50 rounded-xl">
+          <div className="text-center py-6 bg-gradient-to-r from-primary-50 to-bronze-50 dark:from-primary-900/20 dark:to-bronze-900/20 rounded-xl">
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Valor a pagar</p>
             <p className="text-4xl font-bold text-primary-700">
               R$ {Number(pixData.amount).toFixed(2)}
@@ -128,7 +128,7 @@ export default function CheckoutPix() {
                   className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                     copied 
                       ? 'bg-success-600 text-white' 
-                      : 'bg-neutral-900 text-white hover:bg-neutral-800'
+                      : 'bg-neutral-900 dark:bg-neutral-700 text-white hover:bg-neutral-800 dark:hover:bg-neutral-600'
                   }`}
                 >
                   {copied ? (
