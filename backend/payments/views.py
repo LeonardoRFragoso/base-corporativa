@@ -311,16 +311,16 @@ def create_card_payment(request):
             return Response({'error': 'Carrinho vazio'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Calcular total
-        total_items = sum(float(item['price']) * int(item['qty']) for item in items_data)
-        shipping_price = float(request.data.get('shipping_price', 0) or 0)
-        discount_amount = float(request.data.get('discount_amount', 0) or 0)
+        total_items = round(sum(float(item['price']) * int(item['qty']) for item in items_data), 2)
+        shipping_price = round(float(request.data.get('shipping_price', 0) or 0), 2)
+        discount_amount = round(float(request.data.get('discount_amount', 0) or 0), 2)
         
         # Usar transaction_amount do frontend se fornecido (inclui juros de parcelamento)
         # Caso contrário, calcular o total normalmente
         if request.data.get('transaction_amount'):
-            total_amount = float(request.data.get('transaction_amount'))
+            total_amount = round(float(request.data.get('transaction_amount')), 2)
         else:
-            total_amount = total_items + float(shipping_price) - float(discount_amount)
+            total_amount = round(total_items + shipping_price - discount_amount, 2)
         
         # Log dados recebidos para debug CARTÃO
         import logging
@@ -402,7 +402,7 @@ def create_card_payment(request):
         
         # Preparar dados do pagamento
         payment_data = {
-            "transaction_amount": float(total_amount),
+            "transaction_amount": round(float(total_amount), 2),
             "token": request.data.get('token'),
             "description": f"Pedido #{order.id} - BASE CORPORATIVA",
             "installments": int(request.data.get('installments', 1)),

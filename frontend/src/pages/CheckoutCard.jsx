@@ -24,13 +24,13 @@ export default function CheckoutCard() {
   const [transactionAmount, setTransactionAmount] = useState(0)
 
   // Calcular totais
-  const itemsTotal = checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0
-  const shipping = Number(checkoutData?.shipping_price || 0)
-  const discount = Number(checkoutData?.discount_amount || 0)
-  const finalTotal = itemsTotal + shipping - discount
+  const itemsTotal = parseFloat((checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0).toFixed(2))
+  const shipping = parseFloat(Number(checkoutData?.shipping_price || 0).toFixed(2))
+  const discount = parseFloat(Number(checkoutData?.discount_amount || 0).toFixed(2))
+  const finalTotal = parseFloat((itemsTotal + shipping - discount).toFixed(2))
   
   // Valor a ser exibido na UI (pode incluir juros de parcelamento)
-  const displayTotal = transactionAmount > 0 ? transactionAmount : finalTotal
+  const displayTotal = transactionAmount > 0 ? parseFloat(transactionAmount.toFixed(2)) : finalTotal
 
   useEffect(() => {
     if (!checkoutData) {
@@ -126,7 +126,7 @@ export default function CheckoutCard() {
     setCardForm(cardFormInstance)
     
     // Inicializar o valor da transação
-    setTransactionAmount(finalTotal)
+    setTransactionAmount(parseFloat(finalTotal.toFixed(2)))
     
     // Adicionar listener para mudanças nas parcelas
     const installmentsSelect = document.getElementById('form-checkout__installments')
@@ -139,7 +139,7 @@ export default function CheckoutCard() {
           const text = selectedOption.text
           const totalMatch = text.match(/\(R\$\s*([\d.,]+)\)/)
           if (totalMatch) {
-            const totalWithInterest = parseFloat(totalMatch[1].replace('.', '').replace(',', '.'))
+            const totalWithInterest = parseFloat(parseFloat(totalMatch[1].replace('.', '').replace(',', '.')).toFixed(2))
             console.log('Transaction amount with interest:', totalWithInterest)
             setTransactionAmount(totalWithInterest)
           }
@@ -190,7 +190,7 @@ export default function CheckoutCard() {
       
       // Calcular o total correto considerando juros das parcelas
       // Se o usuário selecionou parcelamento com juros, transactionAmount já foi atualizado
-      const finalTransactionAmount = transactionAmount > 0 ? transactionAmount : finalTotal
+      const finalTransactionAmount = parseFloat((transactionAmount > 0 ? transactionAmount : finalTotal).toFixed(2))
       
       // Preparar dados do pagamento
       const paymentData = {
@@ -205,7 +205,8 @@ export default function CheckoutCard() {
       }
 
       console.log('Sending payment data:', paymentData)
-      console.log('Transaction amount (with interest):', finalTransactionAmount)
+      console.log('Transaction amount (with interest, rounded):', finalTransactionAmount)
+      console.log('Transaction amount type:', typeof finalTransactionAmount)
       // Enviar para backend
       const response = await api.post('/api/payments/create-card-payment/', paymentData)
       console.log('Payment response:', response.data)

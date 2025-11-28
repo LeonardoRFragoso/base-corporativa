@@ -323,11 +323,11 @@ export default function Cart() {
       destination_zip: formatZip(zipNumbersOnly(zip)),
       shipping_service_name: selectedQuote?.service_name || '',
       shipping_carrier: selectedQuote?.carrier || '',
-      shipping_price: selectedQuote ? Number(selectedQuote.price) : 0,
+      shipping_price: selectedQuote ? parseFloat(Number(selectedQuote.price).toFixed(2)) : 0,
       items: items.map(item => ({
         name: item.name,
         qty: item.qty,
-        price: Number(item.price),
+        price: parseFloat(Number(item.price).toFixed(2)),
         size: item.size,
         color: item.color
       }))
@@ -374,12 +374,12 @@ export default function Cart() {
     }
     if (coupon) {
       checkoutData.coupon_code = coupon.code
-      checkoutData.discount_amount = Number(discount)
+      checkoutData.discount_amount = parseFloat(Number(discount).toFixed(2))
     }
     // Para PIX, adicionar frete como item (mantém compatibilidade)
     // Para cartão, o shipping_price já está sendo enviado separadamente
     if (selectedQuote && Number(selectedQuote.price) > 0) {
-      checkoutData.items.push({ name: 'Frete', qty: 1, price: Number(selectedQuote.price) })
+      checkoutData.items.push({ name: 'Frete', qty: 1, price: parseFloat(Number(selectedQuote.price).toFixed(2)) })
     }
     return checkoutData
   }
