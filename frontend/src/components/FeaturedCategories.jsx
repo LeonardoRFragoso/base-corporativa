@@ -47,32 +47,32 @@ export default function FeaturedCategories() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
+    <section className="py-12 sm:py-16 lg:py-24 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <p className="text-sm font-bold text-primary-600 dark:text-primary-400 mb-3 uppercase tracking-widest">
+        <div className="text-center mb-8 sm:mb-12">
+          <p className="text-xs sm:text-sm font-bold text-primary-600 dark:text-primary-400 mb-2 sm:mb-3 uppercase tracking-widest">
             Explore por Categoria
           </p>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4">
             Encontre seu Corte Ideal
           </h2>
           
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
             Camisas minimalistas premium em diversos cortes para seu estilo profissional
           </p>
         </div>
 
         {/* Grid de Categorias */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category, index) => (
             <CategoryCard key={category.id} category={category} index={index} />
           ))}
         </div>
 
         {/* CTA Ver Todas */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 sm:mt-12">
           <Link
             to="/catalog"
             className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-bold text-lg transition-colors group"
@@ -112,7 +112,7 @@ function CategoryCard({ category, index }) {
       <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-60 group-hover:opacity-70 transition-opacity duration-300`}></div>
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+      <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-6 lg:p-8">
         {/* Count Badge */}
         <div className="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full border border-white/30">
           <span className="text-white font-bold text-sm">
@@ -122,11 +122,11 @@ function CategoryCard({ category, index }) {
 
         {/* Category Info */}
         <div className="transform transition-transform duration-300 group-hover:-translate-y-2">
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-2">
+          <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-white mb-1.5 sm:mb-2">
             {category.name}
           </h3>
           
-          <p className="text-white/90 text-sm sm:text-base mb-4">
+          <p className="text-white/90 text-xs sm:text-sm lg:text-base mb-3 sm:mb-4">
             {category.description}
           </p>
 

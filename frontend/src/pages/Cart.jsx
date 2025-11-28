@@ -12,7 +12,7 @@ import SavingsBadge from '../components/SavingsBadge.jsx'
 
 export default function Cart() {
   const { items, update, remove, clear } = useCart()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
   const subtotal = items.reduce((sum, i) => sum + Number(i.price) * i.qty, 0)
@@ -246,6 +246,12 @@ export default function Cart() {
         setQuoteError('Informe um CEP válido (8 dígitos).')
         return
       }
+      
+      // Para usuários não autenticados, preencher endereço automaticamente
+      if (!isAuthenticated && zipNormalized.length === 8) {
+        fetchAddressByZip(zipNormalized)
+      }
+      
       const payload = {
         zip_destination: formatZip(zipNormalized),
         items: items.map(i => ({
@@ -317,6 +323,7 @@ export default function Cart() {
       destination_zip: formatZip(zipNumbersOnly(zip)),
       shipping_service_name: selectedQuote?.service_name || '',
       shipping_carrier: selectedQuote?.carrier || '',
+      shipping_price: selectedQuote ? Number(selectedQuote.price) : 0,
       items: items.map(item => ({
         name: item.name,
         qty: item.qty,
@@ -325,10 +332,30 @@ export default function Cart() {
         color: item.color
       }))
     }
-    if (isAuthenticated && selectedAddressId) {
-      checkoutData.address_id = selectedAddressId
-    }
-    if (!isAuthenticated) {
+    
+    // Adicionar dados do comprador (obrigatório para todos)
+    if (isAuthenticated) {
+      checkoutData.email = user?.email || ''
+      checkoutData.first_name = user?.first_name || ''
+      checkoutData.last_name = user?.last_name || ''
+      if (selectedAddressId) {
+        checkoutData.address_id = selectedAddressId
+        // Enviar dados do endereço selecionado
+        const selectedAddr = addresses.find(a => a.id === selectedAddressId)
+        if (selectedAddr) {
+          checkoutData.shipping_first_name = selectedAddr.first_name || user?.first_name || ''
+          checkoutData.shipping_last_name = selectedAddr.last_name || user?.last_name || ''
+          checkoutData.shipping_phone = selectedAddr.phone || ''
+          checkoutData.shipping_street = selectedAddr.street || ''
+          checkoutData.shipping_number = selectedAddr.number || ''
+          checkoutData.shipping_complement = selectedAddr.complement || ''
+          checkoutData.shipping_neighborhood = selectedAddr.neighborhood || ''
+          checkoutData.shipping_city = selectedAddr.city || ''
+          checkoutData.shipping_state = selectedAddr.state || ''
+          checkoutData.shipping_zip = selectedAddr.zip_code || ''
+        }
+      }
+    } else {
       checkoutData.first_name = guestInfo.first_name
       checkoutData.last_name = guestInfo.last_name
       checkoutData.email = guestInfo.email
@@ -349,6 +376,8 @@ export default function Cart() {
       checkoutData.coupon_code = coupon.code
       checkoutData.discount_amount = Number(discount)
     }
+    // Para PIX, adicionar frete como item (mantém compatibilidade)
+    // Para cartão, o shipping_price já está sendo enviado separadamente
     if (selectedQuote && Number(selectedQuote.price) > 0) {
       checkoutData.items.push({ name: 'Frete', qty: 1, price: Number(selectedQuote.price) })
     }
@@ -440,11 +469,11 @@ export default function Cart() {
         <CartProgressIndicator currentStep={1} />
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3">
+        <div className="mb-8 text-center md:text-left">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3">
             Carrinho de Compras
           </h1>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400">
+          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">
             {items.length} {items.length === 1 ? 'item' : 'itens'} no seu <span className="text-primary-700 font-medium">carrinho</span>
           </p>
         </div>
@@ -452,12 +481,12 @@ export default function Cart() {
         {/* Free Shipping Progress Bar */}
         <FreeShippingBar subtotal={subtotal} freeShippingThreshold={200} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             {items.map((item, idx) => (
-              <div key={idx} className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl dark:hover:shadow-primary-500/20 transition-all duration-300 p-8 border border-neutral-200 dark:border-neutral-700">
-                <div className="flex flex-col sm:flex-row items-start gap-4">
+              <div key={idx} className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-neutral-900/50 hover:shadow-xl dark:hover:shadow-primary-500/20 transition-all duration-300 p-4 sm:p-6 md:p-8 border border-neutral-200 dark:border-neutral-700">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                   {/* Product image placeholder */}
                   {item.image ? (
                     <img
@@ -473,21 +502,21 @@ export default function Cart() {
                     </div>
                   )}
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{item.name}</h3>
-                    <div className="text-base text-neutral-600 dark:text-neutral-400 space-y-1">
+                  <div className="flex-1 min-w-0 text-center sm:text-left">
+                    <h3 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{item.name}</h3>
+                    <div className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 space-y-1">
                       {item.size && <div><span className="font-medium">Tamanho:</span> {item.size}</div>}
                       {item.color && <div><span className="font-medium">Cor:</span> {item.color}</div>}
-                      <div className="font-semibold text-primary-700 dark:text-primary-400 text-lg mt-2">R$ {Number(item.price).toFixed(2)} <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">cada</span></div>
+                      <div className="font-semibold text-primary-700 dark:text-primary-400 text-base sm:text-lg mt-2">R$ {Number(item.price).toFixed(2)} <span className="text-xs sm:text-sm font-normal text-neutral-500 dark:text-neutral-400">cada</span></div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                  <div className="flex flex-row items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
                     {/* Quantity controls */}
                     <div className="flex items-center border-2 border-neutral-300 dark:border-neutral-600 rounded-xl overflow-hidden">
                       <button
                         onClick={() => update(item, Math.max(1, item.qty - 1))}
-                        className="px-4 py-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors font-semibold text-lg"
+                        className="px-3 sm:px-4 py-2 sm:py-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors font-semibold text-base sm:text-lg"
                       >
                         -
                       </button>
@@ -496,11 +525,11 @@ export default function Cart() {
                         min="1"
                         value={item.qty}
                         onChange={(e) => update(item, Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-16 text-center py-3 border-0 focus:ring-0 font-semibold bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
+                        className="w-12 sm:w-16 text-center py-2 sm:py-3 border-0 focus:ring-0 font-semibold bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm sm:text-base"
                       />
                       <button
                         onClick={() => update(item, item.qty + 1)}
-                        className="px-4 py-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors font-semibold text-lg"
+                        className="px-3 sm:px-4 py-2 sm:py-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 dark:bg-neutral-800 transition-colors font-semibold text-base sm:text-lg"
                       >
                         +
                       </button>
@@ -509,10 +538,10 @@ export default function Cart() {
                     {/* Remove button */}
                     <button
                       onClick={() => remove(item)}
-                      className="p-3 text-error-500 hover:bg-error-50 rounded-xl transition-all duration-200 hover:scale-110"
+                      className="p-2 sm:p-3 text-error-500 hover:bg-error-50 rounded-xl transition-all duration-200 hover:scale-110"
                       title="Remover item"
                     >
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
@@ -520,18 +549,18 @@ export default function Cart() {
                 </div>
 
                 {/* Item total */}
-                <div className="mt-6 pt-6 border-t-2 border-neutral-200 dark:border-neutral-700 flex justify-between items-center">
-                  <span className="text-neutral-600 dark:text-neutral-400 font-medium">Subtotal do item:</span>
-                  <span className="text-2xl font-bold text-primary-700 dark:text-primary-400">R$ {(Number(item.price) * item.qty).toFixed(2)}</span>
+                <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
+                  <span className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-medium">Subtotal do item:</span>
+                  <span className="text-xl sm:text-2xl font-bold text-primary-700 dark:text-primary-400">R$ {(Number(item.price) * item.qty).toFixed(2)}</span>
                 </div>
               </div>
             ))}
 
             {/* Clear cart button */}
-            <div className="flex justify-end">
+            <div className="flex justify-center sm:justify-end">
               <button
                 onClick={clear}
-                className="text-error-500 hover:text-error-700 text-sm font-medium transition-colors"
+                className="text-error-500 hover:text-error-700 text-sm font-medium transition-colors px-4 py-2 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-lg"
               >
                 Limpar carrinho
               </button>
@@ -539,17 +568,25 @@ export default function Cart() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Savings Badge */}
-            <div className="lg:sticky lg:top-24 space-y-6">
-              <SavingsBadge discount={discount} freeShipping={subtotal >= 200} />
+            <SavingsBadge discount={discount} freeShipping={subtotal >= 200} />
 
-              <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-8 overflow-hidden border border-neutral-200 dark:border-neutral-700">
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Resumo do pedido</h2>
+            <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-neutral-900/50 p-6 sm:p-8 overflow-hidden border border-neutral-200 dark:border-neutral-700">
+              <div className="flex items-center gap-3 mb-6 pb-5 border-b border-neutral-200 dark:border-neutral-700">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">Resumo do pedido</h2>
+                </div>
 
               {/* Shipping: CEP and quotes */}
-              <div className="mb-6">
-                <label className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Calcular frete</label>
+              <div className="mb-5">
+                <label className="block text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wide">
+                  📍 Calcular Frete
+                </label>
                 <div className="flex flex-col gap-3">
                   <input
                     type="text"
@@ -557,7 +594,8 @@ export default function Cart() {
                     placeholder="20730-480"
                     value={formatZip(zip)}
                     onChange={(e) => setZip(e.target.value)}
-                    className="w-full px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                    autoComplete="off"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                   />
                   <button
                     onClick={calculateShipping}
@@ -667,25 +705,29 @@ export default function Cart() {
               )}
 
               {!isAuthenticated && (
-                <div className="mb-6">
-                  <label className="block text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">Dados do comprador</label>
+                <div className="mb-5">
+                  <label className="block text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wide">
+                    👤 Dados do Comprador
+                  </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       type="text"
                       placeholder="Nome"
                       value={guestInfo.first_name}
                       onChange={(e) => setGuestInfo(v => ({...v, first_name: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      autoComplete="given-name"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                     />
                     <input
                       type="text"
                       placeholder="Sobrenome"
                       value={guestInfo.last_name}
                       onChange={(e) => setGuestInfo(v => ({...v, last_name: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      autoComplete="family-name"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     <div className="relative">
                       <input
                         type="email"
@@ -697,9 +739,10 @@ export default function Cart() {
                           setEmailValid(email === '' || validateEmail(email))
                         }}
                         onBlur={() => setEmailValid(guestInfo.email === '' || validateEmail(guestInfo.email))}
+                        autoComplete="email"
                         aria-label="E-mail"
                         aria-invalid={!emailValid}
-                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                        className={`px-4 py-2.5 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
                           emailValid 
                             ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
                             : 'border-error-500 focus:border-error-600'
@@ -726,9 +769,10 @@ export default function Cart() {
                         }}
                         onBlur={() => setCpfValid(guestInfo.cpf === '' || validateCPF(guestInfo.cpf))}
                         maxLength={14}
+                        autoComplete="off"
                         aria-label="CPF"
                         aria-invalid={!cpfValid}
-                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                        className={`px-4 py-2.5 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
                           cpfValid 
                             ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
                             : 'border-error-500 focus:border-error-600'
@@ -749,55 +793,15 @@ export default function Cart() {
               )}
 
               {!isAuthenticated && (
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                    Endereço de entrega
+                <div className="mb-5">
+                  <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wide">
+                    🏠 Endereço de Entrega
                     {addressFilled && (
                       <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded-full font-medium">
-                        ✓ Preenchido automaticamente
+                        ✓ Preenchido automaticamente pelo CEP
                       </span>
                     )}
                   </label>
-                  
-                  {/* CEP com auto-preenchimento */}
-                  <div className="mb-4">
-                    <div className="flex gap-3">
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="CEP (00000-000)"
-                          value={formatZip(guestAddr.shipping_zip)}
-                          onChange={(e) => {
-                            const value = e.target.value
-                            setGuestAddr(v => ({...v, shipping_zip: value}))
-                            setAddressFilled(false)
-                          }}
-                          onBlur={() => {
-                            const cleanCep = zipNumbersOnly(guestAddr.shipping_zip)
-                            if (cleanCep.length === 8) {
-                              fetchAddressByZip(cleanCep)
-                            }
-                          }}
-                          className="w-full px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => fetchAddressByZip(guestAddr.shipping_zip)}
-                        disabled={loadingAddress || zipNumbersOnly(guestAddr.shipping_zip).length !== 8}
-                        className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 disabled:opacity-50 transition-all shrink-0 hover:scale-[1.02] active:scale-95"
-                      >
-                        {loadingAddress ? (
-                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : 'Buscar'}
-                      </button>
-                    </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Digite o CEP e o endereço será preenchido automaticamente</p>
-                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
@@ -806,23 +810,26 @@ export default function Cart() {
                       value={guestAddr.shipping_street}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_street: e.target.value}))}
                       disabled={loadingAddress}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      autoComplete="street-address"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <input
                       type="text"
                       placeholder="Número"
                       value={guestAddr.shipping_number}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_number: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      autoComplete="off"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     <input
                       type="text"
                       placeholder="Complemento (opcional)"
                       value={guestAddr.shipping_complement}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_complement: e.target.value}))}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                      autoComplete="off"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                     />
                     <input
                       type="text"
@@ -830,17 +837,19 @@ export default function Cart() {
                       value={guestAddr.shipping_neighborhood}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_neighborhood: e.target.value}))}
                       disabled={loadingAddress}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      autoComplete="off"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     <input
                       type="text"
                       placeholder="Cidade"
                       value={guestAddr.shipping_city}
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_city: e.target.value}))}
                       disabled={loadingAddress}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      autoComplete="address-level2"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <input
                       type="text"
@@ -849,7 +858,8 @@ export default function Cart() {
                       onChange={(e) => setGuestAddr(v => ({...v, shipping_state: e.target.value}))}
                       maxLength={2}
                       disabled={loadingAddress}
-                      className="px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+                      autoComplete="address-level1"
+                      className="px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase"
                     />
                   </div>
                   <div className="grid grid-cols-1 gap-3 mt-3">
@@ -865,9 +875,10 @@ export default function Cart() {
                         }}
                         onBlur={() => setPhoneValid(validatePhone(guestAddr.shipping_phone))}
                         maxLength={15}
+                        autoComplete="tel"
                         aria-label="Telefone"
                         aria-invalid={!phoneValid}
-                        className={`px-4 py-3 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
+                        className={`px-4 py-2.5 w-full bg-white dark:bg-neutral-700 border-2 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors ${
                           phoneValid 
                             ? 'border-neutral-300 dark:border-neutral-600 focus:border-primary-600 dark:focus:border-primary-400' 
                             : 'border-error-500 focus:border-error-600'
@@ -887,9 +898,9 @@ export default function Cart() {
                 </div>
               )}
 
-              <div className="mb-6">
-                <label className="flex items-center gap-2 text-base font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                  Cupom de desconto
+              <div className="mb-5">
+                <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wide">
+                  🎟️ Cupom de Desconto
                   <button
                     type="button"
                     className="group relative"
@@ -912,9 +923,10 @@ export default function Cart() {
                     placeholder="Digite seu cupom"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 min-w-0 px-4 py-3 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
+                    autoComplete="off"
+                    className="flex-1 min-w-0 px-4 py-2.5 bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-400 focus:border-primary-600 dark:focus:border-primary-400 font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors"
                   />
-                  <button onClick={applyCoupon} className="px-6 py-3 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all shrink-0 whitespace-nowrap hover:scale-[1.02] active:scale-95">Aplicar</button>
+                  <button onClick={applyCoupon} className="px-6 py-2.5 rounded-xl bg-neutral-900 dark:bg-neutral-700 text-white font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-all shrink-0 whitespace-nowrap hover:scale-[1.02] active:scale-95">Aplicar</button>
                 </div>
                 {couponError && <div className="text-sm text-error-600 mt-2 font-medium">{couponError}</div>}
                 {coupon && (
@@ -922,27 +934,62 @@ export default function Cart() {
                 )}
               </div>
 
-              <div className="space-y-5">
-                <div className="flex justify-between text-base">
-                  <span className="text-neutral-600 dark:text-neutral-400 font-medium">Subtotal ({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">R$ {subtotal.toFixed(2)}</span>
+              <div className="space-y-3 bg-gradient-to-br from-neutral-50 to-neutral-100/50 dark:from-neutral-900/50 dark:to-neutral-900/30 rounded-xl p-5 border-2 border-neutral-200/80 dark:border-neutral-700/80 shadow-sm">
+                <div className="flex items-center justify-between py-2.5 border-b-2 border-neutral-200/60 dark:border-neutral-700/60">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-neutral-500 dark:text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium">Subtotal ({items.length} {items.length === 1 ? 'item' : 'itens'})</span>
+                  </div>
+                  <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">R$ {subtotal.toFixed(2)}</span>
                 </div>
                 
-                <div className="flex justify-between text-base">
-                  <span className="text-neutral-600 dark:text-neutral-400 font-medium">Frete</span>
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">{shipping === 0 ? '—' : `R$ ${shipping.toFixed(2)}`}</span>
+                <div className="flex items-center justify-between py-2 border-b border-neutral-200 dark:border-neutral-700">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-neutral-500 dark:text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium">Frete</span>
+                  </div>
+                  <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+                    {shipping === 0 ? (
+                      <span className="text-neutral-500 dark:text-neutral-400">—</span>
+                    ) : subtotal >= 200 ? (
+                      <span className="text-success-600 dark:text-success-400">Grátis</span>
+                    ) : (
+                      `R$ ${shipping.toFixed(2)}`
+                    )}
+                  </span>
                 </div>
-                <div className="flex justify-between text-base">
-                  <span className="text-neutral-600 dark:text-neutral-400 font-medium">Desconto</span>
-                  <span className="font-semibold text-success-700">{discount > 0 ? `- R$ ${discount.toFixed(2)}` : '—'}</span>
+                
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-success-600 dark:text-success-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium">Desconto</span>
+                  </div>
+                  <span className="text-lg font-bold text-success-600 dark:text-success-400">
+                    {discount > 0 ? `- R$ ${discount.toFixed(2)}` : <span className="text-neutral-500 dark:text-neutral-400">—</span>}
+                  </span>
                 </div>
+              </div>
 
                 {/* Tip: could add free shipping rule hint here if needed */}
 
-                <div className="border-t-2 border-neutral-200 dark:border-neutral-700 pt-5">
-                  <div className="flex justify-between text-2xl font-bold">
-                    <span className="text-neutral-900 dark:text-neutral-100">Total</span>
-                    <span className="text-primary-700 dark:text-primary-400">R$ {total.toFixed(2)}</span>
+                <div className="mt-5 bg-gradient-to-br from-primary-50 via-primary-100/50 to-bronze-50 dark:from-primary-900/30 dark:via-primary-900/20 dark:to-bronze-900/30 rounded-xl p-6 border-2 border-primary-300/60 dark:border-primary-700/60 shadow-lg">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide block mb-1">Total a Pagar</span>
+                      <span className="text-xs text-neutral-500 dark:text-neutral-500">{items.length} {items.length === 1 ? 'produto' : 'produtos'}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-display font-black text-primary-700 dark:text-primary-400 leading-none">
+                        R$ {total.toFixed(2)}
+                      </div>
+                    </div>
                   </div>
                   {discount > 0 && (
                     <div className="flex items-center gap-2 mt-3 text-sm text-success-700 dark:text-success-400 bg-success-50 dark:bg-success-900/20 px-4 py-2 rounded-lg">
@@ -962,14 +1009,13 @@ export default function Cart() {
                     </div>
                   )}
                 </div>
-              </div>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-6 space-y-3 sm:space-y-4">
                 {/* Botão PIX - Principal */}
                 <button 
                   onClick={handleCheckoutPix}
                   disabled={isProcessing}
-                  className={`w-full py-6 px-6 rounded-xl transition-all ${
+                  className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all ${
                     isProcessing 
                       ? 'bg-neutral-400 text-neutral-600 cursor-not-allowed' 
                       : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 hover:scale-[1.02] shadow-xl hover:shadow-2xl'
@@ -984,14 +1030,14 @@ export default function Cart() {
                       Processando...
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex items-center gap-3">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex flex-col items-center gap-1 sm:gap-2">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="text-xl font-bold">Pagar com PIX</span>
+                        <span className="text-lg sm:text-xl font-bold">Pagar com PIX</span>
                       </div>
-                      <span className="text-sm font-normal opacity-90">Pagamento instantâneo via QR Code</span>
+                      <span className="text-xs sm:text-sm font-normal opacity-90">Pagamento instantâneo via QR Code</span>
                     </div>
                   )}
                 </button>
@@ -1000,20 +1046,20 @@ export default function Cart() {
                 <button 
                   onClick={handleCheckout}
                   disabled={isProcessing}
-                  className={`w-full py-6 px-6 rounded-xl transition-all ${
+                  className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all ${
                     isProcessing 
                       ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed' 
                       : 'bg-white border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:border-neutral-400 hover:shadow-lg'
                   }`}
                 >
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-3">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex flex-col items-center gap-1 sm:gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
-                      <span className="text-lg font-bold">Cartão, Boleto e Mais</span>
+                      <span className="text-base sm:text-lg font-bold">Cartão, Boleto e Mais</span>
                     </div>
-                    <span className="text-sm font-normal text-neutral-600 dark:text-neutral-400">Parcelamento em até 12x sem juros</span>
+                    <span className="text-xs sm:text-sm font-normal text-neutral-600 dark:text-neutral-400">Parcelamento em até 12x sem juros</span>
                   </div>
                 </button>
               </div>
@@ -1025,13 +1071,17 @@ export default function Cart() {
                 Continuar comprando
               </Link>
             </div>
+          </div>
+
+          {/* Sidebar - Payment Methods & Trust Badges */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              {/* Payment Methods Preview */}
+              <PaymentMethodsPreview />
+
+              {/* Trust Badges */}
+              <CartTrustBadges />
             </div>
-
-            {/* Payment Methods Preview */}
-            <PaymentMethodsPreview />
-
-            {/* Trust Badges */}
-            <CartTrustBadges />
           </div>
         </div>
       </div>

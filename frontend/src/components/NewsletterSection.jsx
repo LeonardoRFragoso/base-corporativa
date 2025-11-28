@@ -58,7 +58,7 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-primary-600 via-primary-700 to-bronze-800 text-white relative overflow-hidden">
+    <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-primary-600 via-primary-700 to-bronze-800 text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-40 h-40 border-2 border-white rounded-full animate-pulse" style={{animationDuration: '3s'}}></div>
@@ -67,24 +67,24 @@ export default function NewsletterSection() {
       </div>
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 sm:mb-12">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full mb-6 animate-bounce" style={{animationDuration: '3s'}}>
-            <Mail className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-sm rounded-full mb-4 sm:mb-6 animate-bounce" style={{animationDuration: '3s'}}>
+            <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold mb-3 sm:mb-4">
             Ganhe <span className="text-yellow-300">10% OFF</span> na Primeira Compra!
           </h2>
 
-          <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
             Cadastre-se em nossa newsletter e receba ofertas exclusivas, lançamentos e dicas de estilo profissional
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -93,7 +93,7 @@ export default function NewsletterSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Seu melhor e-mail"
-                className="w-full pl-12 pr-4 py-4 rounded-xl text-neutral-900 font-medium text-lg placeholder:text-neutral-400 focus:ring-4 focus:ring-yellow-300 focus:outline-none shadow-xl"
+                className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl text-neutral-900 font-medium text-base sm:text-lg placeholder:text-neutral-400 focus:ring-4 focus:ring-yellow-300 focus:outline-none shadow-xl"
                 disabled={status === 'loading'}
               />
             </div>
@@ -101,7 +101,7 @@ export default function NewsletterSection() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className={`px-8 py-4 rounded-xl font-bold text-lg shadow-xl transition-all duration-300 transform hover:scale-105 ${
+              className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-xl transition-all duration-300 transform hover:scale-105 ${
                 status === 'loading'
                   ? 'bg-neutral-400 cursor-not-allowed'
                   : 'bg-yellow-400 text-neutral-900 hover:bg-yellow-300'
@@ -136,34 +136,34 @@ export default function NewsletterSection() {
         </form>
 
         {/* Benefits */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Gift className="w-6 h-6 text-neutral-900" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-900" />
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-1">10% OFF</h4>
-              <p className="text-sm text-white/80">Primeira compra</p>
+              <h4 className="font-bold text-base sm:text-lg mb-0.5 sm:mb-1">10% OFF</h4>
+              <p className="text-xs sm:text-sm text-white/80">Primeira compra</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-6 h-6 text-neutral-900" />
+          <div className="flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-900" />
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-1">Lançamentos</h4>
-              <p className="text-sm text-white/80">Em primeira mão</p>
+              <h4 className="font-bold text-base sm:text-lg mb-0.5 sm:mb-1">Lançamentos</h4>
+              <p className="text-xs sm:text-sm text-white/80">Em primeira mão</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Bell className="w-6 h-6 text-neutral-900" />
+          <div className="flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-900" />
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-1">Ofertas</h4>
-              <p className="text-sm text-white/80">Exclusivas</p>
+              <h4 className="font-bold text-base sm:text-lg mb-0.5 sm:mb-1">Ofertas</h4>
+              <p className="text-xs sm:text-sm text-white/80">Exclusivas</p>
             </div>
           </div>
         </div>

@@ -51,8 +51,8 @@ export default function HeroProductSlider({ products = [] }) {
         <div className="absolute bottom-20 right-20 w-28 h-28 border-2 border-bronze-700/30 transform rotate-45 animate-pulse" style={{animationDuration: '5s', animationDelay: '0.5s'}}></div>
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Texto à esquerda */}
           <div className="animate-fade-in z-10">
             <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-semibold mb-6">
@@ -62,52 +62,52 @@ export default function HeroProductSlider({ products = [] }) {
               Mais de 1.000 profissionais confiam
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-display font-black mb-6 leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-7xl font-display font-black mb-4 sm:mb-6 leading-tight tracking-tight">
               BASE<br className="md:hidden" /> CORPORATIVA
             </h1>
             
-            <p className="text-lg sm:text-xl md:text-2xl text-primary-200 mb-4 font-light tracking-wide">
+            <p className="text-base sm:text-lg md:text-xl text-primary-200 mb-3 sm:mb-4 font-light tracking-wide">
               {currentProduct.name}
             </p>
             
-            <p className="text-sm sm:text-base text-neutral-200 mb-6 leading-relaxed max-w-xl line-clamp-3">
+            <p className="text-xs sm:text-sm md:text-base text-neutral-200 mb-4 sm:mb-6 leading-relaxed max-w-xl line-clamp-2 sm:line-clamp-3">
               {currentProduct.description || 'Roupas minimalistas, monocromáticas e de alta qualidade dedicadas ao trabalho.'}
             </p>
 
             {/* Preço */}
-            <div className="mb-8">
-              <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-white">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
                   R$ {currentProduct.base_price}
                 </span>
-                <span className="text-lg text-neutral-400 line-through">
+                <span className="text-sm sm:text-base lg:text-lg text-neutral-400 line-through">
                   R$ {(parseFloat(currentProduct.base_price) * 1.3).toFixed(2)}
                 </span>
-                <span className="px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-full">
+                <span className="px-2 py-1 sm:px-3 bg-green-500 text-white text-xs sm:text-sm font-bold rounded-full">
                   -30% OFF
                 </span>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link 
                 to={`/product/${currentProduct.id}`}
-                className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-bronze-600 to-bronze-700 text-white font-bold text-lg rounded-xl hover:from-bronze-500 hover:to-bronze-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                className="group relative inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-bronze-600 to-bronze-700 text-white font-bold text-base sm:text-lg rounded-xl hover:from-bronze-500 hover:to-bronze-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
-                <ShoppingCart className="mr-2 w-5 h-5" />
+                <ShoppingCart className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                 Ver Produto
               </Link>
               
               <Link 
                 to="/catalog"
-                className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/30 text-white font-semibold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm"
+                className="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 border-2 border-white/30 text-white font-semibold text-base sm:text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm"
               >
                 Ver Catálogo
               </Link>
             </div>
 
             {/* Indicadores de slide */}
-            <div className="flex items-center gap-2 mt-8">
+            <div className="flex items-center gap-2 mt-6 sm:mt-8">
               {products.map((_, index) => (
                 <button
                   key={index}
@@ -125,18 +125,18 @@ export default function HeroProductSlider({ products = [] }) {
 
           {/* Produto à direita */}
           <div 
-            className="relative flex justify-center lg:justify-end"
+            className="relative flex justify-center items-center lg:justify-end"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
             {/* Container do produto */}
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-md mx-auto">
               {/* Glow effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary-500/30 to-bronze-600/30 rounded-full blur-3xl scale-150 animate-glow-pulse"></div>
               
               {/* Imagem do produto */}
-              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-8 border-2 border-white/20 hover:border-primary-400/40 transition-all duration-500 shadow-2xl">
-                <div className="aspect-[3/4] relative overflow-hidden rounded-2xl">
+              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-3xl p-4 sm:p-6 md:p-8 border-2 border-white/20 hover:border-primary-400/40 transition-all duration-500 shadow-2xl">
+                <div className="aspect-[3/4] relative overflow-hidden rounded-2xl flex items-center justify-center">
                   {currentProduct.images && currentProduct.images.length > 0 ? (
                     <OptimizedImage
                       src={currentProduct.images[0].image}
@@ -145,7 +145,7 @@ export default function HeroProductSlider({ products = [] }) {
                       height={533}
                       priority={currentSlide === 0}
                       objectFit="cover"
-                      className="transition-transform duration-700 hover:scale-110"
+                      className="transition-transform duration-700 hover:scale-110 object-center"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary-900/20 to-bronze-900/20 flex items-center justify-center">

@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Search, Moon, Sun, GitCompare } from 'lucide-react'
 import logo from '../assets/img/LOGO-BASE-CORPORATIVA.png'
@@ -10,6 +10,7 @@ import SearchBar from './SearchBar.jsx'
 import NotificationBell from './NotificationBell.jsx'
 
 export default function Navbar() {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const { items } = useCart()
@@ -19,20 +20,20 @@ export default function Navbar() {
   const cartItemsCount = items.reduce((sum, item) => sum + item.qty, 0)
 
   return (
-    <header className="bg-white/98 dark:bg-neutral-800/98 backdrop-blur-lg border-b-2 border-neutral-200 dark:border-neutral-700 shadow-2xl transition-colors duration-300">
+    <header className="sticky top-0 z-50 bg-white/98 dark:bg-neutral-800/98 backdrop-blur-lg border-b-2 border-neutral-200 dark:border-neutral-700 shadow-2xl transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-            <div className="relative">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink min-w-0">
+            <div className="relative flex-shrink-0">
               <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-bronze-400 rounded-lg blur-md opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               <img 
                 src={logo}
                 alt="BASE CORPORATIVA"
-                className="relative h-9 sm:h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
+                className="relative h-8 sm:h-9 md:h-10 w-auto transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
               />
             </div>
-            <span className="text-base sm:text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 dark:from-primary-400 dark:via-primary-500 dark:to-bronze-400 bg-clip-text text-transparent tracking-wide">
+            <span className="text-sm sm:text-base md:text-xl font-display font-bold bg-gradient-to-r from-primary-700 via-primary-800 to-bronze-700 dark:from-primary-400 dark:via-primary-500 dark:to-bronze-400 bg-clip-text text-transparent tracking-wide truncate">
               BASE CORPORATIVA
             </span>
           </Link>
@@ -167,7 +168,8 @@ export default function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-3 rounded-lg text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 transition-all duration-200"
+            className="md:hidden flex-shrink-0 relative z-50 p-3 rounded-lg text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 transition-all duration-200"
+            aria-label="Menu"
           >
             <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               {isMenuOpen ? (
@@ -183,6 +185,54 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden py-6 border-t-2 border-neutral-200 dark:border-neutral-700 animate-slide-up">
             <nav className="flex flex-col space-y-3">
+              {/* Mobile Action Buttons */}
+              <div className={`grid ${user?.is_staff ? 'grid-cols-4' : 'grid-cols-3'} gap-3 mb-3 px-2`}>
+                <button
+                  onClick={() => {
+                    setIsSearchOpen(true)
+                    setIsMenuOpen(false)
+                  }}
+                  className="flex flex-col items-center justify-center p-3 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-xl transition-all"
+                  aria-label="Buscar produtos"
+                >
+                  <Search className="w-6 h-6 mb-1" />
+                  <span className="text-xs font-medium">Buscar</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    navigate('/compare')
+                    setIsMenuOpen(false)
+                  }}
+                  className="relative flex flex-col items-center justify-center p-3 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-xl transition-all"
+                  aria-label="Comparar produtos"
+                >
+                  <GitCompare className="w-6 h-6 mb-1" />
+                  <span className="text-xs font-medium">Comparar</span>
+                  {compareItems.length > 0 && (
+                    <span className="absolute top-1 right-1 bg-primary-600 dark:bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {compareItems.length}
+                    </span>
+                  )}
+                </button>
+                
+                {user?.is_staff && (
+                  <div className="flex flex-col items-center justify-center p-3">
+                    <NotificationBell />
+                  </div>
+                )}
+                
+                <button
+                  onClick={toggleTheme}
+                  className="flex flex-col items-center justify-center p-3 text-neutral-700 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-neutral-700 rounded-xl transition-all"
+                  aria-label="Alternar tema"
+                >
+                  {theme === 'light' ? <Moon className="w-6 h-6 mb-1" /> : <Sun className="w-6 h-6 mb-1" />}
+                  <span className="text-xs font-medium">Tema</span>
+                </button>
+              </div>
+
+              {/* Navigation Links */}
               <NavLink 
                 to="/about"
                 onClick={() => setIsMenuOpen(false)}
@@ -247,6 +297,14 @@ export default function Navbar() {
                       Dashboard Admin
                     </NavLink>
                   )}
+                  <div className="px-4 py-3 bg-gradient-to-r from-primary-50 to-bronze-50 dark:from-primary-900/20 dark:to-bronze-900/20 rounded-xl border border-primary-200 dark:border-primary-700">
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Olá, <span className="text-primary-700 dark:text-primary-400 font-bold">{user?.username}</span></span>
+                    {user?.is_staff && (
+                      <span className="ml-2 px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-bronze-700 to-bronze-800 text-white rounded-full">
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={() => { logout(); setIsMenuOpen(false) }}
                     className="px-4 py-3 text-base font-semibold rounded-xl transition-all text-neutral-700 dark:text-neutral-200 hover:bg-error-50 dark:hover:bg-error-900/20 hover:text-error-700 dark:hover:text-error-400 border-2 border-transparent hover:border-error-300 dark:hover:border-error-700 shadow-md"

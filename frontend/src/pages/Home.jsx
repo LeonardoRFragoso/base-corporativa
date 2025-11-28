@@ -147,12 +147,12 @@ function HeroFallback() {
   return (
     <section className="relative bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-800 text-white overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary-900/5 via-transparent to-bronze-900/5"></div>
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
         <div className="text-center">
-          <h1 className="text-5xl lg:text-7xl font-display font-black mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-black mb-4 sm:mb-6">
             BASE CORPORATIVA
           </h1>
-          <p className="text-xl text-primary-200 mb-8">
+          <p className="text-lg sm:text-xl text-primary-200 mb-6 sm:mb-8">
             Conforto e praticidade diária
           </p>
           <Link 
@@ -270,10 +270,10 @@ function CTASection({ handleDownloadCatalog }) {
           Descubra nossa coleção completa de roupas corporativas e encontre as peças perfeitas para elevar seu estilo profissional.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
           <Link 
             to="/catalog"
-            className="inline-flex items-center justify-center px-12 py-6 bg-gradient-to-r from-primary-600 to-bronze-700 hover:from-primary-500 hover:to-bronze-600 text-white font-bold text-lg rounded-xl shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+            className="inline-flex items-center justify-center px-8 sm:px-12 py-4 sm:py-6 w-full sm:w-auto bg-gradient-to-r from-primary-600 to-bronze-700 hover:from-primary-500 hover:to-bronze-600 text-white font-bold text-base sm:text-lg rounded-xl shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
             Explorar catálogo
             <svg className="ml-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -283,7 +283,7 @@ function CTASection({ handleDownloadCatalog }) {
 
           <button 
             onClick={handleDownloadCatalog}
-            className="inline-flex items-center justify-center px-12 py-6 border-2 border-neutral-600 hover:border-primary-500 text-neutral-200 hover:text-white hover:bg-neutral-800/50 font-bold text-lg rounded-xl transition-all duration-300"
+            className="inline-flex items-center justify-center px-8 sm:px-12 py-4 sm:py-6 w-full sm:w-auto border-2 border-neutral-600 hover:border-primary-500 text-neutral-200 hover:text-white hover:bg-neutral-800/50 font-bold text-base sm:text-lg rounded-xl transition-all duration-300"
           >
             <svg className="mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

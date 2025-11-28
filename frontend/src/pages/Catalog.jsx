@@ -114,7 +114,7 @@ export default function Catalog() {
   const activeFiltersCount = Object.values(filters).filter(v => v && v !== '-created_at').length
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-4 sm:py-8">
       <SEO 
         title="Catálogo - BASE CORPORATIVA"
         description="Explore nossa coleção completa de roupas corporativas de qualidade premium"
@@ -126,14 +126,14 @@ export default function Catalog() {
         {/* Hero Banner */}
         <CatalogHeroBanner />
         
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Catálogo de Produtos</h1>
-            <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-neutral-100">Catálogo de Produtos</h1>
+            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-1 sm:mt-2">
               {loading ? 'Carregando...' : `${products.length} produtos encontrados`}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 flex-wrap">
             {/* View Mode Toggle */}
             <div className="hidden md:flex items-center gap-1 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-1">
               <button
@@ -162,10 +162,11 @@ export default function Catalog() {
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg hover:border-primary-600 dark:hover:border-primary-400 transition-colors text-neutral-900 dark:text-neutral-100 font-semibold"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg hover:border-primary-600 dark:hover:border-primary-400 transition-colors text-neutral-900 dark:text-neutral-100 font-semibold text-sm sm:text-base"
             >
-              <SlidersHorizontal className="w-5 h-5" />
-              Filtros
+              <SlidersHorizontal className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Filtros</span>
+              <span className="sm:hidden">Filtrar</span>
               {activeFiltersCount > 0 && (
                 <span className="bg-primary-600 text-white text-xs rounded-full px-2 py-0.5 font-bold">
                   {activeFiltersCount}
@@ -176,13 +177,14 @@ export default function Catalog() {
               <>
                 <button
                   onClick={() => navigate('/admin/products/new')}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg"
+                  className="px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-sm sm:text-base"
                 >
-                  Novo Produto
+                  <span className="hidden sm:inline">Novo Produto</span>
+                  <span className="sm:hidden">Novo</span>
                 </button>
                 <button
                   onClick={() => navigate('/admin/products')}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg"
+                  className="px-3 sm:px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg text-sm sm:text-base"
                 >
                   Gerenciar
                 </button>
@@ -193,7 +195,7 @@ export default function Catalog() {
 
         {/* Active Filters Chips */}
         {activeFiltersCount > 0 && (
-          <div className="mb-6 flex flex-wrap items-center gap-2">
+          <div className="w-full mb-6 flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               Filtros ativos:
             </span>
@@ -351,7 +353,7 @@ export default function Catalog() {
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-lg dark:shadow-neutral-900/50 p-12 text-center border border-neutral-200 dark:border-neutral-700">
+              <div className="bg-white dark:bg-neutral-800/90 backdrop-blur-sm rounded-lg shadow-lg dark:shadow-neutral-900/50 p-6 sm:p-8 md:p-12 text-center border border-neutral-200 dark:border-neutral-700">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Filter className="w-10 h-10 text-neutral-400" />
@@ -371,7 +373,7 @@ export default function Catalog() {
                 </div>
               </div>
             ) : (
-              <div className={`grid gap-6 ${
+              <div className={`grid gap-4 sm:gap-6 ${
                 viewMode === 'grid'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                   : 'grid-cols-1'

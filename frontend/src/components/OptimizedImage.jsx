@@ -81,8 +81,8 @@ export default function OptimizedImage({
           className={`
             w-full h-full transition-opacity duration-300
             ${isLoaded ? 'opacity-100' : 'opacity-0'}
-            ${objectFit === 'cover' ? 'object-cover' : ''}
-            ${objectFit === 'contain' ? 'object-contain' : ''}
+            ${objectFit === 'cover' ? 'object-cover object-center' : ''}
+            ${objectFit === 'contain' ? 'object-contain object-center' : ''}
           `}
           onLoad={() => setIsLoaded(true)}
           onError={() => setError(true)}

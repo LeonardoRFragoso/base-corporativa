@@ -74,20 +74,20 @@ export default function Testimonials() {
   const current = testimonials[currentIndex];
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20 dark:from-neutral-800/50 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
+    <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-primary-50/30 via-white to-bronze-50/20 dark:from-neutral-800/50 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-semibold mb-4">
             <Star className="w-4 h-4 fill-current" />
             Avaliação 4.9/5.0
           </div>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4">
             O Que Dizem Nossos Clientes
           </h2>
           
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
             Mais de 1.000 profissionais confiam na BASE CORPORATIVA para seu guarda-roupa profissional
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function Testimonials() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl p-8 sm:p-12 lg:p-16 relative overflow-hidden">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 relative overflow-hidden">
             {/* Quote Icon Background */}
             <div className="absolute top-8 right-8 opacity-5 dark:opacity-10">
               <Quote className="w-32 h-32 text-primary-600" />
@@ -107,15 +107,15 @@ export default function Testimonials() {
             {/* Content */}
             <div className="relative z-10">
               {/* Stars Rating */}
-              <div className="flex items-center justify-center gap-1 mb-6">
+              <div className="flex items-center justify-center gap-1 mb-4 sm:mb-6">
                 {[...Array(current.rating)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-current" />
                 ))}
               </div>
 
               {/* Testimonial Text */}
-              <blockquote className="text-center mb-8">
-                <p className="text-lg sm:text-xl lg:text-2xl text-neutral-700 dark:text-neutral-300 leading-relaxed italic">
+              <blockquote className="text-center mb-6 sm:mb-8">
+                <p className="text-base sm:text-lg lg:text-xl text-neutral-700 dark:text-neutral-300 leading-relaxed italic">
                   "{current.text}"
                 </p>
               </blockquote>
@@ -128,7 +128,7 @@ export default function Testimonials() {
                   <img
                     src={current.avatar}
                     alt={current.name}
-                    className="relative w-20 h-20 rounded-full border-4 border-white dark:border-neutral-700 shadow-xl"
+                    className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white dark:border-neutral-700 shadow-xl"
                   />
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center border-2 border-white dark:border-neutral-800">
@@ -140,13 +140,13 @@ export default function Testimonials() {
 
                 {/* Info */}
                 <div className="text-center">
-                  <h4 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                  <h4 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
                     {current.name}
                   </h4>
-                  <p className="text-primary-600 dark:text-primary-400 font-semibold">
+                  <p className="text-sm sm:text-base text-primary-600 dark:text-primary-400 font-semibold">
                     {current.role}
                   </p>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
                     {current.company}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export default function Testimonials() {
           {/* Navigation Arrows */}
           <button
             onClick={prevTestimonial}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-12 h-12 bg-white dark:bg-neutral-800 hover:bg-primary-600 dark:hover:bg-primary-600 text-neutral-600 dark:text-neutral-300 hover:text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110"
+            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-12 h-12 bg-white dark:bg-neutral-800 hover:bg-primary-600 dark:hover:bg-primary-600 text-neutral-600 dark:text-neutral-300 hover:text-white rounded-full shadow-xl items-center justify-center transition-all duration-300 hover:scale-110"
             aria-label="Depoimento anterior"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -165,7 +165,7 @@ export default function Testimonials() {
 
           <button
             onClick={nextTestimonial}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-12 h-12 bg-white dark:bg-neutral-800 hover:bg-primary-600 dark:hover:bg-primary-600 text-neutral-600 dark:text-neutral-300 hover:text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110"
+            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-12 h-12 bg-white dark:bg-neutral-800 hover:bg-primary-600 dark:hover:bg-primary-600 text-neutral-600 dark:text-neutral-300 hover:text-white rounded-full shadow-xl items-center justify-center transition-all duration-300 hover:scale-110"
             aria-label="Próximo depoimento"
           >
             <ChevronRight className="w-6 h-6" />
@@ -173,7 +173,7 @@ export default function Testimonials() {
         </div>
 
         {/* Dots Navigation */}
-        <div className="flex items-center justify-center gap-3 mt-12">
+        <div className="flex items-center justify-center gap-3 mt-8 sm:mt-12">
           {testimonials.map((_, index) => (
             <button
               key={index}
@@ -189,30 +189,30 @@ export default function Testimonials() {
         </div>
 
         {/* Stats Below */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mt-12 sm:mt-16 max-w-3xl mx-auto">
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+            <div className="text-3xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
               1.247
             </div>
-            <div className="text-neutral-600 dark:text-neutral-400 font-medium">
+            <div className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-medium">
               Clientes Satisfeitos
             </div>
           </div>
 
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+            <div className="text-3xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
               4.9/5.0
             </div>
-            <div className="text-neutral-600 dark:text-neutral-400 font-medium">
+            <div className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-medium">
               Avaliação Média
             </div>
           </div>
 
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+            <div className="text-3xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">
               98%
             </div>
-            <div className="text-neutral-600 dark:text-neutral-400 font-medium">
+            <div className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-medium">
               Taxa de Recompra
             </div>
           </div>

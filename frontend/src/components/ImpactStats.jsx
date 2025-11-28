@@ -43,25 +43,25 @@ export default function ImpactStats() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 bg-white dark:bg-neutral-900 transition-colors duration-300">
+    <section className="py-12 sm:py-16 lg:py-24 bg-white dark:bg-neutral-900 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <p className="text-sm font-bold text-primary-600 dark:text-primary-400 mb-3 uppercase tracking-widest">
+        <div className="text-center mb-8 sm:mb-12">
+          <p className="text-xs sm:text-sm font-bold text-primary-600 dark:text-primary-400 mb-2 sm:mb-3 uppercase tracking-widest">
             Resultados que Falam
           </p>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4">
             Números que Impressionam
           </h2>
           
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
             A confiança de milhares de profissionais refletida em números
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {stats.map((stat, index) => (
             <StatCard key={stat.id} stat={stat} index={index} />
           ))}
@@ -132,26 +132,26 @@ function StatCard({ stat, index }) {
   return (
     <div
       ref={cardRef}
-      className="group bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-neutral-100 dark:border-neutral-700 hover:border-primary-400 dark:hover:border-primary-600 animate-fade-in"
+      className="group bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-neutral-100 dark:border-neutral-700 hover:border-primary-400 dark:hover:border-primary-600 animate-fade-in"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       {/* Icon */}
-      <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-6 shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-        <Icon className="w-8 h-8 text-white" />
+      <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+        <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
       </div>
 
       {/* Number */}
-      <div className="mb-3">
-        <span className="text-4xl sm:text-5xl font-bold text-neutral-900 dark:text-neutral-100">
+      <div className="mb-2 sm:mb-3">
+        <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100">
           {displayValue}
         </span>
-        <span className="text-2xl sm:text-3xl font-bold text-primary-600 dark:text-primary-400">
+        <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-600 dark:text-primary-400">
           {stat.suffix}
         </span>
       </div>
 
       {/* Label */}
-      <p className="text-neutral-600 dark:text-neutral-400 font-medium text-lg">
+      <p className="text-neutral-600 dark:text-neutral-400 font-medium text-base sm:text-lg">
         {stat.label}
       </p>
 

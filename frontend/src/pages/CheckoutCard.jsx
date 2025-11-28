@@ -21,6 +21,7 @@ export default function CheckoutCard() {
   const [installmentsOptions, setInstallmentsOptions] = useState([])
   const [paymentMethodId, setPaymentMethodId] = useState('')
   const [issuerId, setIssuerId] = useState('')
+  const [transactionAmount, setTransactionAmount] = useState(0)
 
   // Calcular totais
   const itemsTotal = checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0
@@ -32,6 +33,27 @@ export default function CheckoutCard() {
     if (!checkoutData) {
       navigate('/cart')
       return
+    }
+
+    // Adicionar estilos CSS para dark mode nos iframes do Mercado Pago
+    const styleId = 'mp-dark-mode-styles'
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style')
+      style.id = styleId
+      style.textContent = `
+        .dark #form-checkout__cardNumber iframe,
+        .dark #form-checkout__expirationDate iframe,
+        .dark #form-checkout__securityCode iframe {
+          background-color: transparent !important;
+        }
+        .dark #form-checkout__cardNumber iframe input,
+        .dark #form-checkout__expirationDate iframe input,
+        .dark #form-checkout__securityCode iframe input {
+          background-color: rgb(64 64 64) !important;
+          color: rgb(245 245 245) !important;
+        }
+      `
+      document.head.appendChild(style)
     }
 
     // Inicializar Mercado Pago SDK
@@ -99,6 +121,34 @@ export default function CheckoutCard() {
     })
 
     setCardForm(cardFormInstance)
+    
+    // Inicializar o valor da transação
+    setTransactionAmount(finalTotal)
+    
+    // Adicionar listener para mudanças nas parcelas
+    const installmentsSelect = document.getElementById('form-checkout__installments')
+    if (installmentsSelect) {
+      const handleInstallmentChange = (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex]
+        if (selectedOption) {
+          // O Mercado Pago inclui o valor total com juros no texto da option
+          // Formato: "2 parcelas de R$ 73,99 (R$ 147,98)"
+          const text = selectedOption.text
+          const totalMatch = text.match(/\(R\$\s*([\d.,]+)\)/)
+          if (totalMatch) {
+            const totalWithInterest = parseFloat(totalMatch[1].replace('.', '').replace(',', '.'))
+            console.log('Transaction amount with interest:', totalWithInterest)
+            setTransactionAmount(totalWithInterest)
+          }
+        }
+      }
+      installmentsSelect.addEventListener('change', handleInstallmentChange)
+      
+      // Cleanup
+      return () => {
+        installmentsSelect.removeEventListener('change', handleInstallmentChange)
+      }
+    }
   }, [checkoutData, navigate, finalTotal])
 
   const handleSubmit = async (e) => {
@@ -134,6 +184,11 @@ export default function CheckoutCard() {
       // Obter dados consolidados do formulário (garante consistência com o BIN)
       const formData = cardForm.getCardFormData()
       const resolvedPaymentMethodId = cardData?.payment_method_id || formData.paymentMethodId
+      
+      // Calcular o total correto considerando juros das parcelas
+      // Se o usuário selecionou parcelamento com juros, transactionAmount já foi atualizado
+      const finalTransactionAmount = transactionAmount > 0 ? transactionAmount : finalTotal
+      
       // Preparar dados do pagamento
       const paymentData = {
         ...checkoutData,
@@ -142,9 +197,12 @@ export default function CheckoutCard() {
         installments: Number(formData.installments || 1),
         issuer_id: formData.issuerId,
         cpf: formData.identificationNumber,
+        // IMPORTANTE: Enviar o valor total com juros das parcelas
+        transaction_amount: finalTransactionAmount,
       }
 
       console.log('Sending payment data:', paymentData)
+      console.log('Transaction amount (with interest):', finalTransactionAmount)
       // Enviar para backend
       const response = await api.post('/api/payments/create-card-payment/', paymentData)
       console.log('Payment response:', response.data)
@@ -189,7 +247,7 @@ export default function CheckoutCard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 py-8 sm:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 py-8 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
@@ -218,18 +276,18 @@ export default function CheckoutCard() {
 
                   {/* Número do Cartão */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
                       Número do Cartão
                     </label>
-                    <div id="form-checkout__cardNumber" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                    <div id="form-checkout__cardNumber" className="bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                   </div>
 
                   {/* Nome no Cartão */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -238,7 +296,7 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__cardholderName"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 placeholder:text-neutral-400 text-sm"
                       placeholder="Nome como está no cartão"
                     />
                   </div>
@@ -246,30 +304,30 @@ export default function CheckoutCard() {
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {/* Data de Validade */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                         <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         Validade
                       </label>
-                      <div id="form-checkout__expirationDate" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                      <div id="form-checkout__expirationDate" className="bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
 
                     {/* CVV */}
                     <div>
-                      <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                      <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                         <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         CVV
                       </label>
-                      <div id="form-checkout__securityCode" className="border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
+                      <div id="form-checkout__securityCode" className="bg-white dark:bg-neutral-700 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg transition-all hover:border-primary-400 focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100" style={{height: '42px', padding: '6px 10px', display: 'flex', alignItems: 'center'}}></div>
                     </div>
                   </div>
                 </div>
 
                 {/* Seção: Dados do Titular */}
-                <div className="mb-8 pt-6 border-t-2 border-neutral-100">
+                <div className="mb-8 pt-6 border-t-2 border-neutral-100 dark:border-neutral-700">
                   <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -279,7 +337,7 @@ export default function CheckoutCard() {
 
                   {/* CPF */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                       </svg>
@@ -289,7 +347,7 @@ export default function CheckoutCard() {
                     <input
                       type="text"
                       id="form-checkout__identificationNumber"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 placeholder:text-neutral-400 text-sm"
                       placeholder="000.000.000-00"
                       defaultValue={checkoutData.cpf || ''}
                     />
@@ -297,7 +355,7 @@ export default function CheckoutCard() {
 
                   {/* Email */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
@@ -306,7 +364,7 @@ export default function CheckoutCard() {
                     <input
                       type="email"
                       id="form-checkout__cardholderEmail"
-                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
+                      className="w-full px-3 py-2.5 border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-600 transition-all text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 placeholder:text-neutral-400 text-sm"
                       placeholder="seu@email.com"
                       defaultValue={checkoutData.email || ''}
                     />
@@ -314,7 +372,7 @@ export default function CheckoutCard() {
                 </div>
 
                 {/* Seção: Opções de Pagamento */}
-                <div className="mb-8 pt-6 border-t-2 border-neutral-100">
+                <div className="mb-8 pt-6 border-t-2 border-neutral-100 dark:border-neutral-700">
                   <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -324,7 +382,7 @@ export default function CheckoutCard() {
 
                   {/* Banco Emissor */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
@@ -338,7 +396,7 @@ export default function CheckoutCard() {
 
                   {/* Parcelas */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
                       <svg className="w-4 h-4 text-neutral-500 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
@@ -405,7 +463,7 @@ export default function CheckoutCard() {
 
           {/* Resumo do Pedido */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-white to-neutral-50 rounded-2xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-6 sticky top-4">
+            <div className="bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-800 dark:to-neutral-900 rounded-2xl shadow-lg border border-neutral-200 dark:border-neutral-700 p-6 sticky top-4">
               <div className="flex items-center gap-2 mb-5">
                 <svg className="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -415,7 +473,7 @@ export default function CheckoutCard() {
               
               <div className="space-y-3 mb-5">
                 {checkoutData.items?.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-100">
+                  <div key={index} className="flex justify-between items-start gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-100 dark:border-neutral-700">
                     <div className="flex-1">
                       <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100 block">
                         {item.name}
@@ -477,14 +535,14 @@ export default function CheckoutCard() {
 
               {/* Selos de Segurança */}
               <div className="mt-6 pt-6 border-t-2 border-neutral-200 dark:border-neutral-700">
-                <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                  <div className="flex items-center justify-center gap-2 text-sm text-green-800 mb-2">
-                    <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-xl p-4">
+                  <div className="flex items-center justify-center gap-2 text-sm text-green-800 dark:text-green-300 mb-2">
+                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     <span className="font-bold">Pagamento 100% seguro</span>
                   </div>
-                  <p className="text-xs text-green-700 text-center">
+                  <p className="text-xs text-green-700 dark:text-green-300 text-center">
                     Seus dados são criptografados e protegidos pelo Mercado Pago
                   </p>
                 </div>

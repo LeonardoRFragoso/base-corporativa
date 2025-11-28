@@ -314,7 +314,13 @@ def create_card_payment(request):
         total_items = sum(float(item['price']) * int(item['qty']) for item in items_data)
         shipping_price = float(request.data.get('shipping_price', 0) or 0)
         discount_amount = float(request.data.get('discount_amount', 0) or 0)
-        total_amount = total_items + float(shipping_price) - float(discount_amount)
+        
+        # Usar transaction_amount do frontend se fornecido (inclui juros de parcelamento)
+        # Caso contrário, calcular o total normalmente
+        if request.data.get('transaction_amount'):
+            total_amount = float(request.data.get('transaction_amount'))
+        else:
+            total_amount = total_items + float(shipping_price) - float(discount_amount)
         
         # Log dados recebidos para debug CARTÃO
         import logging
@@ -338,6 +344,7 @@ def create_card_payment(request):
         
         logger.info(f"🚚 CARTÃO CHECKOUT - Dados de entrega recebidos: {shipping_data_card}")
         logger.info(f"📦 CARTÃO CHECKOUT - Todos os dados do request: {dict(request.data)}")
+        logger.info(f"💰 CARTÃO CHECKOUT - Total amount (with interest if applicable): R$ {total_amount:.2f}")
 
         # Criar Order com TODOS os dados de entrega
         order = Order.objects.create(

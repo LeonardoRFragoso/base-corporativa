@@ -12,10 +12,10 @@ export default function FeaturedProducts({ products = [], title = "Destaques da 
   }
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
+    <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-white via-neutral-50 to-white dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-semibold mb-4">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -23,27 +23,27 @@ export default function FeaturedProducts({ products = [], title = "Destaques da 
             Seleção Especial
           </div>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4 transition-colors duration-300">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-3 sm:mb-4 transition-colors duration-300">
             {title}
           </h2>
           
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
             Peças cuidadosamente selecionadas para elevar seu estilo profissional
           </p>
         </div>
 
         {/* Grid de Produtos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
           {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
 
         {/* CTA Ver Mais */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 sm:mt-12">
           <Link
             to="/catalog"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-600 to-bronze-700 hover:from-primary-500 hover:to-bronze-600 text-white font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+            className="inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-primary-600 to-bronze-700 hover:from-primary-500 hover:to-bronze-600 text-white font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
             Ver Todos os Produtos
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,18 +67,18 @@ function ProductCard({ product, index }) {
 
   return (
     <div 
-      className="group relative bg-white dark:bg-neutral-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden animate-fade-in"
+      className="group relative bg-white dark:bg-neutral-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden animate-fade-in w-full max-w-sm mx-auto"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       {/* Imagem do Produto */}
-      <Link to={`/product/${product.id}`} className="block relative aspect-[3/4] overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+      <Link to={`/product/${product.id}`} className="relative aspect-[3/4] overflow-hidden bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center">
         {product.images && product.images.length > 0 ? (
           <OptimizedImage
             src={product.images[0].image}
             alt={product.name}
             width={300}
             height={400}
-            className="transition-transform duration-700 group-hover:scale-110"
+            className="transition-transform duration-700 group-hover:scale-110 object-center"
             objectFit="cover"
           />
         ) : (
@@ -88,7 +88,7 @@ function ProductCard({ product, index }) {
         )}
 
         {/* Overlay com ações */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3">
           <button
             className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-300 transform hover:scale-110"
             aria-label="Ver produto"
@@ -136,7 +136,7 @@ function ProductCard({ product, index }) {
       </Link>
 
       {/* Informações do Produto */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         {/* Categoria */}
         {product.category && (
           <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wide mb-2">
