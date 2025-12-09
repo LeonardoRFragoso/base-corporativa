@@ -6,11 +6,19 @@ from decimal import Decimal, InvalidOperation
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = ProductImage
         fields = (
             'id', 'image', 'alt_text', 'is_primary', 'sort_order', 'variant'
         )
+    
+    def get_image(self, obj):
+        if obj.image:
+            # Get the absolute URL from the storage backend
+            return obj.image.url
+        return None
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):

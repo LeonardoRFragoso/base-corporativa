@@ -3,9 +3,16 @@ from .models import GiftCard, GiftCardDesign, GiftCardTransaction
 
 
 class GiftCardDesignSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = GiftCardDesign
         fields = ['id', 'name', 'description', 'image', 'occasion']
+    
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
 
 
 class GiftCardSerializer(serializers.ModelSerializer):
