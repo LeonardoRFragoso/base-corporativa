@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python manage.py migrate --noinput && python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL || true && python -m gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120",
+    "startCommand": "python manage.py migrate --noinput && python create_superuser.py && python -m gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120",
     "healthcheckPath": "/api/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
