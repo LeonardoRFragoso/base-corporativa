@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Product, ProductVariant, ProductImage
 from django.utils.text import slugify
+from django.conf import settings
 import uuid
 from decimal import Decimal, InvalidOperation
 
@@ -15,10 +16,37 @@ class ProductImageSerializer(serializers.ModelSerializer):
         )
     
     def get_image(self, obj):
-        if obj.image:
-            # Get the absolute URL from the storage backend
+        name = getattr(obj.image, 'name', None)
+        if not name:
+            return None
+
+        # Build absolute URL robustly for Cloudflare R2
+        bucket = getattr(settings, 'AWS_STORAGE_BUCKET_NAME', '') or ''
+        domain = getattr(settings, 'AWS_S3_CUSTOM_DOMAIN', '') or ''
+        endpoint = getattr(settings, 'AWS_S3_ENDPOINT_URL', '') or ''
+
+        if domain:
+            base = domain.strip()
+            if not base.startswith('http'):  # add scheme if missing
+                base = f"https://{base}"
+            base = base.rstrip('/')
+            # If domain path already ends with /<bucket>, strip it (bucket-bound dev domain)
+            if bucket and base.endswith('/' + bucket):
+                base = base[:-(len(bucket) + 1)]
+            return f"{base}/{name.lstrip('/')}"
+
+        # Fallback to endpoint + bucket
+        if endpoint:
+            base = endpoint.rstrip('/')
+            if bucket:
+                base = f"{base}/{bucket}"
+            return f"{base}/{name.lstrip('/')}"
+
+        # Last resort: storage-generated URL
+        try:
             return obj.image.url
-        return None
+        except Exception:
+            return None
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):

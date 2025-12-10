@@ -219,11 +219,18 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-CORS_ALLOWED_ORIGINS = [o for o in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if o] or [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
-]
+# CORS Configuration
+cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+if cors_origins_env:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in cors_origins_env.split(',') if o.strip()]
+    print(f"[CORS] Loaded from env: {CORS_ALLOWED_ORIGINS}")
+else:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
+    ]
+    print(f"[CORS] Using defaults: {CORS_ALLOWED_ORIGINS}")
 
 # Allow credentials (cookies, authorization headers, etc.)
 CORS_ALLOW_CREDENTIALS = True
@@ -254,8 +261,16 @@ CORS_EXPOSE_HEADERS = [
 # Preflight cache time (in seconds)
 CORS_PREFLIGHT_MAX_AGE = 86400
 
-CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
+csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if csrf_origins_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_env.split(',') if o.strip()]
+    print(f"[CSRF] Loaded from env: {CSRF_TRUSTED_ORIGINS}")
+else:
+    CSRF_TRUSTED_ORIGINS = []
+    print("[CSRF] No CSRF_TRUSTED_ORIGINS defined")
+
 FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:5173')
+print(f"[FRONTEND] Base URL: {FRONTEND_BASE_URL}")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -292,15 +307,17 @@ if AWS_STORAGE_BUCKET_NAME:
     }
     
     # For Cloudflare R2 with Public Development URL
-    # Files are uploaded to the bucket, and accessed via: https://pub-xxx.r2.dev/bucket-name/path
+    # Access pattern should be: https://pub-xxx.r2.dev/<object-path>
+    # If the provided custom domain already contains the bucket segment, do NOT duplicate it.
     if AWS_S3_CUSTOM_DOMAIN:
-        # Check if custom domain already includes bucket name
-        if AWS_STORAGE_BUCKET_NAME in AWS_S3_CUSTOM_DOMAIN:
-            # Domain already includes bucket (e.g., pub-xxx.r2.dev/base-corporativa-media)
-            MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
-        else:
-            # Domain without bucket, need to add it (e.g., pub-xxx.r2.dev)
-            MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STORAGE_BUCKET_NAME}/"
+        _base = AWS_S3_CUSTOM_DOMAIN.strip()
+        if not _base.startswith('http'):
+            _base = f"https://{_base}"
+        _base = _base.rstrip('/')
+        # If domain ends with /<bucket>, strip it to avoid /bucket duplication in URLs
+        if AWS_STORAGE_BUCKET_NAME and _base.endswith('/' + AWS_STORAGE_BUCKET_NAME):
+            _base = _base[:-(len(AWS_STORAGE_BUCKET_NAME) + 1)]
+        MEDIA_URL = f"{_base}/"
     elif AWS_S3_ENDPOINT_URL:
         MEDIA_URL = AWS_S3_ENDPOINT_URL.rstrip('/') + '/' + AWS_STORAGE_BUCKET_NAME + '/'
     
