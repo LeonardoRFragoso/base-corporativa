@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
+from django.db.models import Sum
 from .models import Category, Product, ProductVariant, ProductImage
 from .stock_models import StockMovement
 

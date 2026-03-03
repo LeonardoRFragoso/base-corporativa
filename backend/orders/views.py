@@ -9,7 +9,10 @@ class OrderListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        qs = Order.objects.all().order_by('-created_at')
+        qs = Order.objects.select_related('user', 'shipping_address').prefetch_related(
+            'items__variant__product__category',
+            'items__variant__product__images'
+        ).order_by('-created_at')
         user = getattr(self.request, 'user', None)
         if user and user.is_staff:
             return qs
@@ -21,7 +24,10 @@ class OrderDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        qs = Order.objects.all()
+        qs = Order.objects.select_related('user', 'shipping_address').prefetch_related(
+            'items__variant__product__category',
+            'items__variant__product__images'
+        )
         user = getattr(self.request, 'user', None)
         if user and user.is_staff:
             return qs

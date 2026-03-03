@@ -22,4 +22,7 @@ urlpatterns = [
     
     # Endpoints de Privacidade e LGPD
     path('privacy/', include('users.urls_privacy')),
+    
+    # Enhanced Profile endpoints
+    path('user/', include('users.urls_enhanced')),
 ]

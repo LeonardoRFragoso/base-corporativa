@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from . import views_reservation
 
@@ -18,4 +18,7 @@ urlpatterns = [
     path('check-availability/', views_reservation.check_availability, name='check_availability'),
     path('my-reservations/', views_reservation.get_user_reservations, name='my_reservations'),
     path('cleanup-reservations/', views_reservation.cleanup_expired_reservations, name='cleanup_reservations'),
+    
+    # Enhanced Cart endpoints
+    path('', include('cart.urls_enhanced')),
 ]

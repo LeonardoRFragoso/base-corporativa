@@ -17,17 +17,26 @@ class Category(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey('Category', related_name='products', on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=220, unique=True)
     description = models.TextField(blank=True)
     fabric_type = models.CharField(max_length=100, blank=True)
     composition = models.TextField(blank=True)
     care_instructions = models.TextField(blank=True)
-    base_price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    base_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     catalog_pdf = models.FileField(upload_to='product_pdfs/', blank=True, null=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['category', '-created_at']),
+            models.Index(fields=['is_active', '-created_at']),
+            models.Index(fields=['base_price']),
+            models.Index(fields=['slug']),
+        ]
 
     def __str__(self):
         return self.name
@@ -85,15 +94,20 @@ class ProductVariant(models.Model):
     ]
 
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
-    size = models.CharField(max_length=8, choices=SIZE_CHOICES, blank=True)
-    color = models.CharField(max_length=50, blank=True)
+    size = models.CharField(max_length=8, choices=SIZE_CHOICES, blank=True, db_index=True)
+    color = models.CharField(max_length=50, blank=True, db_index=True)
     sku = models.CharField(max_length=64, unique=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, db_index=True)
+    stock = models.PositiveIntegerField(default=0, db_index=True)
     is_default = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('product', 'size', 'color')
+        ordering = ['product', 'size', 'color']
+        indexes = [
+            models.Index(fields=['product', 'stock']),
+            models.Index(fields=['sku']),
+        ]
 
     def __str__(self):
         label = f"{self.product.name}"
@@ -109,11 +123,15 @@ class ProductImage(models.Model):
     variant = models.ForeignKey(ProductVariant, related_name='images', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(upload_to='products/')
     alt_text = models.CharField(max_length=255, blank=True)
-    is_primary = models.BooleanField(default=False)
+    is_primary = models.BooleanField(default=False, db_index=True)
     sort_order = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['sort_order', 'id']
+        indexes = [
+            models.Index(fields=['product', 'is_primary']),
+            models.Index(fields=['product', 'sort_order']),
+        ]
 
     def __str__(self):
         return f"Image for {self.product.name}"

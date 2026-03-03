@@ -15,17 +15,17 @@ class Order(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     shipping_address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(blank=True, db_index=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending", db_index=True)
     currency = models.CharField(max_length=10, default="BRL")
     shipping_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    coupon_code = models.CharField(max_length=50, blank=True)
+    coupon_code = models.CharField(max_length=50, blank=True, db_index=True)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    external_reference = models.CharField(max_length=100, blank=True)
-    mp_payment_id = models.CharField(max_length=100, blank=True)
+    external_reference = models.CharField(max_length=100, blank=True, db_index=True)
+    mp_payment_id = models.CharField(max_length=100, blank=True, db_index=True)
     mp_status = models.CharField(max_length=50, blank=True)
     shipping_service_name = models.CharField(max_length=120, blank=True)
     shipping_carrier = models.CharField(max_length=120, blank=True)
@@ -42,8 +42,18 @@ class Order(models.Model):
     shipping_city = models.CharField(max_length=120, blank=True)
     shipping_state = models.CharField(max_length=50, blank=True)
     shipping_zip = models.CharField(max_length=20, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['status', '-created_at']),
+            models.Index(fields=['email', '-created_at']),
+            models.Index(fields=['mp_payment_id']),
+            models.Index(fields=['external_reference']),
+        ]
 
 
 class OrderItem(models.Model):

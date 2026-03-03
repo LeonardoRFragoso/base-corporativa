@@ -15,7 +15,17 @@ export default function Cart() {
   const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
-  const subtotal = items.reduce((sum, i) => sum + Number(i.price) * i.qty, 0)
+  // Função helper para arredondamento correto
+  const roundToTwo = (num) => Math.round((parseFloat(num) || 0) * 100) / 100
+  
+  // Cálculo de subtotal com compatibilidade de campos
+  const subtotal = roundToTwo(
+    items.reduce((sum, i) => {
+      const price = parseFloat(i.unit_price || i.price || 0)
+      const qty = parseInt(i.quantity || i.qty || 0, 10)
+      return sum + (price * qty)
+    }, 0)
+  )
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
   // Shipping state
@@ -65,12 +75,27 @@ export default function Cart() {
   const [cpfValid, setCpfValid] = useState(true)
   const [phoneValid, setPhoneValid] = useState(true)
 
-  const shipping = selectedQuote ? Number(selectedQuote.price) : 0
-  const discount = coupon ? Math.min(
-    Number(coupon.amount_off || 0) || (subtotal * (Number(coupon.percent_off || 0) / 100)),
-    subtotal
-  ) : 0
-  const total = Math.max(0, subtotal + shipping - discount)
+  // Cálculo de frete
+  const shipping = roundToTwo(selectedQuote ? parseFloat(selectedQuote.price || 0) : 0)
+  
+  // Cálculo de desconto corrigido (sem bug do OR)
+  const discount = coupon ? (() => {
+    let discountValue = 0
+    
+    // Priorizar amount_off se existir (mesmo que seja 0)
+    if (coupon.amount_off !== null && coupon.amount_off !== undefined) {
+      discountValue = parseFloat(coupon.amount_off) || 0
+    } else if (coupon.percent_off !== null && coupon.percent_off !== undefined) {
+      const percent = parseFloat(coupon.percent_off) || 0
+      discountValue = (subtotal * percent) / 100
+    }
+    
+    // Garantir que desconto não exceda subtotal e não seja negativo
+    return roundToTwo(Math.min(Math.max(0, discountValue), subtotal))
+  })() : 0
+  
+  // Total final
+  const total = roundToTwo(Math.max(0, subtotal + shipping - discount))
 
   // Load persisted shipping info
   useEffect(() => {
@@ -323,11 +348,11 @@ export default function Cart() {
       destination_zip: formatZip(zipNumbersOnly(zip)),
       shipping_service_name: selectedQuote?.service_name || '',
       shipping_carrier: selectedQuote?.carrier || '',
-      shipping_price: selectedQuote ? parseFloat(Number(selectedQuote.price).toFixed(2)) : 0,
+      shipping_price: roundToTwo(selectedQuote ? parseFloat(selectedQuote.price || 0) : 0),
       items: items.map(item => ({
-        name: item.name,
-        qty: item.qty,
-        price: parseFloat(Number(item.price).toFixed(2)),
+        name: item.name || item.product_name,
+        qty: item.qty || item.quantity,
+        price: roundToTwo(item.price || item.unit_price || 0),
         size: item.size,
         color: item.color
       }))
@@ -374,13 +399,10 @@ export default function Cart() {
     }
     if (coupon) {
       checkoutData.coupon_code = coupon.code
-      checkoutData.discount_amount = parseFloat(Number(discount).toFixed(2))
+      checkoutData.discount_amount = roundToTwo(discount)
     }
-    // Para PIX, adicionar frete como item (mantém compatibilidade)
-    // Para cartão, o shipping_price já está sendo enviado separadamente
-    if (selectedQuote && Number(selectedQuote.price) > 0) {
-      checkoutData.items.push({ name: 'Frete', qty: 1, price: parseFloat(Number(selectedQuote.price).toFixed(2)) })
-    }
+    // NÃO adicionar frete como item - shipping_price já está sendo enviado separadamente
+    // O backend usa shipping_price para calcular o total corretamente
     return checkoutData
   }
 

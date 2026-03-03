@@ -4,7 +4,6 @@ import SEO from '../components/SEO.jsx';
 import { OrganizationSchema, WebsiteSchema } from '../components/StructuredData.jsx';
 
 // Novos componentes criados
-import PromoBanner from '../components/PromoBanner.jsx';
 import HeroProductSlider from '../components/HeroProductSlider.jsx';
 import FeaturedCategories from '../components/FeaturedCategories.jsx';
 import FeaturedProducts from '../components/FeaturedProducts.jsx';
@@ -93,9 +92,6 @@ export default function HomeNew() {
       />
       <OrganizationSchema />
       <WebsiteSchema />
-
-      {/* ========== NOVO: Banner Promocional com Countdown ========== */}
-      <PromoBanner />
 
       {/* ========== MELHORADO: Hero com Slider de Produtos Reais ========== */}
       {heroProducts.length > 0 ? (

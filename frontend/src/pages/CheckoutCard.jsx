@@ -23,14 +23,25 @@ export default function CheckoutCard() {
   const [issuerId, setIssuerId] = useState('')
   const [transactionAmount, setTransactionAmount] = useState(0)
 
-  // Calcular totais
-  const itemsTotal = parseFloat((checkoutData?.items?.reduce((sum, item) => sum + (item.price * item.qty), 0) || 0).toFixed(2))
-  const shipping = parseFloat(Number(checkoutData?.shipping_price || 0).toFixed(2))
-  const discount = parseFloat(Number(checkoutData?.discount_amount || 0).toFixed(2))
-  const finalTotal = parseFloat((itemsTotal + shipping - discount).toFixed(2))
+  // Função helper para arredondamento correto
+  const roundToTwo = (num) => Math.round((parseFloat(num) || 0) * 100) / 100
+
+  // Calcular totais com arredondamento correto
+  const itemsTotal = roundToTwo(
+    checkoutData?.items?.reduce((sum, item) => {
+      const price = parseFloat(item.price || 0)
+      const qty = parseInt(item.qty || 0, 10)
+      return sum + (price * qty)
+    }, 0) || 0
+  )
+  const shipping = roundToTwo(checkoutData?.shipping_price || 0)
+  const discount = roundToTwo(checkoutData?.discount_amount || 0)
+  const finalTotal = roundToTwo(itemsTotal + shipping - discount)
   
   // Valor a ser exibido na UI (pode incluir juros de parcelamento)
-  const displayTotal = transactionAmount > 0 ? parseFloat(transactionAmount.toFixed(2)) : finalTotal
+  const displayTotal = roundToTwo(
+    transactionAmount && transactionAmount !== finalTotal ? transactionAmount : finalTotal
+  )
 
   useEffect(() => {
     if (!checkoutData) {
@@ -190,7 +201,9 @@ export default function CheckoutCard() {
       
       // Calcular o total correto considerando juros das parcelas
       // Se o usuário selecionou parcelamento com juros, transactionAmount já foi atualizado
-      const finalTransactionAmount = parseFloat((transactionAmount > 0 ? transactionAmount : finalTotal).toFixed(2))
+      const finalTransactionAmount = roundToTwo(
+        transactionAmount && transactionAmount !== finalTotal ? transactionAmount : finalTotal
+      )
       
       // Preparar dados do pagamento
       const paymentData = {

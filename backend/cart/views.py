@@ -49,6 +49,12 @@ def get_cart(request):
     cart = _get_or_create_cart_for_request(request)
     if cart is None:
         return Response({"error": "Informe X-Session-Key no header para carrinho de convidado."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    cart = Cart.objects.prefetch_related(
+        'items__variant__product__category',
+        'items__variant__product__images'
+    ).get(id=cart.id)
+    
     return Response(CartSerializer(cart).data)
 
 
@@ -67,16 +73,53 @@ def add_to_cart(request):
     if quantity < 1:
         quantity = 1
 
-    variant = get_object_or_404(ProductVariant.objects.select_related('product'), id=variant_id)
+    variant = get_object_or_404(
+        ProductVariant.objects.select_related('product').prefetch_related('product__images'),
+        id=variant_id
+    )
+    
+    # VALIDAR ESTOQUE DISPONÍVEL
+    if variant.stock < quantity:
+        return Response({
+            "error": "Estoque insuficiente",
+            "available": variant.stock,
+            "requested": quantity
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
     unit_price = variant.price or variant.product.base_price
     product_name = variant.product.name
+    
+    # Obter imagem principal
+    primary_image = variant.product.images.filter(is_primary=True).first()
+    if not primary_image:
+        primary_image = variant.product.images.first()
+    image_url = primary_image.image.url if primary_image else ''
 
     item, created = CartItem.objects.get_or_create(
-        cart=cart, variant=variant,
-        defaults={"product_name": product_name, "unit_price": unit_price, "quantity": quantity}
+        cart=cart,
+        variant=variant,
+        defaults={
+            "product_name": product_name,
+            "unit_price": unit_price,
+            "quantity": quantity,
+            "size": variant.size or '',
+            "color": variant.color or '',
+            "sku": variant.sku or '',
+            "image_url": image_url,
+            "product_id": variant.product.id
+        }
     )
     if not created:
-        item.quantity += quantity
+        new_quantity = item.quantity + quantity
+        # VALIDAR NOVA QUANTIDADE
+        if new_quantity > variant.stock:
+            return Response({
+                "error": "Estoque insuficiente",
+                "available": variant.stock,
+                "current_in_cart": item.quantity,
+                "requested": quantity
+            }, status=status.HTTP_400_BAD_REQUEST)
+        item.quantity = new_quantity
         item.save(update_fields=["quantity", "updated_at"])
 
     return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
@@ -89,11 +132,18 @@ def update_item(request, item_id: int):
     cart = _get_or_create_cart_for_request(request)
     if cart is None:
         return Response({"error": "Informe X-Session-Key no header para carrinho de convidado."}, status=status.HTTP_400_BAD_REQUEST)
-    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    item = get_object_or_404(CartItem.objects.select_related('variant'), id=item_id, cart=cart)
     quantity = int(request.data.get('quantity') or 1)
     if quantity <= 0:
         item.delete()
     else:
+        # VALIDAR ESTOQUE
+        if quantity > item.variant.stock:
+            return Response({
+                "error": "Estoque insuficiente",
+                "available": item.variant.stock,
+                "requested": quantity
+            }, status=status.HTTP_400_BAD_REQUEST)
         item.quantity = quantity
         item.save(update_fields=["quantity", "updated_at"])
     return Response(CartSerializer(cart).data)

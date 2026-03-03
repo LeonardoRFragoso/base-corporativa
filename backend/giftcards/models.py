@@ -144,10 +144,10 @@ class GiftCardDesign(models.Model):
     # Ocasiões
     OCCASION_CHOICES = [
         ('birthday', 'Aniversário'),
-        ('christmas', 'Natal'),
         ('mothers_day', 'Dia das Mães'),
         ('fathers_day', 'Dia dos Pais'),
         ('valentines', 'Dia dos Namorados'),
+        ('corporate', 'Corporativo'),
         ('generic', 'Genérico'),
     ]
     occasion = models.CharField(max_length=20, choices=OCCASION_CHOICES, default='generic')
