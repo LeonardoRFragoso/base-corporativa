@@ -29,8 +29,8 @@ export default function SupportChat() {
       id: 2,
       icon: Phone,
       title: 'Telefone',
-      description: '(11) 99999-9999',
-      action: () => window.location.href = 'tel:+5511999999999',
+      description: '(21) 98029-2791',
+      action: () => window.location.href = 'tel:+5521980292791',
       color: 'from-blue-500 to-blue-600'
     },
     {

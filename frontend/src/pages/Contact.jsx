@@ -57,7 +57,7 @@ export default function Contact() {
             </div>
             <div>
               <div className="text-sm text-neutral-500 dark:text-neutral-500">Telefone</div>
-              <div className="font-medium text-primary-950">(11) 99999-9999</div>
+              <div className="font-medium text-primary-950">(21) 98029-2791</div>
             </div>
             <div>
               <div className="text-sm text-neutral-500 dark:text-neutral-500">Horário</div>

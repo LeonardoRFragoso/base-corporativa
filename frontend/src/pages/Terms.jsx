@@ -35,7 +35,7 @@ export default function Terms() {
                 <strong>CNPJ:</strong> [XX.XXX.XXX/XXXX-XX]<br />
                 <strong>Endereço:</strong> [Rua/Av], [Número], [Bairro], [Cidade] - [Estado], CEP: [XXXXX-XXX]<br />
                 <strong>E-mail:</strong> contato@basecorporativa.com<br />
-                <strong>Telefone:</strong> (11) 99999-9999
+                <strong>Telefone:</strong> (21) 98029-2791
               </p>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-4 italic">
                 * Os dados completos da empresa serão atualizados assim que o processo de abertura for concluído.
@@ -284,7 +284,7 @@ export default function Terms() {
             <div className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-lg">
               <p className="text-neutral-700 dark:text-neutral-300">
                 <strong>E-mail:</strong> contato@basecorporativa.com<br />
-                <strong>Telefone:</strong> (11) 99999-9999<br />
+                <strong>Telefone:</strong> (21) 98029-2791<br />
                 <strong>Horário de atendimento:</strong> Segunda a Sexta, 9h às 18h
               </p>
             </div>
