@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏰ Última chance! 10% OFF</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 40px; text-align: center;">
+                            <h1 style="color: #d4a574; margin: 0; font-size: 28px; font-weight: bold;">BASE CORPORATIVA</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Urgency Banner -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 20px; text-align: center;">
+                            <p style="color: #ffffff; margin: 0; font-size: 18px; font-weight: bold;">
+                                ⏰ ÚLTIMA CHANCE - Expira em 3 dias!
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="color: #1a1a1a; margin: 0 0 20px 0; font-size: 24px;">
+                                {{ user.first_name }}, não perca esta oportunidade!
+                            </h2>
+                            
+                            <p style="color: #666; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                                Esta é sua <strong>última chance</strong> de garantir seus produtos com um desconto especial de <strong>10% OFF</strong>!
+                            </p>
+                            
+                            <!-- Coupon Box -->
+                            <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 30px; border: 3px dashed #ffffff;">
+                                <p style="color: #ffffff; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                    Cupom Exclusivo - Última Chance
+                                </p>
+                                <p style="color: #ffffff; margin: 0; font-size: 36px; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 3px;">
+                                    {{ coupon_code }}
+                                </p>
+                                <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 24px; font-weight: bold;">
+                                    10% OFF
+                                </p>
+                                <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px; font-weight: bold;">
+                                    ⏰ Válido apenas por 3 dias!
+                                </p>
+                            </div>
+                            
+                            <!-- Benefits -->
+                            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                                <h3 style="color: #1a1a1a; margin: 0 0 15px 0; font-size: 18px;">Por que finalizar agora:</h3>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <li style="margin-bottom: 10px;">✓ Frete grátis acima de R$ 200</li>
+                                    <li style="margin-bottom: 10px;">✓ 30 dias para troca</li>
+                                    <li style="margin-bottom: 10px;">✓ Compra 100% segura</li>
+                                    <li style="margin-bottom: 10px;">✓ Entrega rápida</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Cart Items -->
+                            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                                <h3 style="color: #1a1a1a; margin: 0 0 15px 0; font-size: 18px;">Seus itens esperando:</h3>
+                                {% for item in items %}
+                                <div style="border-bottom: 1px solid #e0e0e0; padding: 15px 0;">
+                                    <p style="margin: 0; color: #1a1a1a; font-weight: bold;">{{ item.product.name }}</p>
+                                    <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+                                        Quantidade: {{ item.quantity }} | 
+                                        <span style="text-decoration: line-through;">R$ {{ item.unit_price }}</span>
+                                        <span style="color: #dc2626; font-weight: bold;"> R$ {{ item.unit_price|floatformat:2|add:"-"|add:item.unit_price|floatformat:2|mul:0.9 }}</span>
+                                    </p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="https://basecorporativa.store/cart" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: #ffffff; text-decoration: none; padding: 18px 50px; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                                            🔥 Garantir meu desconto agora!
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="color: #dc2626; font-size: 14px; text-align: center; margin: 30px 0 0 0; font-weight: bold;">
+                                ⚠️ Este cupom expira em 3 dias e não será renovado!
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #1a1a1a; padding: 30px; text-align: center;">
+                            <p style="color: #999; font-size: 12px; margin: 0 0 10px 0;">
+                                BASE CORPORATIVA - Roupas Corporativas de Qualidade
+                            </p>
+                            <p style="color: #666; font-size: 12px; margin: 0;">
+                                © 2026 BASE CORPORATIVA. Todos os direitos reservados.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

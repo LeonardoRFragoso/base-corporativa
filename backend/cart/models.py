@@ -9,6 +9,14 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
     
+    # Abandoned cart email tracking
+    abandoned_email_1_sent = models.BooleanField(default=False, help_text='Email de lembrete 1h enviado')
+    abandoned_email_2_sent = models.BooleanField(default=False, help_text='Email com cupom 5% enviado')
+    abandoned_email_3_sent = models.BooleanField(default=False, help_text='Email com cupom 10% enviado')
+    abandoned_email_1_sent_at = models.DateTimeField(null=True, blank=True, help_text='Data/hora do envio do email 1')
+    abandoned_email_2_sent_at = models.DateTimeField(null=True, blank=True, help_text='Data/hora do envio do email 2')
+    abandoned_email_3_sent_at = models.DateTimeField(null=True, blank=True, help_text='Data/hora do envio do email 3')
+    
     class Meta:
         ordering = ['-updated_at']
         indexes = [
