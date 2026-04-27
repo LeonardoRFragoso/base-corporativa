@@ -1,12 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Heart, GitCompare } from 'lucide-react'
+import { Heart, GitCompare, Plus, Minus } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
 import { useCompare } from '../context/CompareContext.jsx'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product }) {
   const [isAdding, setIsAdding] = useState(false)
+  const [quantity, setQuantity] = useState(1)
   const { add } = useCart()
   const { addToCompare, isInCompare } = useCompare()
   const navigate = useNavigate()
@@ -52,6 +53,12 @@ export default function ProductCard({ product }) {
     const variantToAdd = variantForSelectedSize || firstAvailableVariant
     if (!variantToAdd || isAdding) return
     
+    // Verificar se a quantidade não excede o estoque
+    if (quantity > variantToAdd.stock) {
+      toast.error(`Apenas ${variantToAdd.stock} unidades disponíveis`)
+      return
+    }
+    
     setIsAdding(true)
     
     const cartItem = {
@@ -62,13 +69,36 @@ export default function ProductCard({ product }) {
       image: image,
       size: variantToAdd.size,
       color: variantToAdd.color,
-      qty: 1
+      qty: quantity
     }
     
     add(cartItem)
+    toast.success(`${quantity} ${quantity > 1 ? 'unidades adicionadas' : 'unidade adicionada'} ao carrinho!`)
     
-    // Reset button state after animation
-    setTimeout(() => setIsAdding(false), 1000)
+    // Reset button state and quantity after animation
+    setTimeout(() => {
+      setIsAdding(false)
+      setQuantity(1)
+    }, 1000)
+  }
+  
+  const handleIncreaseQuantity = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const variantToCheck = variantForSelectedSize || firstAvailableVariant
+    if (variantToCheck && quantity < variantToCheck.stock) {
+      setQuantity(prev => prev + 1)
+    } else {
+      toast.error(`Estoque máximo: ${variantToCheck?.stock || 0} unidades`)
+    }
+  }
+  
+  const handleDecreaseQuantity = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1)
+    }
   }
   
   return (
@@ -196,50 +226,81 @@ export default function ProductCard({ product }) {
             </div>
           )}
           
-          {/* Add to Cart Button */}
-          <div className="mt-4 flex flex-col sm:flex-row gap-2.5">
-            <Link 
-              to={`/product/${product.id}`}
-              className="flex-1 text-center px-4 py-2.5 border-2 border-primary-500 dark:border-primary-600 text-primary-700 dark:text-primary-400 text-sm font-semibold rounded-xl hover:bg-primary-50 dark:hover:bg-neutral-700 hover:border-primary-600 dark:hover:border-primary-400 transition-all duration-200 transform hover:scale-105"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Ver detalhes
-            </Link>
-            
-            {hasStock && (variantForSelectedSize || firstAvailableVariant) ? (
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 shadow-soft ${
-                  isAdding 
-                    ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-medium' 
-                    : 'bg-gradient-to-r from-bronze-800 to-bronze-600 text-white hover:from-bronze-700 hover:to-bronze-500 hover:shadow-medium transform hover:scale-105'
-                }`}
-              >
-                {isAdding ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Adicionado!
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5-5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
-                    </svg>
-                    Comprar
-                  </div>
-                )}
-              </button>
-            ) : (
-              <button
-                disabled
-                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed border-2 border-neutral-200 dark:border-neutral-700"
-              >
-                Esgotado
-              </button>
+          {/* Quantity Selector and Add to Cart */}
+          <div className="mt-4 space-y-3">
+            {/* Quantity Selector */}
+            {hasStock && (variantForSelectedSize || firstAvailableVariant) && (
+              <div className="flex items-center justify-between bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2 border border-neutral-200 dark:border-neutral-700">
+                <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 px-2">Quantidade:</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleDecreaseQuantity}
+                    disabled={quantity <= 1}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:border-primary-500 dark:hover:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    aria-label="Diminuir quantidade"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-12 text-center font-bold text-lg text-neutral-900 dark:text-neutral-100">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={handleIncreaseQuantity}
+                    disabled={quantity >= (variantForSelectedSize?.stock || firstAvailableVariant?.stock || 0)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:border-primary-500 dark:hover:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    aria-label="Aumentar quantidade"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             )}
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <Link 
+                to={`/product/${product.id}`}
+                className="flex-1 text-center px-4 py-2.5 border-2 border-primary-500 dark:border-primary-600 text-primary-700 dark:text-primary-400 text-sm font-semibold rounded-xl hover:bg-primary-50 dark:hover:bg-neutral-700 hover:border-primary-600 dark:hover:border-primary-400 transition-all duration-200 transform hover:scale-105"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Ver detalhes
+              </Link>
+              
+              {hasStock && (variantForSelectedSize || firstAvailableVariant) ? (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isAdding}
+                  className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 shadow-soft ${
+                    isAdding 
+                      ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-medium' 
+                      : 'bg-gradient-to-r from-bronze-800 to-bronze-600 text-white hover:from-bronze-700 hover:to-bronze-500 hover:shadow-medium transform hover:scale-105'
+                  }`}
+                >
+                  {isAdding ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Adicionado!
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5-5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
+                      </svg>
+                      Comprar {quantity > 1 ? `(${quantity})` : ''}
+                    </div>
+                  )}
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-400 cursor-not-allowed border-2 border-neutral-200 dark:border-neutral-700"
+                >
+                  Esgotado
+                </button>
+              )}
+            </div>
           </div>
         </div>
     </div>
