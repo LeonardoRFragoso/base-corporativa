@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.contrib.sitemaps.views import sitemap
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from users.views import EmailOrUsernameTokenObtainPairView
+from .sitemaps import sitemaps
 
 def root_health(_request):
     return JsonResponse({
@@ -31,11 +33,35 @@ def root_health(_request):
         "version": "v1"
     })
 
+def robots_txt(request):
+    """Gera robots.txt dinamicamente"""
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        "Disallow: /api/auth/",
+        "Disallow: /api/user/",
+        "Disallow: /api/cart/",
+        "Disallow: /api/orders/",
+        "Disallow: /api/payments/",
+        "",
+        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', root_health, name='root'),
+    
+    # SEO - Sitemap e Robots
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', robots_txt, name='robots_txt'),
+    
+    # Auth
     path('api/auth/login/', EmailOrUsernameTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # API Routes
     path('api/', include('users.urls')),
     path('api/', include('catalog.urls')),
     path('api/payments/', include('payments.urls')),
@@ -51,6 +77,7 @@ urlpatterns = [
     path('api/', include('recommendations.urls')),
     path('api/', include('giftcards.urls')),
     path('api/wishlist/', include('wishlist.urls')),
+    path('api/', include('promotions.urls')),
 ]
 
 if settings.DEBUG:

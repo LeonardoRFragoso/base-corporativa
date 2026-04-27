@@ -2,6 +2,7 @@ import { Route, Routes, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import CookieBanner from './components/CookieBanner.jsx'
+import FlashSaleBanner from './components/FlashSaleBanner.jsx'
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import Catalog from './pages/Catalog.jsx'
@@ -44,6 +45,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
       <ScrollToTop />
+      <FlashSaleBanner />
       <Navbar />
       <main className="flex-1">
         <Routes>
