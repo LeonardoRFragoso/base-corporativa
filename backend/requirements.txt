@@ -17,3 +17,5 @@ dj-database-url
 sendgrid
 django-admin-interface
 django-colorfield
+celery
+redis
